@@ -1,8 +1,8 @@
 package com.example.restapi.controller;
 
-import com.example.restapi.model.Book;
 import com.example.restapi.service.BookService;
 
+import es.uDeusto.G15procesos.entity.Book;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.restapi.model.Book;
+import es.uDeusto.G15procesos.entity.Book;
 
 public class BookManager {
 

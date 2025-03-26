@@ -1,7 +1,9 @@
 package com.example.restapi.service;
 
-import com.example.restapi.model.Book;
 import com.example.restapi.repository.BookRepository;
+
+import es.uDeusto.G15procesos.entity.Book;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

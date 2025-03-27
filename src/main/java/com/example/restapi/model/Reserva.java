@@ -1,4 +1,4 @@
-package es.uDeusto.G15procesos.entity;
+package com.example.restapi.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;

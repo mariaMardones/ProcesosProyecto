@@ -1,14 +1,14 @@
-package com.example.restapi.model;
+package es.uDeusto.G15procesos.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "reservas") // Opcional: especificar nombre de la tabla
+@Table(name = "reservas")
 public class Reserva {
 
     @Id
-    private String idReserva; // Identificador único
+    private String idReserva;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -18,25 +18,22 @@ public class Reserva {
     @JoinColumn(name = "coche_matricula", nullable = false)
     private Coche coche;
 
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    private LocalDate fecha;
     private double precioTotal;
 
     @Enumerated(EnumType.STRING)
-    private TipoEstado estado;
+    private EstadoReserva estado;
 
     // Constructor sin argumentos
     public Reserva() {
     }
 
     // Constructor con todos los argumentos
-    public Reserva(String idReserva, Usuario usuario, Coche coche, LocalDate fechaInicio, LocalDate fechaFin,
-                   double precioTotal, TipoEstado estado) {
+    public Reserva(String idReserva, Usuario usuario, Coche coche, LocalDate fecha, double precioTotal, EstadoReserva estado) {
         this.idReserva = idReserva;
         this.usuario = usuario;
         this.coche = coche;
-        this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
+        this.fecha = fecha;
         this.precioTotal = precioTotal;
         this.estado = estado;
     }
@@ -66,20 +63,12 @@ public class Reserva {
         this.coche = coche;
     }
 
-    public LocalDate getFechaInicio() {
-        return fechaInicio;
+    public LocalDate getFecha() {
+        return fecha;
     }
 
-    public void setFechaInicio(LocalDate fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
-
-    public LocalDate getFechaFin() {
-        return fechaFin;
-    }
-
-    public void setFechaFin(LocalDate fechaFin) {
-        this.fechaFin = fechaFin;
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public double getPrecioTotal() {
@@ -90,16 +79,16 @@ public class Reserva {
         this.precioTotal = precioTotal;
     }
 
-    public TipoEstado getEstado() {
+    public EstadoReserva getEstado() {
         return estado;
     }
 
-    public void setEstado(TipoEstado estado) {
+    public void setEstado(EstadoReserva estado) {
         this.estado = estado;
     }
 
     @Override
     public String toString() {
-        return "Reserva [idReserva=" + idReserva + ", usuario=" + usuario + ", coche=" + coche + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", precioTotal=" + precioTotal + ", estado=" + estado + "]";
+        return "Reserva [idReserva=" + idReserva + ", usuario=" + usuario + ", coche=" + coche + ", fecha=" + fecha + ", precioTotal=" + precioTotal + ", estado=" + estado + "]";
     }
 }

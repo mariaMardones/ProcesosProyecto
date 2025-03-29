@@ -1,9 +1,6 @@
 package com.example.restapi.model;
 
 import jakarta.persistence.*;
-import main.java.com.example.restapi.model.EstadoReserva;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "reservas")
@@ -90,6 +87,6 @@ public class Reserva {
 
     @Override
     public String toString() {
-        return "Reserva [idReserva=" + idReserva + ", usuario=" + usuario + ", coche=" + coche + ", fecha=" + fecha + ", precioTotal=" + precioTotal + ", estado=" + estado + "]";
+        return "Reserva [idReserva=" + id + ", usuario=" + usuario + ", coche=" + coche + ", fecha=" + fecha + ", precioTotal=" + precioTotal + ", estado=" + estado + "]";
     }
 }

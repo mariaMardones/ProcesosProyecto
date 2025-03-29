@@ -1,4 +1,4 @@
-package es.uDeusto.G15procesos.entity;
+package com.example.restapi.model;
 
 public enum EstadoReserva {
     PENDIENTE,

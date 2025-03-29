@@ -7,6 +7,7 @@ import com.example.restapi.model.Usuario;
 
 public class UsuarioService {
     private final Map<Long, Usuario> usuarios = new HashMap<>();
+    public static Map<String, Usuario> tokens = new HashMap<>();
     
     
 

@@ -3,75 +3,89 @@ package com.example.restapi.service;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.restapi.model.TipoRol;
 import com.example.restapi.model.Usuario;
 import com.example.restapi.repository.UsuarioRepository;
 
+@Service
 public class UsuarioService {
+    
     private final Map<Long, Usuario> usuarios = new HashMap<>();
     public static Map<String, Usuario> tokens = new HashMap<>();
+
+    @Autowired
     private UsuarioRepository repository;
     
-    public void registro(String nombre, String apellido, String fechaNacimiento, String email, String password, String tlf,String rol) {
-        
-        Usuario usuario = repository.findByEmail(email);
-        if (usuario != null) {
-            throw new IllegalArgumentException("Usuario con el email proporcionado ya existe.");
-        }
-        Usuario u = new Usuario(nombre, apellido,fechaNacimiento , email, password, tlf,TipoRol.valueOf(rol));
-        
-        usuarios.put(u.getId(), u);
-        repository.save(u);
-}
+    public List<Usuario> getAllUsuarios() {
+        return repository.findAll();
+    }
 
-    public Optional<String> logIn(String email, String contrasenia) {
-        // Verificar si el usuario ya tiene una sesión activa
-        if (tokens.values().stream().anyMatch(u -> u.getEmail().equals(email))) {
-            return Optional.empty();
+    public Optional<Usuario> getUsuarioByEmail(String email) {
+        return Optional.ofNullable(repository.findByEmail(email));
+    }
+
+    public Usuario registrarUsuario(Usuario usuario) {
+        if (repository.findByEmail(usuario.getEmail()) != null) {
+            throw new IllegalArgumentException("El email ya está en uso.");
         }
-        
-        // Buscar usuario en la base de datos
+        return repository.save(usuario);
+    }
+
+    public Usuario actualizarUsuario(String email, Usuario usuarioActualizado) {
+        Usuario usuarioExistente = repository.findByEmail(email);
+        if (usuarioExistente == null) {
+            throw new IllegalArgumentException("No se encontró el usuario con el email proporcionado.");
+        }
+        usuarioExistente.setNombre(usuarioActualizado.getNombre());
+        usuarioExistente.setApellido(usuarioActualizado.getApellido());
+        usuarioExistente.setFechaNacimiento(usuarioActualizado.getFechaNacimiento());
+        usuarioExistente.setPassword(usuarioActualizado.getPassword());
+        usuarioExistente.setTelefono(usuarioActualizado.getTelefono());
+        usuarioExistente.setRol(usuarioActualizado.getRol());
+
+        return repository.save(usuarioExistente);
+    }
+
+    public void eliminarUsuario(String email) {
         Usuario usuario = repository.findByEmail(email);
         if (usuario == null) {
             throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
         }
-
-        // Validar contraseña (aquí deberías usar BCrypt o similar)
-        if (usuario.getPassword().equals(contrasenia)) { // ¡OJO! Esto es inseguro, solo para ejemplo
-            String token = generarToken(usuario);
-            return Optional.of(token);
-        } else {
-            throw new IllegalArgumentException("Credenciales inválidas para el email: " + email);
-        }
+        repository.delete(usuario);
     }
+
+    public Optional<String> logIn(String email, String contrasenia) {
+        if (tokens.values().stream().anyMatch(u -> u.getEmail().equals(email))) {
+            return Optional.empty();
+        }
+        
+        Usuario usuario = repository.findByEmail(email);
+        if (usuario == null || !usuario.getPassword().equals(contrasenia)) { // Usa BCrypt en una versión real
+            throw new IllegalArgumentException("Credenciales inválidas.");
+        }
+
+        String token = generarToken(usuario);
+        return Optional.of(token);
+    }
+
     public String generarToken(Usuario u) {
         String token = Timestamp.from(Instant.now()).toString();
         tokens.put(token, u);
         return token;
     }
 
-    public Optional<Boolean> logout(String token) {
-        if (tokens.containsKey(token)) {
-            tokens.remove(token);
-            return Optional.of(true);
-        } else {
-            return Optional.empty();
-        }
-
+    public boolean logout(String token) {
+        return tokens.remove(token) != null;
     }
-        
+
     public static Map<String, Usuario> getTokens() {
         return tokens;
     }
-
-    public Map<String, Usuario> obtenerTokens() {
-        return tokens;
-    }
-    
-    
-
-
 }

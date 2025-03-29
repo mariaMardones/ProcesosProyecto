@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.example.restapi.model.TipoRol;
 import com.example.restapi.model.Usuario;
 import com.example.restapi.repository.UsuarioRepository;
 
@@ -13,6 +14,23 @@ public class UsuarioService {
     private final Map<Long, Usuario> usuarios = new HashMap<>();
     public static Map<String, Usuario> tokens = new HashMap<>();
     private UsuarioRepository repository;
+    
+    public void registro(String nombre, String apellido, String fechaNacimiento, String email, String password, String tlf,String rol) {
+        
+        Usuario usuario = repository.findByEmail(email);
+        if (usuario != null) {
+            throw new IllegalArgumentException("Usuario con el email proporcionado ya existe.");
+        }
+        Usuario u = new Usuario(nombre, apellido,fechaNacimiento , email, password, tlf,TipoRol.valueOf(rol));
+
+//        if (peso > 0) u.setPeso(peso);
+//        if (altura > 0) u.setAltura(altura);
+//        if (frec_car_max > 0) u.setFrec_car_max(frec_car_max);
+//        if (frec_car_rep > 0) u.setFrec_car_rep(frec_car_rep);
+        
+        usuarios.put(u.getId(), u);
+        repository.save(u);
+}
 
     public Optional<String> logIn(String email, String contrasenia) {
         // Verificar si el usuario ya tiene una sesión activa

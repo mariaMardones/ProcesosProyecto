@@ -13,7 +13,7 @@ public class Usuario {
 
     private String nombre;
     private String apellido;
-    private Date fechaNacimiento;
+    private String fechaNacimiento;
     private String email;
     private String password;
     private String tlf;
@@ -26,9 +26,8 @@ public class Usuario {
     }
 
     // Constructor con todos los argumentos
-    public Usuario(int id, String nombre, String apellido, Date fechaNacimiento, String email, String password,
+    public Usuario( String nombre, String apellido, String fechaNacimiento, String email, String password,
                    String tlf, TipoRol rol) {
-        this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
@@ -39,8 +38,8 @@ public class Usuario {
     }
 
     // Getters y setters
-    public int getId() {
-        return id;
+    public Long getId() {
+        return (long) id;
     }
 
     public void setId(int id) {
@@ -63,11 +62,11 @@ public class Usuario {
         this.apellido = apellido;
     }
 
-    public Date getFechaNacimiento() {
+    public String getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(Date fechaNacimiento) {
+    public void setFechaNacimiento(String fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 

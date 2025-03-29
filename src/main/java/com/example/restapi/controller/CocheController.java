@@ -7,7 +7,7 @@ import main.java.com.example.restapi.service.CocheService;
 
 @RestController
 @RequestMapping("/api/coche")
-@Tag(name = "Coche Controller", description = "API para manejar coches")
+@Tag(name = "Coche Controller", description = "API para manejar los coches")
 public class CocheController {
 
     @Autowired

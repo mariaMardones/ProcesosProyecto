@@ -18,13 +18,13 @@ public class CocheController {
         return cocheService.getAllCoches();
     }
 
-    @GetMapping("/matricula")
+    @GetMapping("/buscar")
     public ResponseEntity<Coche> getCocheByMatricula(@RequestParam("matricula") String matricula) {
         Optional<Coche> coche = cocheService.getCocheByMatricula(matricula);
         return coche.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<Coche> crearCoche(@RequestBody Coche coche) {
         try {
             Coche cochenuevo = cocheService.guardarCoche(coche);
@@ -34,7 +34,7 @@ public class CocheController {
         }
     }
 
-    @PutMapping("/matricula")
+    @PutMapping("/actualizar")
     public ResponseEntity<Coche> actualizarCoche(@RequestParam("matricula") String matricula, @RequestBody Coche coche) {
         try {
             Coche cocheActualizado = cocheService.actualizarCoche(matricula, coche);
@@ -44,7 +44,7 @@ public class CocheController {
         }
     }
 
-    @DeleteMapping("/matricula")
+    @DeleteMapping("/eliminar")
     public ResponseEntity<Void> eliminarCoche(@RequestParam("matricula") String matricula) {
         Optional<Coche> coche = cocheService.getCocheByMatricula(matricula);
         if (coche.isPresent()) {

@@ -1,6 +1,8 @@
 package com.example.restapi.model;
 
 import jakarta.persistence.*;
+import main.java.com.example.restapi.model.EstadoReserva;
+
 import java.time.LocalDate;
 
 @Entity
@@ -8,7 +10,8 @@ import java.time.LocalDate;
 public class Reserva {
 
     @Id
-    private String idReserva;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -18,7 +21,7 @@ public class Reserva {
     @JoinColumn(name = "coche_matricula", nullable = false)
     private Coche coche;
 
-    private LocalDate fecha;
+    private String fecha;
     private double precioTotal;
 
     @Enumerated(EnumType.STRING)
@@ -29,8 +32,7 @@ public class Reserva {
     }
 
     // Constructor con todos los argumentos
-    public Reserva(String idReserva, Usuario usuario, Coche coche, LocalDate fecha, double precioTotal, EstadoReserva estado) {
-        this.idReserva = idReserva;
+    public Reserva(Usuario usuario, Coche coche, String fecha, double precioTotal, EstadoReserva estado) {
         this.usuario = usuario;
         this.coche = coche;
         this.fecha = fecha;
@@ -38,13 +40,12 @@ public class Reserva {
         this.estado = estado;
     }
 
-    // Getters y setters
-    public String getIdReserva() {
-        return idReserva;
+    public int getId() {
+        return id;
     }
 
-    public void setIdReserva(String idReserva) {
-        this.idReserva = idReserva;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Usuario getUsuario() {
@@ -63,11 +64,11 @@ public class Reserva {
         this.coche = coche;
     }
 
-    public LocalDate getFecha() {
+    public String getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(String fecha) {
         this.fecha = fecha;
     }
 

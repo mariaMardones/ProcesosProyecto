@@ -22,11 +22,6 @@ public class UsuarioService {
             throw new IllegalArgumentException("Usuario con el email proporcionado ya existe.");
         }
         Usuario u = new Usuario(nombre, apellido,fechaNacimiento , email, password, tlf,TipoRol.valueOf(rol));
-
-//        if (peso > 0) u.setPeso(peso);
-//        if (altura > 0) u.setAltura(altura);
-//        if (frec_car_max > 0) u.setFrec_car_max(frec_car_max);
-//        if (frec_car_rep > 0) u.setFrec_car_rep(frec_car_rep);
         
         usuarios.put(u.getId(), u);
         repository.save(u);

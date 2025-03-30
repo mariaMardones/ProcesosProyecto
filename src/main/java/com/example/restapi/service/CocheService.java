@@ -4,7 +4,7 @@ import com.example.restapi.model.Coche;
 import com.example.restapi.repository.CocheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,19 +18,29 @@ public class CocheService {
         this.cocheRepository = cocheRepository;
     }
 
-    public List<Coche> getAllCoches() {
+    public List<Coche> ListarCoches() {
         return cocheRepository.findAll();
+    }
+    public List<Coche> ListarCochesDisponibles() {
+        ArrayList<Coche> coches = cocheRepository.findAll();
+        ArrayList<Coche> cochesdisponibles = new ArrayList<>();
+        for (Coche c: coches){
+            if (c.isDisponible()) {
+                cochesdisponibles.add(c);
+            }
+        }
+        return cochesdisponibles;
     }
 
     public Optional<Coche> getCocheByMatricula(String matricula) {
         return cocheRepository.findById(matricula);
     }
 
-    public Coche GuardarCoche(Coche coche) {
+    public Coche guardarCoche(Coche coche) {
         return cocheRepository.save(coche);
     }
 
-    public Coche ActualizarCoche(String matricula, Coche Coche) {
+    public Coche actualizarCoche(String matricula, Coche Coche) {
         Optional<Coche> c = cocheRepository.findById(matricula);
         if (c.isPresent()) {
             Coche x = c.get();
@@ -47,7 +57,7 @@ public class CocheService {
         }
     }
 
-    public void EliminarCoche(String matricula) {
+    public void eliminarCoche(String matricula) {
         if (cocheRepository.existsById(matricula)) {
             cocheRepository.deleteById(matricula);
         } else {

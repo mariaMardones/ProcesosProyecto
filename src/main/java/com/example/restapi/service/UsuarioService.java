@@ -23,7 +23,7 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository repository;
     
-    public List<Usuario> getAllUsuarios() {
+    public List<Usuario> listarUsuariosResgistrados() {
         return repository.findAll();
     }
 

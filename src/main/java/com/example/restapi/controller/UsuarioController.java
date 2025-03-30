@@ -21,24 +21,14 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public List<Usuario> getAllUsuarios() {
-        return usuarioService.getAllUsuarios();
+    public List<Usuario> listarUsuariosResgistrados() {
+        return usuarioService.listarUsuariosResgistrados();
     }
 
     @GetMapping("/buscar")
     public ResponseEntity<Usuario> getUsuarioByEmail(@RequestParam("email") String email) {
         Optional<Usuario> usuario = usuarioService.getUsuarioByEmail(email);
         return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/crear")
-    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
-        try {
-            Usuario usuarioNuevo = usuarioService.registrarUsuario(usuario);
-            return ResponseEntity.ok(usuarioNuevo);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @PutMapping("/actualizar")
@@ -59,6 +49,16 @@ public class UsuarioController {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/registrar")
+    public ResponseEntity<Usuario> RrgistrarUsuario(@RequestBody Usuario usuario) {
+        try {
+            Usuario usuarioNuevo = usuarioService.registrarUsuario(usuario);
+            return ResponseEntity.ok(usuarioNuevo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 

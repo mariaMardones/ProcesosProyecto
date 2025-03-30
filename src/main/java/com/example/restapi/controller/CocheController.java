@@ -1,11 +1,16 @@
 package main.java.com.example.restapi.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.example.restapi.model.Coche;
-
 import main.java.com.example.restapi.service.CocheService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/coche")
@@ -13,11 +18,11 @@ import main.java.com.example.restapi.service.CocheService;
 public class CocheController {
 
     @Autowired
-    private CocheService cocheService;
+    private com.example.restapi.service.CocheService cocheService;
 
     @GetMapping
-    public List<Coche> getAllCoches() {
-        return cocheService.getAllCoches();
+    public List<Coche> ListarCoches() {
+        return cocheService.ListarCoches();
     }
 
     @GetMapping("/buscar")
@@ -55,5 +60,9 @@ public class CocheController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping("/disponibles")
+    public List<Coche> ListarCochesDisponibles() {
+        return cocheService.ListarCochesDisponibles();
     }
 }

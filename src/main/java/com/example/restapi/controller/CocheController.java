@@ -1,4 +1,4 @@
-package main.java.com.example.restapi.controller;
+package com.example.restapi.controller;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package main.java.com.example.restapi.client;
+package com.example.restapi.client;
 
 import java.util.Scanner;
 

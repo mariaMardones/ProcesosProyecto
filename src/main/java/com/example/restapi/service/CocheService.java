@@ -1,12 +1,14 @@
 package com.example.restapi.service;
 
-import com.example.restapi.model.Coche;
-import com.example.restapi.repository.CocheRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.restapi.model.Coche;
+import com.example.restapi.repository.CocheRepository;
 
 @Service
 public class CocheService {
@@ -22,7 +24,7 @@ public class CocheService {
         return cocheRepository.findAll();
     }
     public List<Coche> ListarCochesDisponibles() {
-        ArrayList<Coche> coches = cocheRepository.findAll();
+        ArrayList<Coche> coches = (ArrayList<Coche>) cocheRepository.findAll();
         ArrayList<Coche> cochesdisponibles = new ArrayList<>();
         for (Coche c: coches){
             if (c.isDisponible()) {

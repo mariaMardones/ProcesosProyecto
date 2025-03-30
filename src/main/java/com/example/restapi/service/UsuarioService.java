@@ -10,14 +10,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.restapi.model.TipoRol;
 import com.example.restapi.model.Usuario;
 import com.example.restapi.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
     
-    private final Map<Long, Usuario> usuarios = new HashMap<>();
+//    private final Map<Long, Usuario> usuarios = new HashMap<>();
     public static Map<String, Usuario> tokens = new HashMap<>();
 
     @Autowired
@@ -47,7 +46,7 @@ public class UsuarioService {
         usuarioExistente.setApellido(usuarioActualizado.getApellido());
         usuarioExistente.setFechaNacimiento(usuarioActualizado.getFechaNacimiento());
         usuarioExistente.setPassword(usuarioActualizado.getPassword());
-        usuarioExistente.setTelefono(usuarioActualizado.getTelefono());
+        usuarioExistente.setTlf(usuarioActualizado.getTlf());
         usuarioExistente.setRol(usuarioActualizado.getRol());
 
         return repository.save(usuarioExistente);

@@ -1,0 +1,71 @@
+// Modificaciones en el frontend (HTML + JavaScript)
+// Agregar formulario de inicio de sesión en el HTML
+const loginForm = `
+    <h2>Iniciar Sesión</h2>
+    <form id="loginForm" onsubmit="event.preventDefault(); login();">
+        <div class="form-group">
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Contraseña" required>
+        </div>
+        <button type="submit">Iniciar Sesión</button>
+    </form>
+    <p id="loginMessage"></p>
+`;
+
+document.body.insertAdjacentHTML("afterbegin", loginForm);
+
+async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    const response = await fetch('/api/usuario/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    });
+    
+    if (response.ok) {
+        const token = await response.text();
+        localStorage.setItem('token', token);
+        document.getElementById('loginMessage').textContent = 'Inicio de sesión exitoso';
+        setTimeout(() => location.reload(), 1000);
+    } else {
+        document.getElementById('loginMessage').textContent = 'Error en el inicio de sesión';
+    }
+}
+
+// Backend - Ajustes en UsuarioController para manejar el login
+@PostMapping("/login")
+public ResponseEntity<String> iniciarSesion(@RequestBody Map<String, String> credentials) {
+    String email = credentials.get("email");
+    String password = credentials.get("password");
+    
+    try {
+        Optional<String> token = usuarioService.logIn(email, password);
+        return token.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(401).build());
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.status(400).build();
+    } catch (Exception e) {
+        return ResponseEntity.status(500).build();
+    }
+}
+
+// Ajuste en UsuarioService para manejar autenticación
+public Optional<String> logIn(String email, String password) {
+    Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+    if (usuarioOpt.isPresent() && usuarioOpt.get().getPassword().equals(password)) {
+        String token = UUID.randomUUID().toString(); // Generación simple de token
+        tokenStorage.put(token, usuarioOpt.get());
+        return Optional.of(token);
+    }
+    return Optional.empty();
+}
+
+// Método para cerrar sesión en UsuarioController
+@PostMapping("/logout")
+public ResponseEntity<Void> cerrarSesion(@RequestBody String token) {
+    if (tokenStorage.remove(token) != null) {
+        return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.status(400).build();
+}

@@ -60,18 +60,19 @@ public class UsuarioService {
         repository.delete(usuario);
     }
 
-    public Optional<String> logIn(String email, String contrasenia) {
+    public Optional<String> logIn(String email, String password) {
+    	String token;
         if (tokens.values().stream().anyMatch(u -> u.getEmail().equals(email))) {
             return Optional.empty();
         }
         
         Usuario usuario = repository.findByEmail(email);
-        if (usuario == null || !usuario.getPassword().equals(contrasenia)) { // Usa BCrypt en una versión real
-            throw new IllegalArgumentException("Credenciales inválidas.");
+        if (usuario == null && !usuario.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
+        } else {
+            token = generarToken(usuario);
+            return Optional.of(token);
         }
-
-        String token = generarToken(usuario);
-        return Optional.of(token);
     }
 
     public String generarToken(Usuario u) {
@@ -80,8 +81,13 @@ public class UsuarioService {
         return token;
     }
 
-    public boolean logout(String token) {
-        return tokens.remove(token) != null;
+    public Optional<Boolean> logout(String token) {
+        if (tokens.containsKey(token)) {
+            tokens.remove(token);
+            return Optional.of(true);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public static Map<String, Usuario> getTokens() {

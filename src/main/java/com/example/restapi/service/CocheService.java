@@ -39,6 +39,9 @@ public class CocheService {
     }
 
     public Coche guardarCoche(Coche coche) {
+        if (cocheRepository.findByMatricula(coche.getMatricula()) != null) {
+            throw new IllegalArgumentException("El coche ya está registrado.");
+        }
         return cocheRepository.save(coche);
     }
 

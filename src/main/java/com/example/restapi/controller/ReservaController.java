@@ -32,14 +32,14 @@ public class ReservaController {
         return reservaService.obtenerReservas();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscar/{id}")
     public ResponseEntity<Reserva> obtenerReservaPorId(@PathVariable Integer id) {
         return reservaService.obtenerReservaPorId(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<Reserva> crearReserva(@RequestBody Reserva reserva) {
         try {
             Reserva nuevaReserva = reservaService.crearReserva(reserva);
@@ -50,7 +50,7 @@ public class ReservaController {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping("/actualizar/{id}")
     public ResponseEntity<Reserva> actualizarReserva(@PathVariable Integer id, @RequestBody Reserva detallesReserva) {
         try {
             Reserva reservaActualizada = reservaService.actualizarReserva(id, detallesReserva);
@@ -60,7 +60,7 @@ public class ReservaController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Void> eliminarReserva(@PathVariable Integer id) {
         if (reservaService.eliminarReserva(id)) {
             return ResponseEntity.noContent().build();

@@ -368,37 +368,35 @@
             }
         }
 
-        async function logout() {
-            try {
-                const token = sessionStorage.getItem('authToken');
-                console.log('Token al hacer logout:', token); // Para depuración
-                
-                if (token) {
-                    const response = await fetch(`/api/usuario/login?email=${encodeURIComponent(token)}`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'text/plain',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        console.log('Logout exitoso');
-                    } else {
-                        const error = await response.text();
-                        console.error('Error en logout:', error);
-                    }
-                }
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-                alert('Error al cerrar sesión: ' + error.message);
-            } finally {
-                // Siempre limpiamos el token y mostramos la interfaz de autenticación
-                sessionStorage.removeItem('authToken');
-                currentToken = null;
-                showAuthInterface();
-            }
-        }
+		async function logout() {
+		    const token = sessionStorage.getItem('authToken');
+		    if (!token) {
+		        window.location.href = 'index.html';  // Recarga la misma página
+		        return;
+		    }
+
+		    try {
+		        const response = await fetch('http://localhost:8080/api/usuario/logout', {
+		            method: 'POST',
+		            headers: { 
+		                'Authorization': `Bearer ${token}`
+		            }
+		        });
+
+		        if (!response.ok) {
+		            throw new Error('Error en logout');
+		        }
+		        
+		        // Limpiar y recargar
+		        sessionStorage.removeItem('authToken');
+		        window.location.href = 'index.html';  // Vuelve al inicio
+		        
+		    } catch (error) {
+		        console.error('Error:', error);
+		        sessionStorage.removeItem('authToken');
+		        window.location.href = 'index.html';
+		    }
+		}
 
         function switchAuthTab(tab) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));

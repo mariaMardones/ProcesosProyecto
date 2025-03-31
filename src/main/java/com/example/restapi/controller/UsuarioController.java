@@ -102,21 +102,26 @@ public class UsuarioController {
             }
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> cerrarSesion(@RequestParam String token) {
+    public ResponseEntity<Void> cerrarSesion(@RequestHeader("Authorization") String authHeader) {
         try {
-            if (token == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+           
+            String token = authHeader.replace("Bearer ", "");
+            
+            if (token.isBlank()) {
+                return ResponseEntity.badRequest().build(); 
             }
+            
             Optional<Boolean> result = usuarioService.logout(token);
             
-            if (result.isPresent() && result.get()) {
-            	return new ResponseEntity<>(HttpStatus.OK);	
-            } else {
-            	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }  
-
+            if (result.isPresent()) {
+                return result.get() ? 
+                    ResponseEntity.ok().build() :
+                    ResponseEntity.badRequest().build();
+            }
+            return ResponseEntity.badRequest().build(); 
+                
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        }
     }
+}

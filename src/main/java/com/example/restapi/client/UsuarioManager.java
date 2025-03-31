@@ -1,8 +1,12 @@
 package com.example.restapi.client;
 
+
 import java.util.List;
 import java.util.Scanner;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -106,24 +110,33 @@ public class UsuarioManager {
         }
     }
 
-    public void cerrarSesion(String token) {
-        try {
-            ResponseEntity<Void> response = restTemplate.postForEntity(
-                USUARIO_CONTROLLER_URL + "/logout",
-                token,
-                Void.class
-            );
+    public boolean cerrarSesion(String token) {
+    	 try {
+    	        HttpHeaders headers = new HttpHeaders();
+    	      
+    	        if (token != null && !token.startsWith("Bearer ")) {
+    	            token = "Bearer " + token;
+    	        }
+    	        headers.add("Authorization", token);
+    	        
+    	        HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+    	        
+    	        ResponseEntity<Void> response = restTemplate.exchange(
+    	            USUARIO_CONTROLLER_URL + "/logout",
+    	            HttpMethod.POST,
+    	            requestEntity,
+    	            Void.class
+    	        );
 
-            if (response.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Sesión cerrada exitosamente.");
-            } else {
-                System.out.println("Error al cerrar sesión. Código de estado: " + response.getStatusCode());
-            }
-        } catch (RestClientException e) {
-            System.out.println("Error al cerrar sesión: " + e.getMessage());
-        }
+    	        return response.getStatusCode().is2xxSuccessful();
+    	        
+    	    } catch (RestClientException e) {
+    	        System.err.println("Error al cerrar sesión: " + e.getMessage());
+    	        return false;
+    	    }
     }
-
+    
+    
     public static void main(String[] args) {
         if (args.length != 2) {
             System.out.println("Uso: UsuarioManager <hostname> <port>");

@@ -34,8 +34,11 @@ label {
     font-weight: bold;
 }
 
+input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="date"],
+select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
@@ -62,4 +65,18 @@ button:hover {
 .error-message {
     color: #dc3545;
     margin-top: 10px;
+}
+
+.register-link {
+    margin-top: 15px;
+    color: #666;
+}
+
+.register-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
 }

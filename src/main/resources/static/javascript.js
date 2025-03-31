@@ -1,3 +1,51 @@
+// Función para manejar el registro
+async function handleRegister(event) {
+    event.preventDefault();
+    
+    const usuario = {
+        nombre: document.getElementById('regNombre').value,
+        apellido: document.getElementById('regApellido').value,
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPassword').value,
+        tlf: document.getElementById('regTlf').value,
+        fechaNacimiento: document.getElementById('regFechaNac').value,
+        rol: document.getElementById('regRol').value
+    };
+    
+    try {
+        const response = await fetch('/api/usuario/registrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(usuario)
+        });
+        
+        if (response.ok) {
+            alert('Registro exitoso! Por favor inicia sesión');
+            window.location.href = 'login.html';
+        } else {
+            const error = await response.json();
+            document.getElementById('registerError').textContent = error.message || 'Error en el registro';
+        }
+    } catch (error) {
+        document.getElementById('registerError').textContent = 'Error de conexión';
+    }
+}
+
+// Event listeners para registro
+document.addEventListener('DOMContentLoaded', function() {
+    // Si estamos en la página de login
+    if (document.getElementById('loginForm')) {
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    }
+    
+    // Si estamos en la página de registro
+    if (document.getElementById('registerForm')) {
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    }
+    
+    // Resto de tu código existente...
+});
+
 // Función para manejar el login
 async function handleLogin(event) {
     event.preventDefault();

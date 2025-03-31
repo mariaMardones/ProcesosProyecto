@@ -4,137 +4,677 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="javascript.js" defer></script>
+    <style>
+        /* Estilos para autenticación */
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .auth-tab.active {
+            border-bottom-color: #007bff;
+        }
+        .auth-content {
+            display: none;
+        }
+        .auth-content.active {
+            display: block;
+        }
+        
+        /* Estilos para la interfaz de gestión */
+        .management {
+            display: none;
+        }
+        .logged-in .management {
+            display: block;
+        }
+        .logged-in .auth-container {
+            display: none;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Estilos existentes */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            position: relative;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="password"],
+        select {
+            padding: 6px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            width: 200px;
+        }
+        button {
+            padding: 6px 12px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Sistema de Gestión</h1>
-    <!-- Añade esto justo después del <h1>Sistema de Gestión</h1> -->
-    <button onclick="logout()" style="float: right;">Cerrar Sesión</button>
-    <div class="tab">
-        <button class="tablinks active" onclick="openTab(event, 'usuarios')">Usuarios</button>
-        <button class="tablinks" onclick="openTab(event, 'coches')">Coches</button>
-        <button class="tablinks" onclick="openTab(event, 'reservas')">Reservas</button>
+    <!-- Contenedor de autenticación -->
+    <div class="auth-container">
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</div>
+            <div class="auth-tab" onclick="switchAuthTab('register')">Registrarse</div>
+        </div>
+        
+        <!-- Formulario de Login -->
+        <div id="loginForm" class="auth-content active">
+            <h2>Iniciar Sesión</h2>
+            <form onsubmit="event.preventDefault(); login();">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                </div>
+                <button type="submit">Ingresar</button>
+            </form>
+        </div>
+        
+        <!-- Formulario de Registro -->
+        <div id="registerForm" class="auth-content">
+            <h2>Registrarse</h2>
+            <form onsubmit="event.preventDefault(); register();">
+                <div class="form-group">
+                    <input type="text" id="regNombre" placeholder="Nombre" required>
+                    <input type="text" id="regApellido" placeholder="Apellido" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="regEmail" placeholder="Email" required>
+                    <input type="password" id="regPassword" placeholder="Contraseña" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="regTlf" placeholder="Teléfono">
+                    <input type="date" id="regFechaNacimiento">
+                </div>
+                <button type="submit">Registrar</button>
+            </form>
+        </div>
     </div>
 
-    <!-- Pestaña Usuarios -->
-    <div id="usuarios" class="tabcontent" style="display: block;">
-        <h2>Gestión de Usuarios</h2>
-        <form id="usuarioForm">
-            <div class="form-group">
-                <input type="text" id="nombre" placeholder="Nombre" required>
-                <input type="text" id="apellido" placeholder="Apellido" required>
-            </div>
-            <div class="form-group">
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Contraseña" required>
-            </div>
-            <div class="form-group">
-                <input type="text" id="tlf" placeholder="Teléfono">
-                <input type="date" id="fechaNacimiento">
-                <select id="rol">
-                    <option value="ADMIN">Admin</option>
-                    <option value="CLIENTE">Cliente</option>
-                </select>
-            </div>
-            <button type="submit">Registrar Usuario</button>
-        </form>
+    <!-- Interfaz de gestión -->
+    <div class="management">
+        <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        
+        <h1>Sistema de Gestión</h1>
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'usuarios')">Usuarios</button>
+            <button class="tablinks" onclick="openTab(event, 'coches')">Coches</button>
+            <button class="tablinks" onclick="openTab(event, 'reservas')">Reservas</button>
+        </div>
 
-        <h3>Lista de Usuarios</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Teléfono</th>
-                    <th>Rol</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="usuarioTable"></tbody>
-        </table>
+        <!-- Pestaña Usuarios -->
+        <div id="usuarios" class="tabcontent" style="display: block;">
+            <h2>Gestión de Usuarios</h2>
+            <form id="usuarioForm" onsubmit="event.preventDefault(); addUsuario();">
+                <div class="form-group">
+                    <input type="text" id="nombre" placeholder="Nombre" required>
+                    <input type="text" id="apellido" placeholder="Apellido" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="tlf" placeholder="Teléfono">
+                    <input type="date" id="fechaNacimiento">
+                    <select id="rol">
+                        <option value="ADMIN">Admin</option>
+                        <option value="CLIENTE">Cliente</option>
+                    </select>
+                </div>
+                <button type="submit">Registrar Usuario</button>
+            </form>
+
+            <h3>Lista de Usuarios</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usuarioTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Pestaña Coches -->
+        <div id="coches" class="tabcontent">
+            <h2>Gestión de Coches</h2>
+            <form id="cocheForm" onsubmit="event.preventDefault(); addCoche();">
+                <div class="form-group">
+                    <input type="text" id="matricula" placeholder="Matrícula" required>
+                    <input type="text" id="marca" placeholder="Marca" required>
+                    <input type="text" id="modelo" placeholder="Modelo" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="anio" placeholder="Año" min="1900" max="2099" required>
+                    <input type="text" id="color" placeholder="Color">
+                    <input type="number" id="precio" placeholder="Precio" step="0.01" required>
+                    <label>
+                        <input type="checkbox" id="disponible"> Disponible
+                    </label>
+                </div>
+                <button type="submit">Añadir Coche</button>
+            </form>
+
+            <h3>Lista de Coches</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Año</th>
+                        <th>Precio</th>
+                        <th>Disponible</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cocheTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Pestaña Reservas -->
+        <div id="reservas" class="tabcontent">
+            <h2>Gestión de Reservas</h2>
+            <form id="reservaForm" onsubmit="event.preventDefault(); addReserva();">
+                <div class="form-group">
+                    <select id="usuarioId" required>
+                        <option value="">Seleccione usuario</option>
+                    </select>
+                    <select id="cocheMatricula" required>
+                        <option value="">Seleccione coche</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="date" id="fechaReserva" required>
+                    <input type="number" id="precioTotal" placeholder="Precio Total" step="0.01" required>
+                    <select id="estadoReserva" required>
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="CONFIRMADA">Confirmada</option>
+                        <option value="CANCELADA">Cancelada</option>
+                        <option value="FINALIZADA">Finalizada</option>
+                    </select>
+                </div>
+                <button type="submit">Crear Reserva</button>
+            </form>
+
+            <h3>Lista de Reservas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Coche</th>
+                        <th>Fecha</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="reservaTable"></tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Pestaña Coches -->
-    <div id="coches" class="tabcontent">
-        <h2>Gestión de Coches</h2>
-        <form id="cocheForm">
-            <div class="form-group">
-                <input type="text" id="matricula" placeholder="Matrícula" required>
-                <input type="text" id="marca" placeholder="Marca" required>
-                <input type="text" id="modelo" placeholder="Modelo" required>
-            </div>
-            <div class="form-group">
-                <input type="number" id="anio" placeholder="Año" min="1900" max="2099" required>
-                <input type="text" id="color" placeholder="Color">
-                <input type="number" id="precio" placeholder="Precio" step="0.01" required>
-                <label>
-                    <input type="checkbox" id="disponible"> Disponible
-                </label>
-            </div>
-            <button type="submit">Añadir Coche</button>
-        </form>
+    <script>
+        let currentToken = null;
 
-        <h3>Lista de Coches</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Matrícula</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Año</th>
-                    <th>Precio</th>
-                    <th>Disponible</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="cocheTable"></tbody>
-        </table>
-    </div>
+        // Funciones de autenticación
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`/api/usuario/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const token = await response.text();
+                    // Guardar el token en sessionStorage
+                    sessionStorage.setItem('authToken', token);
+                    currentToken = token;
+                    console.log('Token guardado:', token); // Para depuración
+                    showManagementInterface();
+                } else {
+                    const error = await response.text();
+                    alert(error || 'Error en las credenciales');
+                }
+            } catch (error) {
+                console.error('Error en login:', error);
+                alert('Error al contactar con el servidor');
+            }
+        }
 
-    <!-- Pestaña Reservas -->
-    <div id="reservas" class="tabcontent">
-        <h2>Gestión de Reservas</h2>
-        <form id="reservaForm">
-            <div class="form-group">
-                <select id="usuarioId" required>
-                    <option value="">Seleccione usuario</option>
-                </select>
-                <select id="cocheMatricula" required>
-                    <option value="">Seleccione coche</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="date" id="fechaReserva" required>
-                <input type="number" id="precioTotal" placeholder="Precio Total" step="0.01" required>
-                <select id="estadoReserva" required>
-                    <option value="PENDIENTE">Pendiente</option>
-                    <option value="CONFIRMADA">Confirmada</option>
-                    <option value="CANCELADA">Cancelada</option>
-                    <option value="FINALIZADA">Finalizada</option>
-                </select>
-            </div>
-            <button type="submit">Crear Reserva</button>
-        </form>
+        async function register() {
+            const usuario = {
+                nombre: document.getElementById('regNombre').value,
+                apellido: document.getElementById('regApellido').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                tlf: document.getElementById('regTlf').value,
+                fechaNacimiento: document.getElementById('regFechaNacimiento').value,
+                rol: 'CLIENTE'
+            };
 
-        <h3>Lista de Reservas</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Coche</th>
-                    <th>Fecha</th>
-                    <th>Precio</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="reservaTable"></tbody>
-        </table>
-    </div>
+            try {
+                const response = await fetch('/api/usuario/registrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(usuario)
+                });
+                
+                if (response.ok) {
+                    alert('Registro exitoso! Por favor inicie sesión');
+                    switchAuthTab('login');
+                    // Limpiar el formulario
+                    document.getElementById('regNombre').value = '';
+                    document.getElementById('regApellido').value = '';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regTlf').value = '';
+                    document.getElementById('regFechaNacimiento').value = '';
+                } else {
+                    const error = await response.text();
+                    alert(error || 'Error en el registro');
+                }
+            } catch (error) {
+                console.error('Error en registro:', error);
+                alert('Error en el registro');
+            }
+        }
 
-    <script src="script.js"></script>
+        async function logout() {
+            try {
+                const token = sessionStorage.getItem('authToken');
+                console.log('Token al hacer logout:', token); // Para depuración
+                
+                if (token) {
+                    const response = await fetch(`/api/usuario/login?email=${encodeURIComponent(token)}`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'text/plain',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        console.log('Logout exitoso');
+                    } else {
+                        const error = await response.text();
+                        console.error('Error en logout:', error);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                alert('Error al cerrar sesión: ' + error.message);
+            } finally {
+                // Siempre limpiamos el token y mostramos la interfaz de autenticación
+                sessionStorage.removeItem('authToken');
+                currentToken = null;
+                showAuthInterface();
+            }
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`.auth-tab[onclick*="${tab}"]`).classList.add('active');
+            document.getElementById(`${tab}Form`).classList.add('active');
+        }
+
+        function showManagementInterface() {
+            document.body.classList.add('logged-in');
+            fetchUsuarios();
+            fetchCoches();
+            fetchReservas();
+        }
+
+        function showAuthInterface() {
+            document.body.classList.remove('logged-in');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // Funciones de gestión
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            const token = sessionStorage.getItem('authToken');
+            if (!token) {
+                logout();
+                throw new Error('No hay token de autenticación');
+            }
+            
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+            
+            const response = await fetch(url, {
+                ...options,
+                headers
+            });
+            
+            if (response.status === 401) {
+                logout();
+                throw new Error('Sesión expirada');
+            }
+            
+            return response;
+        }
+
+        // Funciones para Usuarios
+        async function fetchUsuarios() {
+            try {
+                const response = await fetchWithAuth('/api/usuario');
+                const usuarios = await response.json();
+                
+                let tableContent = usuarios.map(usuario => `
+                    <tr id="usuario-row-${usuario.id}">
+                        <td>${usuario.id}</td>
+                        <td>${usuario.nombre} ${usuario.apellido}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.tlf}</td>
+                        <td>${usuario.rol}</td>
+                        <td>
+                            <button onclick="editUsuario('${usuario.email}')">Editar</button>
+                            <button onclick="deleteUsuario('${usuario.email}')">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('usuarioTable').innerHTML = tableContent;
+                
+                // Actualizar select de usuarios para reservas
+                const usuarioSelect = document.getElementById('usuarioId');
+                usuarioSelect.innerHTML = '<option value="">Seleccione usuario</option>' + 
+                    usuarios.map(u => `<option value="${u.id}">${u.nombre} ${u.apellido}</option>`).join('');
+            } catch (error) {
+                console.error('Error al obtener usuarios:', error);
+                alert('Error al cargar usuarios: ' + error.message);
+            }
+        }
+
+        async function addUsuario() {
+            try {
+                const usuario = {
+                    nombre: document.getElementById('nombre').value,
+                    apellido: document.getElementById('apellido').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    tlf: document.getElementById('tlf').value,
+                    fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                    rol: document.getElementById('rol').value
+                };
+                
+                const response = await fetchWithAuth('/api/usuario/registrar', {
+                    method: 'POST',
+                    body: JSON.stringify(usuario)
+                });
+                
+                if (response.ok) {
+                    document.getElementById('usuarioForm').reset();
+                    fetchUsuarios();
+                } else {
+                    const error = await response.text();
+                    alert(error || 'Error al registrar usuario');
+                }
+            } catch (error) {
+                console.error('Error al agregar usuario:', error);
+                alert('Error al agregar usuario: ' + error.message);
+            }
+        }
+
+        async function editUsuario(email) {
+            try {
+                const response = await fetchWithAuth(`/api/usuario/buscar?email=${encodeURIComponent(email)}`);
+                if (!response.ok) {
+                    throw new Error('Usuario no encontrado');
+                }
+                
+                const usuario = await response.json();
+                
+                document.getElementById('nombre').value = usuario.nombre;
+                document.getElementById('apellido').value = usuario.apellido;
+                document.getElementById('email').value = usuario.email;
+                document.getElementById('tlf').value = usuario.tlf;
+                document.getElementById('fechaNacimiento').value = usuario.fechaNacimiento;
+                document.getElementById('rol').value = usuario.rol;
+
+                const form = document.getElementById('usuarioForm');
+                form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    await updateUsuario(email);
+                };
+            } catch (error) {
+                console.error('Error al editar usuario:', error);
+                alert('Error al editar usuario: ' + error.message);
+            }
+        }
+
+        async function updateUsuario(oldEmail) {
+            try {
+                const usuarioActualizado = {
+                    nombre: document.getElementById('nombre').value,
+                    apellido: document.getElementById('apellido').value,
+                    email: document.getElementById('email').value,
+                    tlf: document.getElementById('tlf').value,
+                    fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                    rol: document.getElementById('rol').value
+                };
+
+                const response = await fetchWithAuth(`/api/usuario/actualizar?email=${encodeURIComponent(oldEmail)}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(usuarioActualizado)
+                });
+                
+                if (response.ok) {
+                    document.getElementById('usuarioForm').reset();
+                    const form = document.getElementById('usuarioForm');
+                    form.onsubmit = (e) => { e.preventDefault(); addUsuario(); };
+                    fetchUsuarios();
+                } else {
+                    const error = await response.text();
+                    alert(error || 'Error al actualizar usuario');
+                }
+            } catch (error) {
+                console.error('Error al actualizar usuario:', error);
+                alert('Error al actualizar usuario: ' + error.message);
+            }
+        }
+
+        async function deleteUsuario(email) {
+            if (!confirm('¿Está seguro de que desea eliminar este usuario?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetchWithAuth(`/api/usuario/eliminar?email=${encodeURIComponent(email)}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    fetchUsuarios();
+                } else {
+                    const error = await response.text();
+                    alert(error || 'Error al eliminar usuario');
+                }
+            } catch (error) {
+                console.error('Error al eliminar usuario:', error);
+                alert('Error al eliminar usuario: ' + error.message);
+            }
+        }
+
+        // Funciones para Coches
+        async function fetchCoches() {
+            try {
+                const response = await fetchWithAuth('/api/coche');
+                const coches = await response.json();
+                
+                let tableContent = coches.map(coche => `
+                    <tr id="coche-row-${coche.matricula}">
+                        <td>${coche.matricula}</td>
+                        <td>${coche.marca}</td>
+                        <td>${coche.modelo}</td>
+                        <td>${coche.anio}</td>
+                        <td>${coche.precio}</td>
+                        <td>${coche.disponible ? 'Sí' : 'No'}</td>
+                        <td>
+                            <button onclick="editCoche('${coche.matricula}')">Editar</button>
+                            <button onclick="deleteCoche('${coche.matricula}')">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('cocheTable').innerHTML = tableContent;
+                
+                // Actualizar select de coches para reservas
+                const cocheSelect = document.getElementById('cocheMatricula');
+                cocheSelect.innerHTML = '<option value="">Seleccione coche</option>' + 
+                    coches.map(c => `<option value="${c.matricula}">${c.marca} ${c.modelo} (${c.matricula})</option>`).join('');
+            } catch (error) {
+                console.error('Error al obtener coches:', error);
+                alert('Error al cargar coches: ' + error.message);
+            }
+        }
+
+        // Funciones para Reservas
+        async function fetchReservas() {
+            try {
+                const response = await fetchWithAuth('/api/reserva');
+                const reservas = await response.json();
+                
+                let tableContent = reservas.map(reserva => `
+                    <tr id="reserva-row-${reserva.id}">
+                        <td>${reserva.id}</td>
+                        <td>${reserva.usuario.nombre} ${reserva.usuario.apellido}</td>
+                        <td>${reserva.coche.marca} ${reserva.coche.modelo}</td>
+                        <td>${new Date(reserva.fechaReserva).toLocaleDateString()}</td>
+                        <td>${reserva.precioTotal}</td>
+                        <td>${reserva.estadoReserva}</td>
+                        <td>
+                            <button onclick="editReserva(${reserva.id})">Editar</button>
+                            <button onclick="deleteReserva(${reserva.id})">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('reservaTable').innerHTML = tableContent;
+            } catch (error) {
+                console.error('Error al obtener reservas:', error);
+                alert('Error al cargar reservas: ' + error.message);
+            }
+        }
+
+        // Inicialización
+        window.onload = function() {
+            const token = sessionStorage.getItem('authToken');
+            if (token) {
+                console.log('Token encontrado en carga:', token); // Para depuración
+                currentToken = token;
+                showManagementInterface();
+            }
+        };
+    </script>
 </body>
 </html>

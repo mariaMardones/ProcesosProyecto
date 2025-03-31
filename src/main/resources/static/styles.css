@@ -23,12 +23,7 @@ form {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-input[type="text"], 
-input[type="number"], 
-input[type="date"], 
-input[type="email"], 
-input[type="password"], 
-select {
+input[type="text"] {
     padding: 8px;
     margin: 5px;
     border: 1px solid #ccc;
@@ -103,54 +98,4 @@ button:nth-child(1) {
 
 button:nth-child(1):hover {
     background-color: #1e7e34;
-}
-
-/* Tab styling */
-.tab {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-    border-radius: 8px 8px 0 0;
-    margin-bottom: 0;
-}
-
-.tab button {
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 14px 16px;
-    transition: 0.3s;
-    font-size: 17px;
-}
-
-.tab button:hover {
-    background-color: #ddd;
-}
-
-.tab button.active {
-    background-color: #ccc;
-}
-
-.tabcontent {
-    display: none;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    background-color: white;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-/* Form groups */
-.form-group {
-    margin-bottom: 15px;
-}
-
-/* Checkbox styling */
-input[type="checkbox"] {
-    margin-left: 5px;
-    vertical-align: middle;
 }

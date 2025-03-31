@@ -351,7 +351,7 @@
                 if (response.ok) {
                     alert('Registro exitoso! Por favor inicie sesión');
                     switchAuthTab('login');
-                    // Limpiar el formulario
+ 
                     document.getElementById('regNombre').value = '';
                     document.getElementById('regApellido').value = '';
                     document.getElementById('regEmail').value = '';
@@ -371,7 +371,7 @@
 		async function logout() {
 		    const token = sessionStorage.getItem('authToken');
 		    if (!token) {
-		        window.location.href = 'index.html';  // Recarga la misma página
+		        window.location.href = 'index.html';
 		        return;
 		    }
 
@@ -387,9 +387,8 @@
 		            throw new Error('Error en logout');
 		        }
 		        
-		        // Limpiar y recargar
 		        sessionStorage.removeItem('authToken');
-		        window.location.href = 'index.html';  // Vuelve al inicio
+		        window.location.href = 'index.html'; 
 		        
 		    } catch (error) {
 		        console.error('Error:', error);
@@ -639,7 +638,7 @@
         // Funciones para Reservas
         async function fetchReservas() {
             try {
-                const response = await fetchWithAuth('/api/reserva');
+                const response = await fetchWithAuth('/api/reservas');
                 const reservas = await response.json();
                 
                 let tableContent = reservas.map(reserva => `

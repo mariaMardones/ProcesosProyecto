@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Gestión</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <!-- Interfaz de gestión -->
+    <div class="management">
+        <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        
+        <h1>Sistema de Gestión</h1>
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'usuarios')">Usuarios</button>
+            <button class="tablinks" onclick="openTab(event, 'coches')">Coches</button>
+            <button class="tablinks" onclick="openTab(event, 'reservas')">Reservas</button>
+        </div>
+
+        <!-- Pestaña Usuarios -->
+        <div id="usuarios" class="tabcontent" style="display: block;">
+            <h2>Gestión de Usuarios</h2>
+            <form id="usuarioForm" onsubmit="event.preventDefault(); registrarUsuario();">
+                <div class="form-group">
+                    <input type="text" id="nombre" placeholder="Nombre" required>
+                    <input type="text" id="apellido" placeholder="Apellido" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="tlf" placeholder="Teléfono">
+                    <input type="date" id="fechaNacimiento">
+                    <select id="rol">
+                        <option value="ADMIN">Admin</option>
+                        <option value="CLIENTE">Cliente</option>
+                    </select>
+                </div>
+                <button type="submit">Registrar Usuario</button>
+            </form>
+
+            <h3>Lista de Usuarios</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usuarioTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Pestaña Coches -->
+        <div id="coches" class="tabcontent">
+            <h2>Gestión de Coches</h2>
+            <form id="cocheForm" onsubmit="event.preventDefault(); registrarCoche();">
+                <div class="form-group">
+                    <input type="text" id="matricula" placeholder="Matrícula" required>
+                    <input type="text" id="marca" placeholder="Marca" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="modelo" placeholder="Modelo" required>
+                    <input type="number" id="anio" placeholder="Año" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="precio" placeholder="Precio" step="0.01" required>
+                    <select id="disponible">
+                        <option value="true">Disponible</option>
+                        <option value="false">No disponible</option>
+                    </select>
+                </div>
+                <button type="submit">Registrar Coche</button>
+            </form>
+            
+            <h3>Lista de Coches</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Año</th>
+                        <th>Precio</th>
+                        <th>Disponible</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cocheTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Pestaña Reservas -->
+        <div id="reservas" class="tabcontent">
+            <h2>Gestión de Reservas</h2>
+            <form id="reservaForm" onsubmit="event.preventDefault(); registrarReserva();">
+                <div class="form-group">
+                    <select id="usuarioId" required>
+                        <option value="">Seleccionar Usuario</option>
+                        <!-- Se llenará dinámicamente -->
+                    </select>
+                    <select id="cocheMatricula" required>
+                        <option value="">Seleccionar Coche</option>
+                        <!-- Se llenará dinámicamente -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="date" id="fechaReserva" required>
+                    <select id="estadoReserva">
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="CONFIRMADA">Confirmada</option>
+                        <option value="CANCELADA">Cancelada</option>
+                    </select>
+                </div>
+                <button type="submit">Crear Reserva</button>
+            </form>
+            
+            <h3>Lista de Reservas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Coche</th>
+                        <th>Fecha</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="reservaTable"></tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

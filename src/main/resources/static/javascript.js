@@ -1,3 +1,105 @@
+// Función para manejar el login
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userRole', data.rol);
+            window.location.href = 'index.html'; // Redirige al sistema
+        } else {
+            const error = await response.json();
+            document.getElementById('loginError').textContent = error.message || 'Error al iniciar sesión';
+        }
+    } catch (error) {
+        document.getElementById('loginError').textContent = 'Error de conexión';
+    }
+}
+
+// Verificar autenticación al cargar
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    if (!token && currentPage !== 'login.html') {
+        window.location.href = 'login.html';
+    } else if (token && currentPage === 'login.html') {
+        window.location.href = 'index.html';
+    }
+}
+
+// Función para cerrar sesión
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    window.location.href = 'login.html';
+}
+
+// Modificar fetch para incluir token
+async function authFetch(url, options = {}) {
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+        options.headers = {
+            ...options.headers,
+            'Authorization': `Bearer ${token}`
+        };
+    }
+    
+    const response = await fetch(url, options);
+    
+    if (response.status === 401) {
+        logout();
+        return;
+    }
+    
+    return response;
+}
+
+// Actualizar todas las funciones fetch para usar authFetch
+async function fetchUsuarios() {
+    const response = await authFetch('/api/usuario');
+    if (!response) return;
+    
+    const usuarios = await response.json();
+    // ... resto del código igual ...
+}
+
+// ... (todas las demás funciones fetch deben usar authFetch en lugar de fetch)
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuth();
+    
+    // Si estamos en la página de login
+    if (document.getElementById('loginForm')) {
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    }
+    
+    // Si estamos en el sistema principal
+    if (document.getElementById('usuarioForm')) {
+        // Agregar botón de logout
+        const header = document.querySelector('h1');
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = 'Cerrar Sesión';
+        logoutBtn.onclick = logout;
+        logoutBtn.style.float = 'right';
+        header.appendChild(logoutBtn);
+        
+        // ... otros event listeners existentes ...
+    }
+});
+
 // Funciones generales
 function openTab(evt, tabName) {
     const tabcontent = document.getElementsByClassName("tabcontent");

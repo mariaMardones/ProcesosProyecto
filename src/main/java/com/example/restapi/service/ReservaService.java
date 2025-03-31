@@ -22,7 +22,7 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
-    public Optional<Reserva> obtenerReservaPorId(Integer id) {
+    public Optional<Reserva> obtenerReservaPorId(Long id) {
         return reservaRepository.findById(id);
     }
 
@@ -30,7 +30,7 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
-    public Reserva actualizarReserva(Integer id, Reserva detallesReserva) {
+    public Reserva actualizarReserva(Long id, Reserva detallesReserva) {
         return reservaRepository.findById(id)
                 .map(reserva -> {
                     reserva.setFecha(detallesReserva.getFecha());
@@ -43,7 +43,7 @@ public class ReservaService {
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
     }
 
-    public boolean eliminarReserva(Integer id) {
+    public boolean eliminarReserva(Long id) {
         if (reservaRepository.existsById(id)) {
             reservaRepository.deleteById(id);
             return true;

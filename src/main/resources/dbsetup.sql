@@ -1,9 +1,9 @@
-DROP USER IF EXISTS 'spq'@'%';
-CREATE USER IF NOT EXISTS 'spq'@'%' IDENTIFIED BY 'spq';
+DROP USER IF EXISTS 'root'@'%';
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root';
 
 DROP SCHEMA IF EXISTS restapidb;
 CREATE SCHEMA restapidb;
 
-GRANT ALL ON restapidb.* TO 'spq'@'%';
+GRANT ALL ON restapidb.* TO 'root'@'%';
 FLUSH PRIVILEGES;
 

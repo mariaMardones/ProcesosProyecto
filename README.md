@@ -1,85 +1,98 @@
 SpringBoot + REST API + MySQL
 =============================
 
-This example relies on the SpringBoot to create a REST API and connecting to a MySQL database using JPA, with a sample web application and a command line client.
+Este proyecto utiliza Spring Boot para crear una REST API y se conecta a una base de datos MySQL utilizando JPA, con una aplicación de ejemplo que maneja reservas, coches y usuarios.
 
-The basic structure of a SpringBoot project can be initialized using *Spring initializr* at https://start.spring.io/.
+El proyecto se basa en un servicio backend para gestionar reservas de coches y usuarios mediante una API REST. Usa Spring Boot y Spring Data JPA para interactuar con la base de datos MySQL.
 
-Launching the application
--------------------------
+La estructura básica de un proyecto Spring Boot se puede inicializar utilizando Spring Initializr en https://start.spring.io/.
 
-First, check all the required dependencies specified by the pom.xml file and the database configuration contained in *src/main/resources/application.properties* file.
+Lanzar la aplicación
+--------------------
 
-Now, run the following command to check to download all dependencies and check that everything correctly compiles
+Requisitos previos
+Asegúrate de que las dependencias necesarias están especificadas en el archivo pom.xml y la configuración de la base de datos en el archivo src/main/resources/application.properties.
+
+Paso 1: Compilar y descargar dependencias
+Para verificar y descargar todas las dependencias, ejecuta el siguiente comando:
 
       mvn compile
 
-Make sure that the MySQL database was correctly configured before connecting the application to use it. 
-Use the contents of the file *src/main/resources/dbsetup.sql* to create the database, an specific user 'spq' (pass: 'spq') for the application and grant privileges to that user. If you are using the command line client for MySQL you could run the following command
+Paso 2: Configuración de la base de datos
+Antes de conectar la aplicación a MySQL, asegúrate de que la base de datos está configurada correctamente.
+
+Usa el archivo src/main/resources/dbsetup.sql para crear la base de datos y el usuario específico spq (con contraseña spq) para la aplicación. Si usas la línea de comandos de MySQL, ejecuta:
 
       mysql –uroot -p < src/main/resources/dbsetup.sql
 
-otherwise you could use the contents of the file in any other MySQL client you are using.
+O usa el contenido del archivo en cualquier otro cliente MySQL que estés utilizando.
 
-Now, launch the server using the following command
+Paso 3: Ejecutar la aplicación
+Una vez configurada la base de datos, lanza el servidor con el siguiente comando:
 
     mvn spring-boot:run
 
-If there are no errors, you should get a running web application serving its contents at http://localhost:8080/. You can press Ctrl+C to stop the running application.
+Si no hay errores, la aplicación estará disponible en http://localhost:8080/. Puedes detener la aplicación presionando Ctrl+C.
 
-REST API
+API REST
 --------
 
-The application exposes a REST API, which is used by the web application, which is implemented in the BookController class. For example, some methods are
+La aplicación expone una API REST que es utilizada por el cliente para interactuar con la base de datos. Algunos ejemplos de métodos son:
 
-Retrieves all the registered books
+Obtener todas las reservas
 
-    GET http://localhost:8080/api/books
+    GET http://localhost:8080/api/reservas
 
-Adds a new book to the database
+Crear una nueva reserva
 
-    POST http://localhost:8080/api/books
-    Content-Type: application/json
+    POST http://localhost:8080/api/reservas
+Content-Type: application/json
 
-    {
-    "title": "Spring Boot in Action",
-    "author": "Craig Walls",
-    "isbn": "9781617292545"
-    }
+{
+  "fecha": "2025-04-01",
+  "precioTotal": 150.0,
+  "estado": "confirmada",
+  "usuario": {
+    "id": 1
+  },
+  "coche": {
+    "id": 2
+  }
+}
 
-Removes a previously registered book
+Eliminar una reserva
 
-    DELETE http://localhost:8080/api/books/1
+    DELETE http://localhost:8080/api/reservas/1
 
-To see the full list of methods from the REST API, you can visit Swagger interface at: http://localhost:8080/swagger-ui.html. Check the annotations in the *BookController* class, the required dependencies in the *pom.xml* file and the *application.properties* file for its configuration
+Para ver el listado completo de métodos de la API REST, puedes consultar las anotaciones en las clases de los controladores (ReservaController, UsuarioController, etc.) y la configuración de dependencias en el archivo pom.xml y application.properties.
 
-Command line client
--------------------
+Cliente de Línea de Comandos
+----------------------------
 
-There is a sample REST API client implementation using the SpringBoot REST client libraries in class *BookManager.java*. You can launch the client using the following Maven command (check)
+El proyecto incluye una implementación de cliente REST que utiliza las bibliotecas de cliente REST de Spring Boot, implementada en la clase MainClient.java. Puedes ejecutar el cliente utilizando el siguiente comando de Maven:
 
     mvn exec:java
 
-See <build> section in *pom.xml* to see how this command was configured to work.
+Consulta la sección <build> en el archivo pom.xml para ver cómo se configuró este comando.
 
-Packaging the application
--------------------------
+Empaquetar la Aplicación
+------------------------
 
-Application can be packaged executing the following command
+Para empaquetar la aplicación, ejecuta el siguiente comando:
 
     mvn package
 
-including all the SpringBoot required libraries inside the *target/rest-api-0.0.1-SNAPSHOT.jar*, which can be distributed.
+Esto incluirá todas las bibliotecas necesarias dentro del archivo target/rest-api-0.0.1-SNAPSHOT.jar, que puede ser distribuido.
 
-Once packaged, the server can be launched with
+Una vez empaquetada, la aplicación puede ser ejecutada con:
 
     java -jar rest-api-0.0.1-SNAPSHOT.jar
 
-and the sample client by running, as SpringBoot changes the way the default Java loader
+El cliente puede ser lanzado con el siguiente comando:
 
-    java -cp rest-api-0.0.1-SNAPSHOT.jar -Dloader.main=com.example.restapi.client.BookManager org.springframework.boot.loader.launch.PropertiesLauncher localhost 8080
+    java -cp rest-api-0.0.1-SNAPSHOT.jar -Dloader.main=com.example.restapi.client.MainClient org.springframework.boot.loader.launch.PropertiesLauncher localhost 8080
 
-Therefore, in a real development, it would be advisable to create different Maven projects for server and client applications, easing distribution and manteinance of each application separately.
+Por lo tanto, en un entorno de desarrollo real, sería recomendable crear proyectos Maven separados para el servidor y el cliente, facilitando la distribución y el mantenimiento de cada aplicación de forma independiente.
 
 References
 ----------

@@ -93,14 +93,3 @@ El cliente puede ser lanzado con el siguiente comando:
     java -cp rest-api-0.0.1-SNAPSHOT.jar -Dloader.main=com.example.restapi.client.MainClient org.springframework.boot.loader.launch.PropertiesLauncher localhost 8080
 
 Por lo tanto, en un entorno de desarrollo real, sería recomendable crear proyectos Maven separados para el servidor y el cliente, facilitando la distribución y el mantenimiento de cada aplicación de forma independiente.
-
-References
-----------
-
-* Very good explaination of the project: https://medium.com/@pratik.941/building-rest-api-using-spring-boot-a-comprehensive-guide-3e9b6d7a8951 
-* Building REST services with Spring: https://spring.io/guides/tutorials/rest
-* Good example documenting how to generate Swagger APIs in Spring Boot: https://bell-sw.com/blog/documenting-rest-api-with-swagger-in-spring-boot-3/#mcetoc_1heq9ft3o1v 
-* Docker example with Spring: https://medium.com/@yunuseulucay/end-to-end-spring-boot-with-mysql-and-docker-2c42a6e036c0
-
-
-

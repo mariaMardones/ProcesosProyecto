@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.restapi.model.EstadoReserva;
 import com.example.restapi.model.Reserva;
 import com.example.restapi.repository.ReservaRepository;
 
@@ -20,6 +21,10 @@ public class ReservaService {
 
     public List<Reserva> obtenerReservas() {
         return reservaRepository.findAll();
+    }
+
+    public List<Reserva> obtenerReservasConfirmadas() {
+        return reservaRepository.findByEstado(EstadoReserva.COMPRADA);
     }
 
     public Optional<Reserva> obtenerReservaPorId(Integer id) {

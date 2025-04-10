@@ -32,6 +32,11 @@ public class ReservaController {
         return reservaService.obtenerReservas();
     }
 
+    @GetMapping("/confirmadas")
+    public List<Reserva> obtenerReservasConfirmadas() {
+        return reservaService.obtenerReservasConfirmadas();
+    }
+
     @GetMapping("/buscar/{id}")
     public ResponseEntity<Reserva> obtenerReservaPorId(@PathVariable Integer id) {
         return reservaService.obtenerReservaPorId(id)

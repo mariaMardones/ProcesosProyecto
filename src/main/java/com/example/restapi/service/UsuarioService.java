@@ -31,9 +31,6 @@ public class UsuarioService {
     }
 
     public Usuario registrarUsuario(Usuario usuario) {
-        if (repository.findByEmail(usuario.getEmail()) != null) {
-            throw new IllegalArgumentException("El email ya está en uso.");
-        }
         return repository.save(usuario);
     }
 
@@ -61,15 +58,19 @@ public class UsuarioService {
     }
 
     public Optional<String> logIn(String email, String password) {
-    	String token;
+        String token;
         if (tokens.values().stream().anyMatch(u -> u.getEmail().equals(email))) {
             return Optional.empty();
         }
         
         Usuario usuario = repository.findByEmail(email);
-        if (usuario == null && !usuario.getPassword().equals(password)) {
+        if (usuario == null) {
             throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
-        } else {
+        } 
+        else if (!usuario.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Contraseña incorrecta.");
+        } 
+        else {
             token = generarToken(usuario);
             return Optional.of(token);
         }

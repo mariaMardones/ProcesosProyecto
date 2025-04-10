@@ -122,7 +122,7 @@ async function cargarUsuarios() {
                     <td>${usuario.id}</td>
                     <td>${usuario.nombre} ${usuario.apellido || ''}</td>
                     <td>${usuario.email}</td>
-                    <td>${usuario.telefono || '-'}</td>
+                    <td>${usuario.tlf || '-'}</td>
                     <td>${usuario.rol}</td>
                     <td>
                         <button onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
@@ -141,7 +141,7 @@ async function registrarUsuario() {
         apellido: document.getElementById('apellido').value,
         email: document.getElementById('email').value,
         password: document.getElementById('password').value,
-        telefono: document.getElementById('tlf').value,
+        tlf: document.getElementById('tlf').value,
         fechaNacimiento: document.getElementById('fechaNacimiento').value,
         rol: document.getElementById('rol').value
     };
@@ -166,9 +166,27 @@ async function registrarUsuario() {
 }
 
 async function eliminarUsuario(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-        try {
-            const response = await fetchWithAuth(`/api/usuario/${id}`, {
+    try {
+        const allUsersResponse = await fetchWithAuth("/api/usuario");
+        
+        if (!allUsersResponse.ok) {
+            alert('Error al obtener usuarios');
+            return;
+        }
+        
+        const usuarios = await allUsersResponse.json();
+        const usuario = usuarios.find(u => u.id === id);
+        
+        if (!usuario) {
+            alert('No se encontró el usuario');
+            return;
+        }
+        
+        const email = usuario.email;
+        
+        if (confirm(`¿Estás seguro de que deseas eliminar al usuario ${usuario.nombre} (${email})?`)) {
+            // Usar el email para eliminar
+            const response = await fetchWithAuth(`/api/usuario/eliminar?email=${encodeURIComponent(email)}`, {
                 method: 'DELETE'
             });
             
@@ -179,9 +197,10 @@ async function eliminarUsuario(id) {
                 const error = await response.text();
                 alert('Error al eliminar usuario: ' + error);
             }
-        } catch (error) {
-            console.error('Error eliminando usuario:', error);
         }
+    } catch (error) {
+        console.error('Error eliminando usuario:', error);
+        alert('Error: ' + error.message);
     }
 }
 
@@ -271,14 +290,25 @@ async function cargarReservas() {
         reservaTable.innerHTML = '';
 
         reservas.forEach(reserva => {
+            
+            const usuarioInfo = reserva.usuario && typeof reserva.usuario === 'object' 
+                ? `${reserva.usuario.nombre || ''} ${reserva.usuario.apellido || ''}`.trim() 
+                : reserva.usuario || '-';
+                
+            const cocheInfo = reserva.coche && typeof reserva.coche === 'object'
+                ? `${reserva.coche.marca || ''} ${reserva.coche.modelo || ''} (${reserva.coche.matricula || ''})`.trim()
+                : reserva.coche || '-';
+                
+            const fecha = reserva.fecha ? new Date(reserva.fecha).toLocaleDateString() : '-';
+
             reservaTable.innerHTML += `
                 <tr>
                     <td>${reserva.id}</td>
-                    <td>${reserva.usuario}</td>
-                    <td>${reserva.coche}</td>
-                    <td>${reserva.fecha}</td>
-                    <td>${reserva.precio}€</td>
-                    <td>${reserva.estado}</td>
+                    <td>${usuarioInfo}</td>
+                    <td>${cocheInfo}</td>
+                    <td>${fecha}</td>
+                    <td>${reserva.precio || 0}€</td>
+                    <td>${reserva.estado || '-'}</td>
                     <td>
                         <button onclick="eliminarReserva(${reserva.id})">Cancelar</button>
                     </td>

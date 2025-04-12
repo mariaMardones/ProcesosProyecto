@@ -1,8 +1,10 @@
 package com.deustocoches.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.service.ReservaService;
 
@@ -72,5 +75,26 @@ public class ReservaController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/pedidos")
+    public ResponseEntity<Reserva> hacerPedido(@RequestBody Reserva reserva) {
+        if (reserva.getUsuario() == null || reserva.getCoche() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    
+        if (reserva.getEstado() == null) {
+            reserva.setEstado(EstadoReserva.PENDIENTE);
+        }
+    
+        if (reserva.getFecha() == null || reserva.getFecha().isEmpty()) {
+            reserva.setFecha(LocalDate.now().toString());
+        }
+    
+        Reserva nuevaReserva = reservaService.crearReserva(reserva);
+        return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
+    }
+    
+
+
 	 
 }

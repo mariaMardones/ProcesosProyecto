@@ -1,4 +1,4 @@
-package com.example.restapi.controller;
+package com.deustocoches.controller;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.restapi.model.Coche;
+import com.deustocoches.model.Coche;
+import com.deustocoches.service.CocheService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -24,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class CocheController {
 
     @Autowired
-    private com.example.restapi.service.CocheService cocheService;
+    private CocheService cocheService;
 
     @GetMapping
     public List<Coche> ListarCoches() {

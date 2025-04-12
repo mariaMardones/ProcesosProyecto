@@ -1,11 +1,12 @@
-package com.example.restapi.repository;
+
+package com.deustocoches.repository;
+import com.deustocoches.model.Reserva;
+
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.example.restapi.model.EstadoReserva;
-import com.example.restapi.model.Reserva;
+import com.deustocoches.model.EstadoReserva;
 
 @Repository
     public interface ReservaRepository extends JpaRepository<Reserva, Integer> {

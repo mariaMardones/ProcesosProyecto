@@ -1,7 +1,7 @@
-package com.example.restapi.controller;
+package com.deustocoches.controller;
 
-import com.example.restapi.model.Book;
-import com.example.restapi.service.BookService;
+import com.deustocoches.model.Book;
+import com.deustocoches.service.BookService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 

@@ -1,7 +1,5 @@
-package com.example.restapi.repository;
-import com.example.restapi.model.Coche;
-import com.example.restapi.model.Usuario;
-
+package com.deustocoches.repository;
+import com.deustocoches.model.Coche;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

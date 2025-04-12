@@ -1,7 +1,8 @@
-package com.example.restapi.service;
+package com.deustocoches.service;
 
-import com.example.restapi.model.Book;
-import com.example.restapi.repository.BookRepository;
+import com.deustocoches.model.Book;
+import com.deustocoches.repository.BookRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,6 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
-
     @Autowired
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;

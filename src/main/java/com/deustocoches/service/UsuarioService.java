@@ -1,4 +1,4 @@
-package com.example.restapi.service;
+package com.deustocoches.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -10,8 +10,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.restapi.model.Usuario;
-import com.example.restapi.repository.UsuarioRepository;
+import com.deustocoches.model.Usuario;
+import com.deustocoches.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {

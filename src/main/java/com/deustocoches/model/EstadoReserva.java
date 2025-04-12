@@ -1,4 +1,4 @@
-package com.example.restapi.model;
+package com.deustocoches.model;
 
 public enum EstadoReserva {
     PENDIENTE,

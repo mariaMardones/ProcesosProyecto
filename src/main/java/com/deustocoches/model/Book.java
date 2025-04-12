@@ -1,4 +1,4 @@
-package com.example.restapi.model;
+package com.deustocoches.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

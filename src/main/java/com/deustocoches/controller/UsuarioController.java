@@ -1,11 +1,10 @@
-package com.example.restapi.controller;
+package com.deustocoches.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import com.example.restapi.model.Usuario;
-import com.example.restapi.service.UsuarioService;
+import com.deustocoches.model.Usuario;
+import com.deustocoches.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.http.HttpStatus;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
@@ -102,24 +100,19 @@ public class UsuarioController {
             }
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> cerrarSesion(@RequestHeader("Authorization") String authHeader) {
-        try {
-           
-            String token = authHeader.replace("Bearer ", "");
-            
-            if (token.isBlank()) {
+    public ResponseEntity<Void> cerrarSesion(@RequestBody String token) {
+        try {            
+            if (token.isBlank() || token == null) {
                 return ResponseEntity.badRequest().build(); 
             }
             
             Optional<Boolean> result = usuarioService.logout(token);
             
-            if (result.isPresent()) {
-                return result.get() ? 
-                    ResponseEntity.ok().build() :
-                    ResponseEntity.badRequest().build();
+            if (result.isPresent() && result.get()) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); 
             }
-            return ResponseEntity.badRequest().build(); 
-                
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

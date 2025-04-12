@@ -1,7 +1,6 @@
-package com.example.restapi.model;
+package com.deustocoches.model;
 
 import jakarta.persistence.*;
-import java.sql.Date;
 
 @Entity
 @Table(name = "usuarios") // Opcional: especificar nombre de la tabla

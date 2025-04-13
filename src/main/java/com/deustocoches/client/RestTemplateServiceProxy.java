@@ -26,7 +26,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public List<Usuario> listarUsuariosResgistrados() {
         String url = apiBaseUrl + "/api/usuario";
         try {
@@ -54,7 +54,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     public Usuario actualizarUsuario(String email, Usuario usuario) {
         String url = apiBaseUrl + "/api/usuario/actualizar?email=" + email;
         try {
-            return restTemplate.exchange(url,HttpMethod.PUT,new HttpEntity<>(usuario), Usuario.class).getBody();
+            return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(usuario), Usuario.class).getBody();
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to update user: " + e.getStatusText());
         }
@@ -101,9 +101,9 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Logout failed: " + e.getStatusText());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public List<Reserva> obtenerReservas() {
         String url = apiBaseUrl + "/api/reservas";
         try {
@@ -112,16 +112,16 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Failed to retrieve reservations: " + e.getStatusText());
         }
     }
-    
-	@Override
-	public Reserva obtenerReservaPorId(Integer id) {
-        String url = apiBaseUrl + "/api/reservas/buscar/"+id;
+
+    @Override
+    public Reserva obtenerReservaPorId(Integer id) {
+        String url = apiBaseUrl + "/api/reservas/buscar/" + id;
         try {
             return restTemplate.getForObject(url, Reserva.class);
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to retrieve reservations: " + e.getStatusText());
         }
-	}
+    }
 
     @Override
     public Reserva crearReserva(Reserva reserva) {
@@ -137,7 +137,8 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     public Reserva actualizarReserva(Integer id, Reserva detallesReserva) {
         String url = apiBaseUrl + "/api/reservas/actualizar/" + id;
         try {
-            return restTemplate.exchange(url,HttpMethod.PUT,new HttpEntity<>(detallesReserva),Reserva.class).getBody();
+            return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(detallesReserva), Reserva.class)
+                    .getBody();
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to update reservation: " + e.getStatusText());
         }
@@ -154,7 +155,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public List<Coche> ListarCoches() {
         String url = apiBaseUrl + "/api/coche";
         try {
@@ -189,7 +190,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     public Coche actualizarCoche(String matricula, Coche coche) {
         String url = apiBaseUrl + "/api/coche/actualizar?matricula=" + matricula;
         try {
-            return restTemplate.exchange(url, HttpMethod.PUT,new HttpEntity<>(coche), Coche.class).getBody();
+            return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(coche), Coche.class).getBody();
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to update car: " + e.getStatusText());
         }
@@ -206,7 +207,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public List<Coche> ListarCochesDisponibles() {
         String url = apiBaseUrl + "/api/coche/disponibles";
         try {
@@ -223,6 +224,20 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             return restTemplate.postForObject(url, reserva, Reserva.class);
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
+
+       
         }
     }
-}
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Reserva> obtenerReservasConfirmadas() {
+        String url = apiBaseUrl + "/api/reservas/confirmadas";
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve confirmed reservations: " + e.getStatusText());
+        }
+    }
+
+}   

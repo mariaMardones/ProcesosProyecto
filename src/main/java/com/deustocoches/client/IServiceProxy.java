@@ -27,6 +27,7 @@ public interface IServiceProxy {
 	// CRUD operations for Reserva
 	List<Reserva> obtenerReservas();
 	Reserva obtenerReservaPorId(Integer id);
+	List<Reserva> obtenerReservasConfirmadas();
 	Reserva crearReserva(Reserva reserva);
 	Reserva actualizarReserva(Integer id, Reserva detallesReserva);
 	void eliminarReserva(Integer id);

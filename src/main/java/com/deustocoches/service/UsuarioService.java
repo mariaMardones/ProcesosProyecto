@@ -45,6 +45,7 @@ public class UsuarioService {
         usuarioExistente.setPassword(usuarioActualizado.getPassword());
         usuarioExistente.setTlf(usuarioActualizado.getTlf());
         usuarioExistente.setRol(usuarioActualizado.getRol());
+        usuarioExistente.setBloqueado(usuarioActualizado.isBloqueado());
 
         return repository.save(usuarioExistente);
     }
@@ -94,4 +95,27 @@ public class UsuarioService {
     public static Map<String, Usuario> getTokens() {
         return tokens;
     }
+    
+    public Usuario bloquearUsuario(Long id) {
+        Optional<Usuario> usuarioOptional = repository.findById(id);
+        if (usuarioOptional.isEmpty()) {
+            throw new IllegalArgumentException("Usuario no encontrado con el ID proporcionado.");
+        }
+
+        Usuario usuario = usuarioOptional.get();
+        usuario.setBloqueado(true);
+        return actualizarUsuario(usuario.getEmail(), usuario);
+    }
+
+    public Usuario desbloquearUsuario(Long id) {
+        Optional<Usuario> usuarioOptional = repository.findById(id);
+        if (usuarioOptional.isEmpty()) {
+            throw new IllegalArgumentException("Usuario no encontrado con el ID proporcionado.");
+        }
+
+        Usuario usuario = usuarioOptional.get();
+        usuario.setBloqueado(false);
+        return actualizarUsuario(usuario.getEmail(), usuario);
+    }
+
 }

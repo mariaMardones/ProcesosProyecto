@@ -12,7 +12,7 @@
         <div class="container py-2 text-center">
             <a href="/client/" class="text-decoration-none text-dark">
                 <i class="fas fa-car fa-2x me-2"></i>
-                <span class="fs-4" style="color: #4a4a4a;">Car Rental Service</span>
+                <span class="fs-4" style="color: #4a4a4a;">DEUSTOCOCHES</span>
             </a>
         </div>
     </header>
@@ -24,18 +24,6 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <h2 class="card-title text-center mb-4">Login</h2>
-                        
-                        <!-- Error messages -->
-                        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <span th:text="${errorMessage}"></span>
-                        </div>
-                        
-                        <!-- Success messages -->
-                        <div th:if="${successMessage}" class="alert alert-success" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <span th:text="${successMessage}"></span>
-                        </div>
 
                         <!-- Login form -->
                         <form th:action="@{/client/login}" method="post">
@@ -80,7 +68,7 @@
     <footer class="fixed-bottom bg-light shadow-sm">
         <div class="container py-3 text-center">
             <p class="text-muted mb-0">
-                <i class="fas fa-code me-2"></i>Car Rental Service - G-15 Procesos
+                <i class="fas fa-code me-2">G-15 Procesos</i>
             </p>
         </div>
     </footer>

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.12</version>
+		<version>3.4.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com</groupId>
@@ -100,7 +100,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>com.example.restapi.client.ClientController</mainClass>
+					<mainClass>com.deustocoches.client.ClientController</mainClass>
 					<arguments>
 						<argument>${server.hostname}</argument>
 						<argument>${server.port}</argument>

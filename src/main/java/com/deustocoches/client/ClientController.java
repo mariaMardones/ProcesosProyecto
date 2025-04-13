@@ -45,8 +45,8 @@ public class ClientController {
     }
 
     @PostMapping("/login")
-    public String performLogin(@RequestParam String email, @RequestParam String password, 
-                             RedirectAttributes redirectAttributes) {
+    public String performLogin(@RequestParam String email, @RequestParam String password,
+            RedirectAttributes redirectAttributes) {
         try {
             String token = serviceProxy.login(email, password);
             if (token != null) {
@@ -102,8 +102,8 @@ public class ClientController {
     }
 
     @PutMapping("/usuario/actualizar")
-    public String actualizarUsuario(@RequestParam("email") String email, @ModelAttribute Usuario usuario, 
-                                  RedirectAttributes redirectAttributes) {
+    public String actualizarUsuario(@RequestParam("email") String email, @ModelAttribute Usuario usuario,
+            RedirectAttributes redirectAttributes) {
         try {
             serviceProxy.actualizarUsuario(email, usuario);
             redirectAttributes.addFlashAttribute("successMessage", "User updated successfully");
@@ -191,7 +191,7 @@ public class ClientController {
 
     @PutMapping("/coche/actualizar")
     public String actualizarCoche(@RequestParam("matricula") String matricula, @ModelAttribute Coche coche,
-                                RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             serviceProxy.actualizarCoche(matricula, coche);
             redirectAttributes.addFlashAttribute("successMessage", "Car updated successfully");
@@ -227,6 +227,19 @@ public class ClientController {
         }
     }
 
+    @GetMapping("/reservas/confirmadas")
+    public String listarReservasConfirmadas(Model model) {
+        try {
+            List<Reserva> reservasConfirmadas = serviceProxy.obtenerReservasConfirmadas();
+            model.addAttribute("reservas", reservasConfirmadas);
+            model.addAttribute("tipoLista", "confirmadas");
+            return "reservas/lista";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Failed to load confirmed reservations: " + e.getMessage());
+            return "reservas/lista";
+        }
+    }
+
     @GetMapping("/reserva/{id}")
     public String obtenerReserva(@PathVariable Integer id, Model model) {
         try {
@@ -254,8 +267,8 @@ public class ClientController {
     }
 
     @PutMapping("/reserva/{id}/actualizar")
-    public String actualizarReserva(@PathVariable Integer id, @ModelAttribute Reserva reserva, 
-                                   RedirectAttributes redirectAttributes) {
+    public String actualizarReserva(@PathVariable Integer id, @ModelAttribute Reserva reserva,
+            RedirectAttributes redirectAttributes) {
         try {
             serviceProxy.actualizarReserva(id, reserva);
             redirectAttributes.addFlashAttribute("successMessage", "Reservation updated successfully");

@@ -277,4 +277,22 @@ public class ClientController {
             return "redirect:/client/reservas";
         }
     }
+
+    @PostMapping("/reserva/pedido")
+    public String hacerPedido(@ModelAttribute Reserva reserva, RedirectAttributes redirectAttributes) {
+        if (reserva.getUsuario() == null || reserva.getCoche() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuario y coche son obligatorios para hacer el pedido.");
+            return "redirect:/client/reservas";
+        }
+
+        try {
+            Reserva nuevaReserva = serviceProxy.crearReserva(reserva);
+            redirectAttributes.addFlashAttribute("successMessage", "Pedido realizado correctamente.");
+            return "redirect:/client/reserva/" + nuevaReserva.getId();
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al hacer el pedido: " + e.getMessage());
+            return "redirect:/client/reservas";
+        }
+    }
+
 }

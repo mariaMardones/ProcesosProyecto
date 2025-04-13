@@ -215,4 +215,14 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Failed to retrieve available cars: " + e.getStatusText());
         }
     }
+
+    @Override
+    public Reserva hacerPedido(Reserva reserva) {
+        String url = apiBaseUrl + "/api/reserva/pedido";
+        try {
+            return restTemplate.postForObject(url, reserva, Reserva.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
+        }
+    }
 }

@@ -30,4 +30,5 @@ public interface IServiceProxy {
 	Reserva crearReserva(Reserva reserva);
 	Reserva actualizarReserva(Integer id, Reserva detallesReserva);
 	void eliminarReserva(Integer id);
+	Reserva hacerPedido(Reserva reserva);
 }

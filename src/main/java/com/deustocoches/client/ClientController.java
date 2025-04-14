@@ -26,22 +26,23 @@ public class ClientController {
         model.addAttribute("token", token);
     }
 
-    // Home endpoint
+    // Home endpoint redirects to login
     @GetMapping("/")
-    public String home(Model model) {
-        try {
-            List<Usuario> usuarios = serviceProxy.listarUsuariosResgistrados();
-            model.addAttribute("usuarios", usuarios);
-        } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", "Failed to load users: " + e.getMessage());
+    public String home() {
+        // If already logged in, redirect to coches
+        if (token != null) {
+            return "redirect:/client/coches";
         }
-        return "home";
+        return "login";
     }
 
     // Authentication endpoints
     @GetMapping("/login")
     public String showLoginPage() {
-        return "login";
+        if (token != null) {
+            return "redirect:/client/coches";
+        }
+        return "redirect:/client/";
     }
 
     @PostMapping("/login")
@@ -51,13 +52,13 @@ public class ClientController {
             String token = serviceProxy.login(email, password);
             if (token != null) {
                 this.token = token;
-                return "redirect:/client/";
+                return "redirect:/client/coches"; // Redirect to coches instead of dashboard
             }
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid credentials");
-            return "redirect:/client/login";
+            return "redirect:/client/";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Login failed: " + e.getMessage());
-            return "redirect:/client/login";
+            return "redirect:/client/";
         }
     }
 

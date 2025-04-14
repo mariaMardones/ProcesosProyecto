@@ -19,14 +19,17 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private TipoRol rol; // Admin o Cliente
+    
+    private boolean bloqueado;
 
     // Constructor sin argumentos
     public Usuario() {
+    	this.bloqueado = false;
     }
 
     // Constructor con todos los argumentos
     public Usuario( String nombre, String apellido, String fechaNacimiento, String email, String password,
-                   String tlf, TipoRol rol) {
+                   String tlf, TipoRol rol, boolean bloqueado) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
@@ -34,6 +37,7 @@ public class Usuario {
         this.password = password;
         this.tlf = tlf;
         this.rol = rol;
+        this.bloqueado = bloqueado;
     }
 
     // Getters y setters
@@ -101,8 +105,19 @@ public class Usuario {
         this.rol = rol;
     }
 
+    public boolean isBloqueado() {
+        return bloqueado;
+    }
+
+    public void setBloqueado(boolean bloqueado) {
+        this.bloqueado = bloqueado;
+    }
+    
     @Override
     public String toString() {
-        return "Usuario [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", fechaNacimiento=" + fechaNacimiento + ", email=" + email + ", password=" + password + ", tlf=" + tlf + ", rol=" + rol + "]";
+        return "Usuario [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + 
+        		", fechaNacimiento=" + fechaNacimiento + ", email=" + email + 
+        		", password=" + password + ", tlf=" + tlf + ", rol=" + rol +
+                ", bloqueado=" + bloqueado + "]";
     }
 }

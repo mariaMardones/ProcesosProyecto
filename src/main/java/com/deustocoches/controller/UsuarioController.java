@@ -117,4 +117,29 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
+    @PutMapping("/{id}/bloquear")
+    public ResponseEntity<Usuario> bloquearUsuario(@PathVariable Long id) {
+        try {
+            Usuario usuarioBloqueado = usuarioService.bloquearUsuario(id);
+            return ResponseEntity.ok(usuarioBloqueado);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/{id}/desbloquear")
+    public ResponseEntity<Usuario> desbloquearUsuario(@PathVariable Long id) {
+        try {
+            Usuario usuarioDesbloqueado = usuarioService.desbloquearUsuario(id);
+            return ResponseEntity.ok(usuarioDesbloqueado);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

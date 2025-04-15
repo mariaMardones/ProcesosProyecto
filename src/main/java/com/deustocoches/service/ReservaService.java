@@ -47,6 +47,10 @@ public class ReservaService {
                 })
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
     }
+    
+    public List<Reserva> obtenerReservasConfirmadasPorUsuario(String emailUsuario) {
+        return reservaRepository.findByUsuarioEmailAndEstado(emailUsuario, EstadoReserva.COMPRADA);
+    }
 
     public boolean eliminarReserva(Integer id) {
         if (reservaRepository.existsById(id)) {

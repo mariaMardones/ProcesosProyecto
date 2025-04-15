@@ -239,5 +239,16 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Failed to retrieve confirmed reservations: " + e.getStatusText());
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Reserva> obtenerReservasConfirmadasPorUsuario(String email) {
+        String url = apiBaseUrl + "/api/reservas/confirmadas/usuario?email=" + email;
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve confirmed reservations for user: " + e.getStatusText());
+        }
+    }
 
 }   

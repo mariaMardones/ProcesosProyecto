@@ -32,4 +32,6 @@ public interface IServiceProxy {
 	Reserva actualizarReserva(Integer id, Reserva detallesReserva);
 	void eliminarReserva(Integer id);
 	Reserva hacerPedido(Reserva reserva);
+	List<Reserva> obtenerReservasConfirmadasPorUsuario(String email);
+
 }

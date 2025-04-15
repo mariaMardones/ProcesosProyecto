@@ -11,4 +11,5 @@ import com.deustocoches.model.EstadoReserva;
 @Repository
     public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
         List<Reserva> findByEstado(EstadoReserva estado);
+        List<Reserva> findByUsuarioEmailAndEstado(String email, EstadoReserva estado);
 }

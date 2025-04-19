@@ -1,4 +1,4 @@
-package com.deustocoches.client;
+package com.deustocoches.client.service;
 
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.Usuario;
@@ -93,9 +93,9 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public void logout(String token) {
-        String url = apiBaseUrl + "/api/usuario/logout";
+        String url = apiBaseUrl + "/api/usuario/logout?token=" + token;
         try {
-            restTemplate.postForObject(url, token, Void.class);
+            restTemplate.postForObject(url, null, Void.class);
 
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Logout failed: " + e.getStatusText());
@@ -237,17 +237,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             return restTemplate.getForObject(url, List.class);
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to retrieve confirmed reservations: " + e.getStatusText());
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Reserva> obtenerReservasConfirmadasPorUsuario(String email) {
-        String url = apiBaseUrl + "/api/reservas/confirmadas/usuario?email=" + email;
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve confirmed reservations for user: " + e.getStatusText());
         }
     }
 

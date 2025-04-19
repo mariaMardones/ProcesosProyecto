@@ -29,7 +29,7 @@ public class IntegrationTest {
     @Test
     void testCrearUsuarioCocheYReserva() {
         Usuario usuario = new Usuario("Maria", "Lopez", "01/01/2001", "maria@email.com", "password", "hola",
-                TipoRol.CLIENTE, false);
+                TipoRol.CLIENTE);
         ResponseEntity<Usuario> userResponse = restTemplate.postForEntity("/api/usuario/registrar", usuario,
                 Usuario.class);
         assertEquals(HttpStatus.CREATED, userResponse.getStatusCode());

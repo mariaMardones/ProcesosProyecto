@@ -10,7 +10,7 @@
     <!-- Header -->
     <header class="bg-light shadow-sm">
         <div class="container py-2 text-center">
-            <a href="/client/" class="text-decoration-none text-dark">
+            <a href="/" class="text-decoration-none text-dark">
                 <i class="fas fa-car fa-2x me-2"></i>
                 <span class="fs-4" style="color: #4a4a4a;">DEUSTOCOCHES</span>
             </a>
@@ -26,7 +26,7 @@
                         <h2 class="card-title text-center mb-4">Login</h2>
 
                         <!-- Login form -->
-                        <form th:action="@{/client/login}" method="post">
+                        <form th:action="@{/login(redirectUrl=${redirectUrl})}" method="post">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email address</label>
                                 <div class="input-group">
@@ -53,11 +53,14 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-sign-in-alt me-2"></i>Login
                                 </button>
-                                <a href="/client/usuario/registrar" class="btn btn-outline-secondary">
-                                    <i class="fas fa-user-plus me-2"></i>Register new account
-                                </a>
                             </div>
                         </form>
+                        <div class="d-grid gap-2 mt-2">
+                            <a href="/usuario/registrar" class="btn btn-outline-secondary">
+                                <i class="fas fa-user-plus me-2"></i>Register new account
+                            </a>
+                        </div>
+                        <p th:if="${errorMessage}" th:text="${errorMessage}" class="text-danger mt-3"></p>
                     </div>
                 </div>
             </div>

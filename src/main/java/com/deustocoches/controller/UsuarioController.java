@@ -95,26 +95,18 @@ public class UsuarioController {
             description = "Permite a un usuario cerrar sesión eliminando su token.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK: Sesión cerrada correctamente."),
-                    @ApiResponse(responseCode = "400", description = "Bad Request: Usuario no tiene un token válido."),
-                    @ApiResponse(responseCode = "500", description = "Internal Server Error: Error interno en el servidor.")
+                    @ApiResponse(responseCode = "401", description = "Unautorized: Invalid token, logout failed."),
             }
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> cerrarSesion(@RequestBody String token) {
-        try {            
-            if (token.isBlank() || token == null) {
-                return ResponseEntity.badRequest().build(); 
-            }
-            
-            Optional<Boolean> result = usuarioService.logout(token);
-            
-            if (result.isPresent() && result.get()) {
-                return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); 
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    public ResponseEntity<Void> cerrarSesion(@RequestParam("token") String token) {
+
+        Optional<Boolean> result = usuarioService.logout(token);
+        
+        if (result.isPresent() && result.get()) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
     

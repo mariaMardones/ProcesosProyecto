@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Rental - Usuarios Registrados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5 mb-5">
+        <h2 class="mb-4 text-center">Usuarios Registrados</h2>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <table class="table table-striped table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Fecha Nacimiento</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Teléfono</th>
+                    <th>Rol</th>
+                    <th>Bloqueado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.nombre}"></td>
+                    <td th:text="${usuario.apellido}"></td>
+                    <td th:text="${usuario.fechaNacimiento}"></td>
+                    <td th:text="${usuario.email}"></td>
+                    <td th:text="${usuario.password}"></td>
+                    <td th:text="${usuario.tlf}"></td>
+                    <td th:text="${usuario.rol}"></td>
+                    <td>
+                        <span th:text="${usuario.bloqueado} ? 'Sí' : 'No'"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-grid gap-2 mt-2">
+            <a href="/coches" class="btn btn-primary">
+                <i class="fas fa-car me-2"></i>Gestionar Coches
+            </a>
+        </div>
+        <div class="d-flex justify-content-center gap-2 mt-4">
+            <!-- Botón Cerrar sesión -->
+            <form th:action="@{/logout(redirectUrl=${redirectUrl})}" method="post">
+                <input type="hidden" name="token" th:value="${token}" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-light shadow-sm mt-5">
+        <div class="container py-3 text-center">
+            <p class="text-muted mb-0">
+                <i class="fas fa-code me-2">G-15 Procesos</i>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

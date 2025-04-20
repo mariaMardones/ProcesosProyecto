@@ -63,6 +63,7 @@
                 <td th:text="${#numbers.formatDecimal(reserva.precioTotal, 1, 'COMMA', 2, 'POINT')}"></td>
                 <td th:text="${reserva.estado}"></td>
                 <td th:if="${selectedEstado == 'PENDIENTE'}">
+                    <!-- Botón Comprar -->
                     <form th:action="@{'/reserva/' + ${reserva.id} + '/actualizar'}" method="post" style="display:inline;">
                         <input type="hidden" name="id" th:value="${reserva.id}" />
                         <input type="hidden" name="usuario" th:value="${reserva.usuario.id}" />
@@ -72,6 +73,12 @@
                         <input type="hidden" name="estado" value="COMPRADA" />
                         <button type="submit" class="btn btn-success btn-sm">
                             <i class="fas fa-shopping-cart"></i> Comprar
+                        </button>
+                    </form>
+                    <!-- Botón Eliminar -->
+                    <form th:action="@{'/reserva/' + ${reserva.id} + '/eliminar'}" method="post" style="display:inline; margin-left: 5px;">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </form>
                 </td>

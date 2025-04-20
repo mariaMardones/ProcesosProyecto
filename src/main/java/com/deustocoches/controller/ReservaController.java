@@ -62,6 +62,9 @@ public class ReservaController {
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Void> eliminarReserva(@PathVariable Integer id) {
+        Reserva r = reservaService.obtenerReservaPorId(id).orElse(null);
+        r.getCoche().setDisponible(true);
+        cocheController.actualizarCoche(r.getCoche().getMatricula(), r.getCoche());
         if (reservaService.eliminarReserva(id)) {
             return ResponseEntity.noContent().build();
         } else {

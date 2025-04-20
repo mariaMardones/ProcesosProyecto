@@ -102,16 +102,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Reserva> obtenerReservas() {
-        String url = apiBaseUrl + "/api/reservas";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve reservations: " + e.getStatusText());
-        }
-    }
 
     @Override
     public Reserva obtenerReservaPorId(Integer id) {
@@ -125,7 +115,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public Reserva crearReserva(Reserva reserva) {
-        String url = apiBaseUrl + "/api/reservas/crear";
+        String url = apiBaseUrl + "/api/reservas/pedidos";
         try {
             return restTemplate.postForObject(url, reserva, Reserva.class);
         } catch (HttpStatusCodeException e) {
@@ -228,16 +218,80 @@ public class RestTemplateServiceProxy implements IServiceProxy {
        
         }
     }
-    
-    @SuppressWarnings("unchecked")
+
     @Override
-    public List<Reserva> obtenerReservasConfirmadas() {
-        String url = apiBaseUrl + "/api/reservas/confirmadas";
+    public Usuario bloquearUsuario(String email) {
+        String url = apiBaseUrl + "/api/usuario/bloquear?email=" + email;
         try {
-            return restTemplate.getForObject(url, List.class);
+            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
         } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve confirmed reservations: " + e.getStatusText());
+            throw new RuntimeException("Failed to block user: " + e.getStatusText());
         }
     }
 
-}   
+    @Override
+    public Usuario desbloquearUsuario(String email) {
+        String url = apiBaseUrl + "/api/usuario/desbloquear?email=" + email;
+        try {
+            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to unblock user: " + e.getStatusText());
+        }
+    }
+
+    // Obtener reservas confirmadas por usuario
+    @SuppressWarnings("unchecked")
+    public List<Reserva> obtenerReservasConfirmadasPorUsuario(String email) {
+        String url = apiBaseUrl + "/api/reservas/usuario/confirmadas?email=" + email;
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve confirmed reservations by user: " + e.getStatusText());
+        }
+    }
+
+    // Obtener reservas pendientes por usuario
+    @SuppressWarnings("unchecked")
+    public List<Reserva> obtenerReservasPendientesPorUsuario(String email) {
+        String url = apiBaseUrl + "/api/reservas/usuario/pendientes?email=" + email;
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve pending reservations by user: " + e.getStatusText());
+        }
+    }
+
+    // Obtener todas las reservas compradas
+    @SuppressWarnings("unchecked")
+    public List<Reserva> obtenerReservasCompradas() {
+        String url = apiBaseUrl + "/api/reservas/compradas";
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve bought reservations: " + e.getStatusText());
+        }
+    }
+
+    // Obtener todas las reservas pendientes
+    @SuppressWarnings("unchecked")
+    public List<Reserva> obtenerReservasPendientes() {
+        String url = apiBaseUrl + "/api/reservas/pendientes";
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve pending reservations: " + e.getStatusText());
+        }
+    }
+
+    // Obtener todas las reservas canceladas
+    @SuppressWarnings("unchecked")
+    public List<Reserva> obtenerReservasCanceladas() {
+        String url = apiBaseUrl + "/api/reservas/canceladas";
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve cancelled reservations: " + e.getStatusText());
+        }
+    }
+
+}

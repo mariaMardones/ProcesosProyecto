@@ -110,10 +110,10 @@ public class UsuarioController {
         }
     }
     
-    @PutMapping("/{id}/bloquear")
-    public ResponseEntity<Usuario> bloquearUsuario(@PathVariable Long id) {
+    @PutMapping("/bloquear")
+    public ResponseEntity<Usuario> bloquearUsuario(@RequestParam("email") String email) {
         try {
-            Usuario usuarioBloqueado = usuarioService.bloquearUsuario(id);
+            Usuario usuarioBloqueado = usuarioService.bloquearUsuario(email);
             return ResponseEntity.ok(usuarioBloqueado);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -122,10 +122,10 @@ public class UsuarioController {
         }
     }
 
-    @PutMapping("/{id}/desbloquear")
-    public ResponseEntity<Usuario> desbloquearUsuario(@PathVariable Long id) {
+    @PutMapping("/desbloquear")
+    public ResponseEntity<Usuario> desbloquearUsuario(@RequestParam("email") String email) {
         try {
-            Usuario usuarioDesbloqueado = usuarioService.desbloquearUsuario(id);
+            Usuario usuarioDesbloqueado = usuarioService.desbloquearUsuario(email);
             return ResponseEntity.ok(usuarioDesbloqueado);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

@@ -15,6 +15,8 @@ public interface IServiceProxy {
 	Usuario registrarUsuario(Usuario usuario);
 	String login(String email, String password);
 	void logout(String token);
+	Usuario bloquearUsuario(String email);
+	Usuario desbloquearUsuario(String email);
 
 	// CRUD operations for Coche
 	List<Coche> ListarCoches();
@@ -25,11 +27,14 @@ public interface IServiceProxy {
 	Coche crearCoche(Coche coche);
 
 	// CRUD operations for Reserva
-	List<Reserva> obtenerReservas();
 	Reserva obtenerReservaPorId(Integer id);
-	List<Reserva> obtenerReservasConfirmadas();
 	Reserva crearReserva(Reserva reserva);
 	Reserva actualizarReserva(Integer id, Reserva detallesReserva);
 	void eliminarReserva(Integer id);
 	Reserva hacerPedido(Reserva reserva);
+	List<Reserva> obtenerReservasConfirmadasPorUsuario(String email);
+	List<Reserva> obtenerReservasPendientesPorUsuario(String email);
+	List<Reserva> obtenerReservasCompradas();
+	List<Reserva> obtenerReservasPendientes();
+	List<Reserva> obtenerReservasCanceladas();
 }

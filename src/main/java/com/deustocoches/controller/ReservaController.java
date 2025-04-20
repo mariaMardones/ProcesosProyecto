@@ -29,16 +29,8 @@ public class ReservaController {
 
 	@Autowired
     private ReservaService reservaService;
-
-    @GetMapping
-    public List<Reserva> obtenerReservas() {
-        return reservaService.obtenerReservas();
-    }
-
-    @GetMapping("/confirmadas")
-    public List<Reserva> obtenerReservasConfirmadas() {
-        return reservaService.obtenerReservasConfirmadas();
-    }
+    @Autowired
+    private CocheController cocheController;
 
     @GetMapping("/buscar/{id}")
     public ResponseEntity<Reserva> obtenerReservaPorId(@PathVariable Integer id) {
@@ -90,14 +82,42 @@ public class ReservaController {
         if (reserva.getFecha() == null || reserva.getFecha().isEmpty()) {
             reserva.setFecha(LocalDate.now().toString());
         }
-    
+
+        if (reserva.getEstado() == EstadoReserva.CANCELADA) {
+            reserva.getCoche().setDisponible(true);
+        }
+        else{
+            reserva.getCoche().setDisponible(false);
+        }
+
+        cocheController.actualizarCoche(reserva.getCoche().getMatricula(), reserva.getCoche());
         Reserva nuevaReserva = reservaService.crearReserva(reserva);
         return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
     }
     
-    @GetMapping("/confirmadas/usuario")
-    public List<Reserva> obtenerReservasConfirmadasPorUsuario(@RequestParam String email) {
-        return reservaService.obtenerReservasConfirmadasPorUsuario(email);
+    @GetMapping("/usuario/confirmadas")
+    public List<Reserva> obtenerReservasConfirmadasPorUsuario(@RequestParam("email") String email) {
+        return reservaService.obtenerReservasCompradasPorUsuario(email);
+    }
+
+    @GetMapping("/usuario/pendientes")
+    public List<Reserva> obtenerReservasPorConfirmasPorUsuario(@RequestParam("email") String email) {
+        return reservaService.obtenerReservasPendientesPorUsuario(email);
+    }
+
+    @GetMapping("/compradas")
+    public List<Reserva> obtenerReservasCompradas() {
+        return reservaService.obtenerCompradas();
+    }
+
+    @GetMapping("/pendientes")
+    public List<Reserva> obtenerReservasPendientes() {
+        return reservaService.obtenerPendientes();
+    }
+
+    @GetMapping("/canceladas")
+    public List<Reserva> obtenerReservasCanceladas() {
+        return reservaService.obtenerCanceladas();
     }
     
 }

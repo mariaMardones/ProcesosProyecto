@@ -19,6 +19,7 @@
                     <th>Año</th>
                     <th>Color</th>
                     <th>Precio (€)</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,13 +30,36 @@
                     <td th:text="${coche.anio}"></td>
                     <td th:text="${coche.color}"></td>
                     <td th:text="${coche.precio}"></td>
+                    <td>
+                        <form th:action="@{/reserva/pedido}" method="post" style="display:inline;">
+                            <input type="hidden" name="email" th:value="${currentUserEmail}" />
+                            <input type="hidden" name="matricula" th:value="${coche.matricula}" />
+                            <input type="hidden" name="estado" value="PENDIENTE" />
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-calendar-plus"></i> Reservar
+                            </button>
+                        </form>
+                        <form th:action="@{/reserva/pedido}" method="post" style="display:inline;">
+                            <input type="hidden" name="email" th:value="${currentUserEmail}" />
+                            <input type="hidden" name="matricula" th:value="${coche.matricula}" />
+                            <input type="hidden" name="estado" value="COMPRADA" />
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             </tbody>
         </table>
         <!-- Centrado horizontal del botón de cerrar sesión -->
         <div class="d-flex justify-content-center gap-2 mt-4">
+            <!-- Botón para ir a reservas -->
+            <a th:href="@{/reservas/usuario/pendientes}" class="btn btn-outline-primary">
+                <i class="fas fa-list me-2"></i>Ver mis reservas
+            </a>
             <!-- Botón Cerrar sesión -->
             <form th:action="@{/logout(redirectUrl=${redirectUrl})}" method="post">
+                <input type="hidden" name="email" th:value="${currentUserEmail}" />
                 <input type="hidden" name="token" th:value="${token}" />
                 <button type="submit" class="btn btn-danger">
                     <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión

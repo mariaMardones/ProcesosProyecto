@@ -19,10 +19,6 @@ public class ReservaService {
         this.reservaRepository = reservaRepository;
     }
 
-    public List<Reserva> obtenerReservas() {
-        return reservaRepository.findAll();
-    }
-
     public List<Reserva> obtenerReservasConfirmadas() {
         return reservaRepository.findByEstado(EstadoReserva.COMPRADA);
     }
@@ -48,9 +44,6 @@ public class ReservaService {
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
     }
     
-    public List<Reserva> obtenerReservasConfirmadasPorUsuario(String emailUsuario) {
-        return reservaRepository.findByUsuarioEmailAndEstado(emailUsuario, EstadoReserva.COMPRADA);
-    }
 
     public boolean eliminarReserva(Integer id) {
         if (reservaRepository.existsById(id)) {
@@ -60,4 +53,23 @@ public class ReservaService {
         return false;
     }
 
+    public List<Reserva> obtenerReservasCompradasPorUsuario(String emailUsuario) {
+        return reservaRepository.findByUsuarioEmailAndEstado(emailUsuario, EstadoReserva.COMPRADA);
+    }
+
+    public List<Reserva> obtenerReservasPendientesPorUsuario(String emailUsuario) {
+        return reservaRepository.findByUsuarioEmailAndEstado(emailUsuario, EstadoReserva.PENDIENTE);
+    }
+
+    public List<Reserva> obtenerCompradas() {
+        return reservaRepository.findByEstado(EstadoReserva.COMPRADA);
+    }
+
+    public List<Reserva> obtenerPendientes() {
+        return reservaRepository.findByEstado(EstadoReserva.PENDIENTE);
+    }
+
+    public List<Reserva> obtenerCanceladas() {
+        return reservaRepository.findByEstado(EstadoReserva.CANCELADA);
+    }
 }

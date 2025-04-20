@@ -21,6 +21,7 @@
                     <th>Teléfono</th>
                     <th>Rol</th>
                     <th>Bloqueado</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,6 +35,22 @@
                     <td th:text="${usuario.rol}"></td>
                     <td>
                         <span th:text="${usuario.bloqueado} ? 'Sí' : 'No'"></span>
+                    </td>
+                    <td>
+                        <div th:if="${usuario.email != currentUserEmail}">
+                            <form th:if="${usuario.bloqueado}" th:action="@{/usuario/desbloquear}" method="post" style="display:inline;">
+                                <input type="hidden" name="email" th:value="${usuario.email}" />
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fas fa-unlock"></i> Desbloquear
+                                </button>
+                            </form>
+                            <form th:if="${!usuario.bloqueado}" th:action="@{/usuario/bloquear}" method="post" style="display:inline;">
+                                <input type="hidden" name="email" th:value="${usuario.email}" />
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-lock"></i> Bloquear
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             </tbody>

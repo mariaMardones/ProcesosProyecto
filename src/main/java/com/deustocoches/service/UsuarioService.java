@@ -64,9 +64,13 @@ public class UsuarioService {
         }
         
         Usuario usuario = repository.findByEmail(email);
-        if (usuario == null) {
+
+        if (usuario == null ) {
             throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
         } 
+        else if (usuario.isBloqueado()) {
+            throw new IllegalArgumentException("Usuario bloqueado.");
+        }
         else if (!usuario.getPassword().equals(password)) {
             throw new IllegalArgumentException("Contraseña incorrecta.");
         } 
@@ -95,24 +99,20 @@ public class UsuarioService {
         return tokens;
     }
     
-    public Usuario bloquearUsuario(Long id) {
-        Optional<Usuario> usuarioOptional = repository.findById(id);
-        if (usuarioOptional.isEmpty()) {
-            throw new IllegalArgumentException("Usuario no encontrado con el ID proporcionado.");
+    public Usuario bloquearUsuario(String email) {
+        Usuario usuario = repository.findByEmail(email);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
         }
-
-        Usuario usuario = usuarioOptional.get();
         usuario.setBloqueado(true);
         return actualizarUsuario(usuario.getEmail(), usuario);
     }
 
-    public Usuario desbloquearUsuario(Long id) {
-        Optional<Usuario> usuarioOptional = repository.findById(id);
-        if (usuarioOptional.isEmpty()) {
-            throw new IllegalArgumentException("Usuario no encontrado con el ID proporcionado.");
+    public Usuario desbloquearUsuario(String email) {
+        Usuario usuario = repository.findByEmail(email);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
         }
-
-        Usuario usuario = usuarioOptional.get();
         usuario.setBloqueado(false);
         return actualizarUsuario(usuario.getEmail(), usuario);
     }

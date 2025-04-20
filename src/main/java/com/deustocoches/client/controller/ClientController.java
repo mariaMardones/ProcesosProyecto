@@ -2,6 +2,7 @@ package com.deustocoches.client.controller;
 
 import com.deustocoches.client.service.RestTemplateServiceProxy;
 import com.deustocoches.model.Coche;
+import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.TipoRol;
 import com.deustocoches.model.Usuario;
@@ -11,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -22,13 +22,14 @@ public class ClientController {
     private RestTemplateServiceProxy serviceProxy;
 
     private String token;
-    private String currentUserEmail; // Guarda el email del usuario logueado
+    private String currentUserEmail;
 
     @ModelAttribute
     public void addAttributes(Model model, HttpServletRequest request) {
         String currentUrl = ServletUriComponentsBuilder.fromRequestUri(request).toUriString();
         model.addAttribute("currentUrl", currentUrl);
         model.addAttribute("token", token);
+        model.addAttribute("currentUserEmail", currentUserEmail);
     }
 
     // Página principal: login (index.html)
@@ -51,8 +52,8 @@ public class ClientController {
             String token = serviceProxy.login(email, password);
             if (token != null) {
                 this.token = token;
-                this.currentUserEmail = email;
-                Usuario u =serviceProxy.getUsuarioByEmail(email);
+                currentUserEmail = email;
+                Usuario u = serviceProxy.getUsuarioByEmail(email);
                 if (u.getRol() == TipoRol.ADMIN) {
                     return "redirect:/usuarios";
                 } else {
@@ -197,6 +198,132 @@ public class ClientController {
         }
     }
 
+    @PostMapping("/usuario/bloquear")
+    public String bloquearUsuario(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
+        try {
+            serviceProxy.bloquearUsuario(email);
+            redirectAttributes.addFlashAttribute("successMessage", "Usuario bloqueado correctamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al bloquear usuario: " + e.getMessage());
+        }
+        return "redirect:/usuarios";
+    }
+
+    @PostMapping("/usuario/desbloquear")
+    public String desbloquearUsuario(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
+        try {
+            serviceProxy.desbloquearUsuario(email);
+            redirectAttributes.addFlashAttribute("successMessage", "Usuario desbloqueado correctamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al desbloquear usuario: " + e.getMessage());
+        }
+        return "redirect:/usuarios";
+    }
+
+    @PostMapping("/reserva/pedido")
+    public String hacerPedido(@RequestParam("email") String email, @RequestParam("estado") String estado, @RequestParam("matricula") String matricula , RedirectAttributes redirectAttributes) {
+        Usuario usuario = serviceProxy.getUsuarioByEmail(email);
+        Coche coche = serviceProxy.getCocheByMatricula(matricula);
+        Reserva reserva = new Reserva();
+        reserva.setUsuario(usuario);    
+        reserva.setCoche(coche);
+        reserva.setPrecioTotal(coche.getPrecio()*1.21); // Precio del coche + IVA del 21%
+        reserva.setEstado(EstadoReserva.valueOf(estado));
+        String fechaActual = java.time.LocalDate.now().toString(); // yyyy-MM-dd
+        reserva.setFecha(fechaActual);
+        if (reserva.getUsuario() == null || reserva.getCoche() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuario y coche son obligatorios para hacer el pedido.");
+            return "redirect:/coches/disponibles";
+        }
+
+        try {
+            serviceProxy.crearReserva(reserva);
+            redirectAttributes.addFlashAttribute("successMessage", "Pedido realizado correctamente.");
+            return "redirect:/coches/disponibles";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al hacer el pedido: " + e.getMessage());
+            return "redirect:/coches/disponibles";
+        }
+    }
+
+    // Mostrar reservas confirmadas por usuario
+    @GetMapping("/reservas/usuario/confirmadas")
+    public String mostrarReservasConfirmadasPorUsuario(
+            @RequestParam(value = "email", required = false) String email,
+            Model model) {
+        String userEmail = (currentUserEmail != null) ? currentUserEmail : email;
+        try {
+            List<Reserva> reservas = serviceProxy.obtenerReservasConfirmadasPorUsuario(userEmail);
+            model.addAttribute("reservas", reservas);
+            model.addAttribute("currentUserEmail", userEmail);
+            model.addAttribute("selectedEstado", "COMPRADA");
+            return "reservas";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Failed to load confirmed reservations: " + e.getMessage());
+            return "reservas";
+        }
+    }
+
+    // Mostrar reservas pendientes por usuario
+    @GetMapping("/reservas/usuario/pendientes")
+    public String mostrarReservasPendientesPorUsuario(
+            @RequestParam(value = "email", required = false) String email,
+            Model model) {
+        String userEmail = (currentUserEmail != null) ? currentUserEmail : email;
+        try {
+            List<Reserva> reservas = serviceProxy.obtenerReservasPendientesPorUsuario(userEmail);
+            model.addAttribute("reservas", reservas);
+            model.addAttribute("currentUserEmail", userEmail);
+            model.addAttribute("selectedEstado", "PENDIENTE");
+            return "reservas";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Failed to load pending reservations: " + e.getMessage());
+            return "reservas";
+        }
+    }
+
+    // Mostrar todas las reservas compradas (admin)
+    @GetMapping("/reservas/compradas")
+    public String mostrarReservasCompradas(Model model) {
+        try {
+            List<Reserva> reservas = serviceProxy.obtenerReservasCompradas();
+            model.addAttribute("reservas", reservas);
+            model.addAttribute("selectedEstado", "COMPRADA");
+            return "reservasADMIN";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Failed to load bought reservations: " + e.getMessage());
+            return "reservasADMIN";
+        }
+    }
+
+    // Mostrar todas las reservas pendientes (admin)
+    @GetMapping("/reservas/pendientes")
+    public String mostrarReservasPendientes(Model model) {
+        try {
+            List<Reserva> reservas = serviceProxy.obtenerReservasPendientes();
+            model.addAttribute("reservas", reservas);
+            model.addAttribute("selectedEstado", "PENDIENTE");
+            return "reservasADMIN";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Failed to load pending reservations: " + e.getMessage());
+            return "reservasADMIN";
+        }
+    }
+
+    // Mostrar todas las reservas canceladas (admin)
+    @GetMapping("/reservas/canceladas")
+    public String mostrarReservasCanceladas(Model model) {
+        try {
+            List<Reserva> reservas = serviceProxy.obtenerReservasCanceladas();
+            model.addAttribute("reservas", reservas);
+            model.addAttribute("selectedEstado", "CANCELADA");
+            return "reservasADMIN";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Failed to load cancelled reservations: " + e.getMessage());
+            return "reservasADMIN";
+        }
+    }
+
 //NO UTILIZADOS, DE MOMENTO
     @GetMapping("/usuario")
     public String getUsuarioByEmail(@RequestParam("email") String email, Model model) {
@@ -222,32 +349,6 @@ public class ClientController {
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update user: " + e.getMessage());
             return "redirect:/client/usuario?email=" + email;
-        }
-    }
-
-    // Reserva endpoints
-    @GetMapping("/reservas")
-    public String listarReservas(Model model) {
-        try {
-            List<Reserva> reservas = serviceProxy.obtenerReservas();
-            model.addAttribute("reservas", reservas);
-            return "reservas/lista";
-        } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", "Failed to load reservations: " + e.getMessage());
-            return "reservas/lista";
-        }
-    }
-
-    @GetMapping("/reservas/confirmadas")
-    public String listarReservasConfirmadas(Model model) {
-        try {
-            List<Reserva> reservasConfirmadas = serviceProxy.obtenerReservasConfirmadas();
-            model.addAttribute("reservas", reservasConfirmadas);
-            model.addAttribute("tipoLista", "confirmadas");
-            return "reservas/lista";
-        } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", "Failed to load confirmed reservations: " + e.getMessage());
-            return "reservas/lista";
         }
     }
 
@@ -277,16 +378,16 @@ public class ClientController {
         }
     }
 
-    @PutMapping("/reserva/{id}/actualizar")
+    @PostMapping("/reserva/{id}/actualizar")
     public String actualizarReserva(@PathVariable Integer id, @ModelAttribute Reserva reserva,
             RedirectAttributes redirectAttributes) {
         try {
             serviceProxy.actualizarReserva(id, reserva);
             redirectAttributes.addFlashAttribute("successMessage", "Reservation updated successfully");
-            return "redirect:/client/reserva/" + id;
+            return "redirect:/reservas/usuario/confirmadas";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update reservation: " + e.getMessage());
-            return "redirect:/client/reserva/" + id;
+            return "redirect:/reservas/usuario/confirmadas";
         }
     }
 
@@ -298,23 +399,6 @@ public class ClientController {
             return "redirect:/client/reservas";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete reservation: " + e.getMessage());
-            return "redirect:/client/reservas";
-        }
-    }
-
-    @PostMapping("/reserva/pedido")
-    public String hacerPedido(@ModelAttribute Reserva reserva, RedirectAttributes redirectAttributes) {
-        if (reserva.getUsuario() == null || reserva.getCoche() == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Usuario y coche son obligatorios para hacer el pedido.");
-            return "redirect:/client/reservas";
-        }
-
-        try {
-            Reserva nuevaReserva = serviceProxy.crearReserva(reserva);
-            redirectAttributes.addFlashAttribute("successMessage", "Pedido realizado correctamente.");
-            return "redirect:/client/reserva/" + nuevaReserva.getId();
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error al hacer el pedido: " + e.getMessage());
             return "redirect:/client/reservas";
         }
     }

@@ -1,6 +1,8 @@
 package com.deustocoches.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "reservas")
@@ -11,11 +13,13 @@ public class Reserva {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false, foreignKey = @ForeignKey(name = "FKcfh7qcr7oxomqk5hhbxdg2m7p"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "coche_matricula", nullable = false)
+    @JoinColumn(name = "coche_matricula", nullable = false, foreignKey = @ForeignKey(name = "FK4236amysagpvewsxo2w5la72u"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Coche coche;
 
     private String fecha;

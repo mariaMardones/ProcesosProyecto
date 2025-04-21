@@ -310,6 +310,18 @@ public class ClientController {
             return "reservasADMIN";
         }
     }
+    
+    @PostMapping("/reserva/{id}/eliminar")
+    public String eliminarReserva(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            serviceProxy.eliminarReserva(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Reservation deleted successfully");
+            return "redirect:/reservas/usuario/pendientes";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete reservation: " + e.getMessage());
+            return "";
+        }
+    }
 
 //NO UTILIZADOS, DE MOMENTO
     @GetMapping("/reservas/canceladas")
@@ -388,18 +400,6 @@ public class ClientController {
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update reservation: " + e.getMessage());
             return "redirect:/reservas/usuario/confirmadas";
-        }
-    }
-
-    @PostMapping("/reserva/{id}/eliminar")
-    public String eliminarReserva(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        try {
-            serviceProxy.eliminarReserva(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Reservation deleted successfully");
-            return "redirect:/client/reservas";
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete reservation: " + e.getMessage());
-            return "redirect:/client/reservas";
         }
     }
 

@@ -12,13 +12,12 @@
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
-    <!-- Selector de estado -->
     <form id="estadoForm" th:action="@{/reservas/usuario/pendientes}" method="get" class="mb-4 d-flex align-items-center gap-2">
         <input type="hidden" name="email" th:value="${currentUserEmail}" />
-        <label for="estado" class="form-label mb-0">Filtrar por estado:</label>
+        <label for="estado" class="form-label mb-0">Filtrar:</label>
         <select class="form-select w-auto" name="estado" id="estado" onchange="cambiarAccion()">
-            <option th:value="PENDIENTE" th:selected="${selectedEstado == 'PENDIENTE'}">Pendiente</option>
-            <option th:value="COMPRADA" th:selected="${selectedEstado == 'COMPRADA'}">Comprada</option>
+            <option th:value="PENDIENTE" th:selected="${selectedEstado == 'PENDIENTE'}">Carrito de la compra</option>
+            <option th:value="COMPRADA" th:selected="${selectedEstado == 'COMPRADA'}">Compras anteriores</option>
         </select>
     </form>
 
@@ -34,12 +33,6 @@
             form.submit();
         }
     </script>
-
-    <div>
-        Email actual: <span th:text="${currentUserEmail}"></span><br>
-        Estado seleccionado: <span th:text="${selectedEstado}"></span>
-        <br>Reservas encontradas: <span th:text="${reservas != null ? #lists.size(reservas) : 0}"></span>
-    </div>
 
     <!-- Tabla de reservas -->
     <table class="table table-bordered table-hover shadow">

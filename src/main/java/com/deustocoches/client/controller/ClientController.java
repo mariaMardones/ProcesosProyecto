@@ -131,7 +131,7 @@ public class ClientController {
             return "redirect:/";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete user: " + e.getMessage());
-            return "redirect:/usuarios";
+            return "";
         }
     }
 
@@ -151,13 +151,14 @@ public class ClientController {
     public String getCocheByMatricula(@RequestParam("matricula") String matricula, Model model) {
         try {
             Coche coche = serviceProxy.getCocheByMatricula(matricula);
+            
             if (coche != null) {
                 model.addAttribute("coche", coche);
                 return "detalleCocheADMIN"; // Renderiza detalleCocheADMIN.html
             }
-            return "redirect:/client/coches?error=car-not-found";
+            return "";
         } catch (RuntimeException e) {
-            return "redirect:/client/coches?error=car-error";
+            return "";
         }
     }
 
@@ -194,7 +195,7 @@ public class ClientController {
             return "redirect:/coches";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete car: " + e.getMessage());
-            return "redirect:/coche";
+            return "redirect:/coches";
         }
     }
 
@@ -310,7 +311,7 @@ public class ClientController {
         }
     }
 
-    // Mostrar todas las reservas canceladas (admin)
+//NO UTILIZADOS, DE MOMENTO
     @GetMapping("/reservas/canceladas")
     public String mostrarReservasCanceladas(Model model) {
         try {
@@ -324,7 +325,6 @@ public class ClientController {
         }
     }
 
-//NO UTILIZADOS, DE MOMENTO
     @GetMapping("/usuario")
     public String getUsuarioByEmail(@RequestParam("email") String email, Model model) {
         try {

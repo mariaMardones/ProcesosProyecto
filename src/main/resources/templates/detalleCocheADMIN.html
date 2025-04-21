@@ -81,7 +81,6 @@
 
     <!-- Formulario para eliminar el coche (DELETE) -->
     <form th:action="@{/coche/eliminar}" method="post" onsubmit="return confirm('¿Seguro que quieres eliminar este coche?');">
-        <input type="hidden" name="_method" value="delete"/>
         <input type="hidden" name="matricula" th:value="${coche.matricula}" />
         <button type="submit" class="btn btn-danger">
             <i class="fas fa-trash-alt me-2"></i>Eliminar

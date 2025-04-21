@@ -83,6 +83,9 @@
             <a href="/usuarios" class="btn btn-outline-primary">
                 <i class="fas fa-users me-2"></i>Volver a usuarios
             </a>
+            <a href="/reservas/pendientes" class="btn btn-outline-primary">
+                <i class="fas fa-users me-2"></i>Ver el historial de compras
+            </a>
             <form th:action="@{/logout(redirectUrl=${redirectUrl})}" method="post">
                 <input type="hidden" name="token" th:value="${token}" />
                 <button type="submit" class="btn btn-danger">

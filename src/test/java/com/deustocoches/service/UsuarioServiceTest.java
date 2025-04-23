@@ -51,8 +51,7 @@ class UsuarioServiceTest {
         assertNotNull(resultado);
         assertEquals("Test", resultado.getNombre());
         assertEquals("test@example.com", resultado.getEmail());
-
-        // Verificar que el método save fue llamado una vez
+        
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
     }
 }

@@ -23,8 +23,8 @@ public class CocheService {
         return cocheRepository.findAll();
     }
     public List<Coche> ListarCochesDisponibles() {
-        ArrayList<Coche> coches = (ArrayList<Coche>) cocheRepository.findAll();
-        ArrayList<Coche> cochesdisponibles = new ArrayList<>();
+        List<Coche> coches =  cocheRepository.findAll();
+        List<Coche> cochesdisponibles = new ArrayList<>();
         for (Coche c: coches){
             if (c.isDisponible()) {
                 cochesdisponibles.add(c);

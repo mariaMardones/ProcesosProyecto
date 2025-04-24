@@ -103,6 +103,7 @@ public class ReservaIntegrationTest {
                 new ParameterizedTypeReference<List<Reserva>>() {}
         );
         List<Reserva> reservasPendientesDespues = pendientesDespuesResponse.getBody();
+        assertNotNull(reservasPendientesDespues);
         assertFalse(reservasPendientesDespues.stream().anyMatch(r -> r.getId() == reservaId));
         
         // 8. Limpiar - Eliminar reserva, coche y usuario

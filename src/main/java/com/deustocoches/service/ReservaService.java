@@ -72,4 +72,8 @@ public class ReservaService {
     public List<Reserva> obtenerCanceladas() {
         return reservaRepository.findByEstado(EstadoReserva.CANCELADA);
     }
+    
+    public List<Reserva> findAll() {
+        return reservaRepository.findAll();
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -101,7 +102,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Logout failed: " + e.getStatusText());
         }
     }
-
 
     @Override
     public Reserva obtenerReservaPorId(Integer id) {
@@ -215,7 +215,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
 
-       
         }
     }
 
@@ -291,6 +290,35 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             return restTemplate.getForObject(url, List.class);
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to retrieve cancelled reservations: " + e.getStatusText());
+        }
+    }
+
+        /**
+     * Método que podría lanzar una excepción al realizar una operación remota.
+     * Se utiliza para probar el manejo de errores en la aplicación.
+     * @throws RuntimeException Si ocurre un error durante la llamada a la API
+     */
+    public void metodoQuePuedeLanzarExcepcion() {
+        try {
+            // Lógica que podría lanzar una excepción
+            restTemplate.getForObject(apiBaseUrl + "/api/ejemplo", String.class);
+        } catch (RestClientException e) {
+            throw new RuntimeException("Error durante la llamada a la API: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Método que devuelve una lista genérica de elementos.
+     * Se utiliza para probar la recuperación de colecciones de datos.
+     * @return Lista de elementos recuperados del endpoint
+     * @throws RuntimeException Si ocurre un error durante la llamada a la API
+     */
+    public List<?> metodoQueDevuelveLista() {
+        String url = apiBaseUrl + "/api/coleccion";
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (RestClientException e) {
+            throw new RuntimeException("Error al recuperar la lista de elementos: " + e.getMessage(), e);
         }
     }
 

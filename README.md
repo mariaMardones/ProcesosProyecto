@@ -1,11 +1,20 @@
 SpringBoot + REST API + MySQL
 =============================
 
+Descripción
+--------------------
 Este proyecto utiliza Spring Boot para crear una REST API y se conecta a una base de datos MySQL utilizando JPA, con una aplicación de ejemplo que maneja reservas, coches y usuarios.
 
 El proyecto se basa en un servicio backend para gestionar reservas de coches y usuarios mediante una API REST. Usa Spring Boot y Spring Data JPA para interactuar con la base de datos MySQL.
 
 La estructura básica de un proyecto Spring Boot se puede inicializar utilizando Spring Initializr en https://start.spring.io/.
+
+Requisitos previos
+--------------------
+- Java 17+
+- Maven
+- MySQL
+
 
 Lanzar la aplicación
 --------------------
@@ -34,62 +43,40 @@ Una vez configurada la base de datos, lanza el servidor con el siguiente comando
 
 Si no hay errores, la aplicación estará disponible en http://localhost:8080/. Puedes detener la aplicación presionando Ctrl+C.
 
-API REST
+Acceso a la aplicación
 --------
 
-La aplicación expone una API REST que es utilizada por el cliente para interactuar con la base de datos. Algunos ejemplos de métodos son:
+Una vez que el programa este en funcionamiento, puede acceder a DeustoCoches a través de:
 
-Obtener todas las reservas
+	http://localhost:8080
+	
+Características
+--------------------
+- Registro e inicio de sesión de usuarios.
+- Ver el listado de coches disponibles.
+- Ver el listado de todos los usuarios registrados.
+- Como cliente, ver las compras hechas.
+- Como admin, bloquear y desbloquear usuarios.
+- Hacer compras
+- ...
 
-    GET http://localhost:8080/api/reservas
-
-Crear una nueva reserva
-
-    POST http://localhost:8080/api/reservas
-Content-Type: application/json
-
-{
-  "fecha": "2025-04-01",
-  "precioTotal": 150.0,
-  "estado": "confirmada",
-  "usuario": {
-    "id": 1
-  },
-  "coche": {
-    "id": 2
-  }
-}
-
-Eliminar una reserva
-
-    DELETE http://localhost:8080/api/reservas/1
-
-Para ver el listado completo de métodos de la API REST, puedes consultar las anotaciones en las clases de los controladores (ReservaController, UsuarioController, etc.) y la configuración de dependencias en el archivo pom.xml y application.properties.
-
-Cliente de Línea de Comandos
-----------------------------
-
-El proyecto incluye una implementación de cliente REST que utiliza las bibliotecas de cliente REST de Spring Boot, implementada en la clase MainClient.java. Puedes ejecutar el cliente utilizando el siguiente comando de Maven:
-
-    mvn exec:java
-
-Consulta la sección <build> en el archivo pom.xml para ver cómo se configuró este comando.
-
-Empaquetar la Aplicación
+Ejecución de tests
 ------------------------
 
-Para empaquetar la aplicación, ejecuta el siguiente comando:
+Puede ejecutar las distintas pruebas del proyecto utilizando los siguientes comandos:
 
-    mvn package
+Tests unitarios:
+	
+	mvn test
+	
 
-Esto incluirá todas las bibliotecas necesarias dentro del archivo target/rest-api-0.0.1-SNAPSHOT.jar, que puede ser distribuido.
+Creadores
+--------------------
 
-Una vez empaquetada, la aplicación puede ser ejecutada con:
+Este proyecto ha sido desarrollado por: 
 
-    java -jar rest-api-0.0.1-SNAPSHOT.jar
-
-El cliente puede ser lanzado con el siguiente comando:
-
-    java -cp rest-api-0.0.1-SNAPSHOT.jar -Dloader.main=com.example.restapi.client.MainClient org.springframework.boot.loader.launch.PropertiesLauncher localhost 8080
-
-Por lo tanto, en un entorno de desarrollo real, sería recomendable crear proyectos Maven separados para el servidor y el cliente, facilitando la distribución y el mantenimiento de cada aplicación de forma independiente.
+- **Markel Urquiza** - [MarkelUrquiza](https://github.com/MarkelUrquiza)
+- **Génesis Balcazar** - [gnnesis](https://github.com/gnnesis)
+- **Ekaitz Hernando** - [hernandoekaitz](https://github.com/hernandoekaitz)
+- **Maria Mardones** - [mariaMardones](https://github.com/mariaMardones)
+- **Ekhiotz Garay** - [EkHi04](https://github.com/EkHi04)

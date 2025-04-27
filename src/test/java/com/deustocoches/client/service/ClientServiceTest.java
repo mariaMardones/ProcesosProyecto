@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -60,7 +59,6 @@ class ClientServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Configurar URL base mediante reflexión ya que es un campo privado con @Value
         try {
             java.lang.reflect.Field field = RestTemplateServiceProxy.class.getDeclaredField("apiBaseUrl");
             field.setAccessible(true);
@@ -69,7 +67,6 @@ class ClientServiceTest {
             e.printStackTrace();
         }
 
-        // Configurar datos de prueba
         usuario = new Usuario();
         usuario.setId(1L);
         usuario.setNombre("Juan");
@@ -390,48 +387,38 @@ class ClientServiceTest {
 
     @Test
     void testMetodoQuePuedeLanzarExcepcion() {
-        // Configurar el mock para que lance una excepción
         when(restTemplate.getForObject(contains("/api/ejemplo"), eq(String.class)))
             .thenThrow(new RestClientException("Error de conexión simulado"));
         
-        // Verificar que se captura y relanza la excepción correctamente
         Exception excepcion = assertThrows(RuntimeException.class, () -> {
             clientService.metodoQuePuedeLanzarExcepcion();
         });
         
-        // Verificar el mensaje de error
         assertTrue(excepcion.getMessage().contains("Error durante la llamada a la API"));
         verify(restTemplate).getForObject(contains("/api/ejemplo"), eq(String.class));
     }
 
     @Test
     void testMetodoQuePuedeLanzarExcepcionExitosoSinExcepcion() {
-        // Configurar mock para que NO lance excepción
         when(restTemplate.getForObject(contains("/api/ejemplo"), eq(String.class)))
             .thenReturn("Resultado exitoso");
         
-        // Ejecutar sin excepción - verificar que no lanza excepción
         assertDoesNotThrow(() -> {
             clientService.metodoQuePuedeLanzarExcepcion();
         });
         
-        // Verificar que se llamó al método
         verify(restTemplate).getForObject(contains("/api/ejemplo"), eq(String.class));
     }
 
     @Test
     void testMetodoQueDevuelveLista() {
-        // Crear datos de prueba
         List<String> datosEsperados = Arrays.asList("elemento1", "elemento2", "elemento3");
         
-        // Configurar el mock para devolver la lista
         when(restTemplate.getForObject(contains("/api/coleccion"), eq(List.class)))
             .thenReturn(datosEsperados);
         
-        // Ejecutar el método y verificar resultados
         List<?> resultado = clientService.metodoQueDevuelveLista();
         
-        // Verificaciones
         assertNotNull(resultado);
         assertEquals(3, resultado.size());
         verify(restTemplate).getForObject(contains("/api/coleccion"), eq(List.class));
@@ -439,14 +426,11 @@ class ClientServiceTest {
 
     @Test
     void testMetodoQueDevuelveListaVacia() {
-        // Configurar el mock para devolver una lista vacía
         when(restTemplate.getForObject(contains("/api/coleccion"), eq(List.class)))
             .thenReturn(Collections.emptyList());
         
-        // Ejecutar y verificar
         List<?> resultado = clientService.metodoQueDevuelveLista();
         
-        // Verificaciones
         assertNotNull(resultado);
         assertTrue(resultado.isEmpty());
         verify(restTemplate).getForObject(contains("/api/coleccion"), eq(List.class));
@@ -454,13 +438,11 @@ class ClientServiceTest {
 
     @Test
     void testActualizarReserva() {
-        // Crear datos de prueba
         Integer id = 1;
         Reserva reserva = new Reserva();
         reserva.setId(id);
         reserva.setPrecioTotal(100.0);
         
-        // Configurar mock
         when(restTemplate.exchange(
                 contains("/api/reservas/actualizar/" + id),
                 eq(HttpMethod.PUT),
@@ -468,10 +450,8 @@ class ClientServiceTest {
                 eq(Reserva.class)))
             .thenReturn(ResponseEntity.ok(reserva));
         
-        // Ejecutar método
         Reserva resultado = clientService.actualizarReserva(id, reserva);
         
-        // Verificar resultado
         assertNotNull(resultado);
         assertEquals(id, resultado.getId());
         verify(restTemplate).exchange(
@@ -483,7 +463,6 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservaPorId() {
-        // Configurar mock
         Integer id = 1;
         Reserva reservaEsperada = new Reserva();
         reservaEsperada.setId(id);
@@ -491,10 +470,8 @@ class ClientServiceTest {
         when(restTemplate.getForObject(contains("/api/reservas/buscar/" + id), eq(Reserva.class)))
             .thenReturn(reservaEsperada);
         
-        // Ejecutar método
         Reserva resultado = clientService.obtenerReservaPorId(id);
         
-        // Verificar resultado
         assertNotNull(resultado);
         assertEquals(id, resultado.getId());
         verify(restTemplate).getForObject(contains("/api/reservas/buscar/" + id), eq(Reserva.class));
@@ -502,7 +479,6 @@ class ClientServiceTest {
 
     @Test
     void testHacerPedido() {
-        // Crear datos de prueba
         Reserva reserva = new Reserva();
         reserva.setPrecioTotal(150.0);
         
@@ -510,14 +486,11 @@ class ClientServiceTest {
         reservaCreada.setId(1);
         reservaCreada.setPrecioTotal(150.0);
         
-        // Configurar mock
         when(restTemplate.postForObject(contains("/api/reserva/pedido"), eq(reserva), eq(Reserva.class)))
             .thenReturn(reservaCreada);
         
-        // Ejecutar método
         Reserva resultado = clientService.hacerPedido(reserva);
         
-        // Verificar resultado
         assertNotNull(resultado);
         assertEquals(1, resultado.getId());
         assertEquals(150.0, resultado.getPrecioTotal());
@@ -526,17 +499,13 @@ class ClientServiceTest {
 
     @Test
     void testListarUsuariosRegistrados() {
-        // Preparar datos de prueba
         List<Usuario> usuariosEsperados = Arrays.asList(new Usuario(), new Usuario());
         
-        // Configurar mock
         when(restTemplate.getForObject(contains("/api/usuario"), eq(List.class)))
             .thenReturn(usuariosEsperados);
         
-        // Ejecutar método
         List<Usuario> resultado = clientService.listarUsuariosResgistrados();
         
-        // Verificar resultado
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
         verify(restTemplate).getForObject(contains("/api/usuario"), eq(List.class));
@@ -544,41 +513,31 @@ class ClientServiceTest {
 
     @Test
     void testEliminarUsuario() {
-        // Configurar mock (para void methods, usamos doNothing())
         doNothing().when(restTemplate).delete(contains("/api/usuario/eliminar?email=test@example.com"));
         
-        // Ejecutar método
         clientService.eliminarUsuario("test@example.com");
         
-        // Verificar que se llamó al método delete con la URL correcta
         verify(restTemplate).delete(contains("/api/usuario/eliminar?email=test@example.com"));
     }
 
     @Test
     void testEliminarReserva() {
-        // Configurar mock
         doNothing().when(restTemplate).delete(contains("/api/reservas/eliminar/1"));
         
-        // Ejecutar método
         clientService.eliminarReserva(1);
         
-        // Verificar
         verify(restTemplate).delete(contains("/api/reservas/eliminar/1"));
     }
 
     @Test
     void testObtenerReservasCanceladas() {
-        // Datos de prueba
         List<Reserva> reservasCanceladas = Arrays.asList(new Reserva(), new Reserva());
         
-        // Configurar mock
         when(restTemplate.getForObject(contains("/api/reservas/canceladas"), eq(List.class)))
             .thenReturn(reservasCanceladas);
         
-        // Ejecutar método
         List<Reserva> resultado = clientService.obtenerReservasCanceladas();
         
-        // Verificar
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
         verify(restTemplate).getForObject(contains("/api/reservas/canceladas"), eq(List.class));
@@ -586,20 +545,16 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailConExcepcion() {
-        // Configurar para que lance excepción
         when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
             .thenThrow(new RestClientException("Error al buscar usuario"));
         
-        // Ejecutar y verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.getUsuarioByEmail("error@example.com");
         });
         
 
-        // Cambia esta línea para comprobar con el mensaje real
-        // En lugar de verificar el contenido exacto, solo verifica que no sea null
+
         assertNotNull(exception.getMessage());
-        // O verifica que contiene alguna parte del mensaje que sí existe
         assertTrue(exception.getMessage().contains("Error") || 
                    exception.getMessage().contains("Failed") ||
                    exception.getMessage().contains("usuario"));
@@ -607,11 +562,9 @@ class ClientServiceTest {
 
     @Test
     void testMetodoQueDevuelveListaConExcepcion() {
-        // Configurar para que lance excepción
         when(restTemplate.getForObject(contains("/api/coleccion"), eq(List.class)))
             .thenThrow(new RestClientException("Error al recuperar lista"));
         
-        // Ejecutar y verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.metodoQueDevuelveLista();
         });
@@ -621,21 +574,16 @@ class ClientServiceTest {
 
     @Test
     void testRegistrarUsuarioConExcepcion() {
-        // Crear datos de prueba
         Usuario usuario = new Usuario();
         
-        // Configurar para que lance excepción
         when(restTemplate.postForObject(contains("/api/usuario/registrar"), eq(usuario), eq(Usuario.class)))
             .thenThrow(new RestClientException("Error al registrar"));
         
-        // Ejecutar y verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.registrarUsuario(usuario);
         });
         
-        // Cambia esta línea para comprobar con el mensaje real
         assertNotNull(exception.getMessage());
-        // O verifica que contiene alguna parte del mensaje que sí existe
         assertTrue(exception.getMessage().contains("Error") || 
                    exception.getMessage().contains("Failed") ||
                    exception.getMessage().contains("registrar"));
@@ -719,27 +667,21 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailWithNullResponse() {
-        // Configurar mock para devolver null
         when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
             .thenReturn(null);
         
-        // Ejecutar
         Usuario result = clientService.getUsuarioByEmail("noexiste@example.com");
         
-        // Verificar que manejamos correctamente el caso nulo
         assertNull(result);
     }
 
     @Test
     void testGetUsuarioByEmailWithNotFoundStatus() {
-        // Configurar mock para lanzar error 404
         when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         
-        // Ejecutar - verificar que no lanza excepción y devuelve null
         Usuario result = clientService.getUsuarioByEmail("noexiste@example.com");
         
-        // Verificar
         assertNull(result);
     }
 
@@ -810,7 +752,6 @@ class ClientServiceTest {
 
     @Test
     void testActualizarUsuarioConErrorDeConexion() {
-        // Configurar mock para lanzar error de conexión
         when(restTemplate.exchange(
                 contains("/api/usuario/actualizar"),
                 eq(HttpMethod.PUT),
@@ -818,7 +759,6 @@ class ClientServiceTest {
                 eq(Usuario.class)))
             .thenThrow(new ResourceAccessException("Error de conexión al servidor"));
         
-        // Verificar que se maneja la excepción correctamente
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.actualizarUsuario("juan@example.com", usuario);
         });
@@ -834,7 +774,6 @@ class ClientServiceTest {
 
     @Test
     void testActualizarReservaConErrorDeServidor() {
-        // Configurar mock para lanzar error de servidor
         when(restTemplate.exchange(
                 contains("/api/reservas/actualizar"),
                 eq(HttpMethod.PUT),
@@ -842,7 +781,6 @@ class ClientServiceTest {
                 eq(Reserva.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error del servidor"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.actualizarReserva(1, reserva);
         });
@@ -852,7 +790,6 @@ class ClientServiceTest {
 
     @Test
     void testBloquearUsuarioConErrorDeDatos() {
-        // Configurar mock para lanzar error de datos
         when(restTemplate.exchange(
                 contains("/api/usuario/bloquear"),
                 eq(HttpMethod.PUT),
@@ -860,7 +797,6 @@ class ClientServiceTest {
                 eq(Usuario.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Email inválido"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.bloquearUsuario("email_invalido");
         });
@@ -870,7 +806,6 @@ class ClientServiceTest {
 
     @Test
     void testDesbloquearUsuarioConErrorDeAcceso() {
-        // Configurar mock para lanzar error de acceso
         when(restTemplate.exchange(
                 contains("/api/usuario/desbloquear"),
                 eq(HttpMethod.PUT),
@@ -878,7 +813,6 @@ class ClientServiceTest {
                 eq(Usuario.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "Permisos insuficientes"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.desbloquearUsuario("juan@example.com");
         });
@@ -888,14 +822,12 @@ class ClientServiceTest {
 
     @Test
     void testLogoutConErrorDeServidor() {
-        // Configurar mock para lanzar error de servidor
         when(restTemplate.postForObject(
                 contains("/api/usuario/logout"),
                 isNull(),
                 eq(Void.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error del servidor"));
         
-        // Verificar manejo de excepción (el método podría devolver false o lanzar excepción)
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.logout("token123");
         });
@@ -906,14 +838,12 @@ class ClientServiceTest {
 
     @Test
     void testCrearCocheConErrorDeDatos() {
-        // Configurar mock para lanzar error de datos
         when(restTemplate.postForObject(
                 contains("/api/coche/crear"),
                 eq(coche),
                 eq(Coche.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Datos de coche inválidos"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.crearCoche(coche);
         });
@@ -923,13 +853,11 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservaPorIdConErrorDeAcceso() {
-        // Configurar mock para lanzar error de acceso
         when(restTemplate.getForObject(
                 contains("/api/reservas/buscar/1"),
                 eq(Reserva.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "Permisos insuficientes"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.obtenerReservaPorId(1);
         });
@@ -946,14 +874,12 @@ class ClientServiceTest {
 
     @Test
     void testHacerPedidoConErrorDeConexion() {
-        // Configurar mock para lanzar error de conexión
         when(restTemplate.postForObject(
                 contains("/api/reserva/pedido"),
                 any(Reserva.class),
                 eq(Reserva.class)))
             .thenThrow(new ResourceAccessException("Error de conexión"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.hacerPedido(reserva);
         });
@@ -969,13 +895,11 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasCanceladasConErrorDeConexion() {
-        // Configurar mock para lanzar error de conexión
         when(restTemplate.getForObject(
                 contains("/api/reservas/canceladas"),
                 eq(List.class)))
             .thenThrow(new ResourceAccessException("Error de conexión"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.obtenerReservasCanceladas();
         });
@@ -991,13 +915,11 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasConfirmadasPorUsuarioConErrorDeServidor() {
-        // Configurar mock para lanzar error de servidor
         when(restTemplate.getForObject(
                 contains("/api/reservas/usuario/confirmadas"),
                 eq(List.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error del servidor"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.obtenerReservasConfirmadasPorUsuario("juan@example.com");
         });
@@ -1007,13 +929,11 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasPendientesPorUsuarioConError404() {
-        // Configurar mock para lanzar error 404
         when(restTemplate.getForObject(
                 contains("/api/reservas/usuario/pendientes"),
                 eq(List.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.obtenerReservasPendientesPorUsuario("noexiste@example.com");
         });
@@ -1023,13 +943,11 @@ class ClientServiceTest {
 
     @Test
     void testListarUsuariosRegistradosConErrorDeAutenticacion() {
-        // Configurar mock para lanzar error de autenticación
         when(restTemplate.getForObject(
                 contains("/api/usuario"),
                 eq(List.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "No autenticado"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.listarUsuariosResgistrados();
         });
@@ -1039,11 +957,9 @@ class ClientServiceTest {
 
     @Test
     void testEliminarCocheConError404() {
-        // Configurar mock para lanzar error 404
         doThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Coche no encontrado"))
             .when(restTemplate).delete(contains("/api/coche/eliminar"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.eliminarCoche("NOEXISTE");
         });
@@ -1053,16 +969,13 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailConErrorDeServidor() {
-        // Configurar para que lance error de servidor
         when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno"));
         
-        // Verificar manejo de excepción
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.getUsuarioByEmail("test@example.com");
         });
         
-        // Verificar mensaje
         assertTrue(exception.getMessage().contains("Failed") || 
                    exception.getMessage().contains("Error"));
     }

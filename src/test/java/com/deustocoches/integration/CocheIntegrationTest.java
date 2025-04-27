@@ -27,7 +27,6 @@ public class CocheIntegrationTest {
 
     @Test
     void testCrudOperationsForCoche() {
-        // 1. Crear un coche con matrícula única
         String matriculaUnica = "TEST" + System.currentTimeMillis();
         Coche coche = new Coche(matriculaUnica, "Seat", "Ibiza", 2021, "Azul", 15000.0, true);
         
@@ -37,20 +36,17 @@ public class CocheIntegrationTest {
         assertNotNull(cocheCreado);
         assertEquals(matriculaUnica, cocheCreado.getMatricula());
         
-        // 2. Obtener el coche por matrícula - ENDPOINT CORREGIDO
         ResponseEntity<Coche> responseGet = restTemplate.getForEntity("/api/coche/buscar?matricula=" + matriculaUnica, Coche.class);
         assertEquals(HttpStatus.OK, responseGet.getStatusCode());
         Coche cocheRecuperado = responseGet.getBody();
         assertNotNull(cocheRecuperado);
         assertEquals("Seat", cocheRecuperado.getMarca());
         
-        // 3. Actualizar el coche - ENDPOINT CORREGIDO
         cocheRecuperado.setColor("Negro");
         cocheRecuperado.setPrecio(16000.0);
         
         restTemplate.put("/api/coche/actualizar?matricula=" + matriculaUnica, cocheRecuperado);
         
-        // 4. Verificar la actualización - ENDPOINT CORREGIDO
         ResponseEntity<Coche> responseAfterUpdate = restTemplate.getForEntity("/api/coche/buscar?matricula=" + matriculaUnica, Coche.class);
         assertEquals(HttpStatus.OK, responseAfterUpdate.getStatusCode());
         Coche cocheActualizado = responseAfterUpdate.getBody();
@@ -58,7 +54,6 @@ public class CocheIntegrationTest {
         assertEquals("Negro", cocheActualizado.getColor());
         assertEquals(16000.0, cocheActualizado.getPrecio());
         
-        // 5. Verificar que aparece en la lista de coches
         ResponseEntity<List<Coche>> responseList = restTemplate.exchange(
                 "/api/coche", 
                 HttpMethod.GET, 
@@ -70,10 +65,8 @@ public class CocheIntegrationTest {
         assertNotNull(coches);
         assertTrue(coches.stream().anyMatch(c -> c.getMatricula().equals(matriculaUnica)));
         
-        // 6. Eliminar el coche
         restTemplate.delete("/api/coche/eliminar?matricula=" + matriculaUnica);
         
-        // 7. Verificar que se ha eliminado
         ResponseEntity<Coche> responseAfterDelete = restTemplate.getForEntity("/api/coche/buscar?matricula=" + matriculaUnica, Coche.class);
         assertEquals(HttpStatus.NOT_FOUND, responseAfterDelete.getStatusCode());
     }

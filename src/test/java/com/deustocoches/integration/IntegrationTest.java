@@ -30,20 +30,17 @@ public class IntegrationTest {
 
     @Test
     void testCrearUsuarioCocheYReserva() {
-        // 1. Crear un usuario con la fecha en formato dd/MM/yyyy
         Usuario usuario = new Usuario();
         usuario.setNombre("Maria");
         usuario.setApellido("Lopez");
-        usuario.setFechaNacimiento("01/01/2001"); // Formato dd/MM/yyyy
+        usuario.setFechaNacimiento("01/01/2001"); 
         usuario.setEmail("maria@email.com");
         usuario.setPassword("password");
         usuario.setTlf("123456789");
         usuario.setRol(TipoRol.CLIENTE);
 
-        // Imprimir el objeto para depuración
         System.out.println("Enviando usuario: " + usuario.getNombre() + ", " + usuario.getEmail());
         
-        // Declara la variable fuera del bloque try
         ResponseEntity<Usuario> userResponse = null;
         try {
             userResponse = restTemplate.postForEntity("/api/usuario/registrar", usuario, Usuario.class);
@@ -54,16 +51,12 @@ public class IntegrationTest {
             throw e;
         }
 
-        // Ahora puedes acceder a userResponse aquí
         Usuario usuarioCreado = userResponse.getBody();
         assertNotNull(usuarioCreado);
-        //Long usuarioId = usuarioCreado.getId();
 
-        // 2. Crear un coche con matrícula única
         String matriculaUnica = "TEST" + System.currentTimeMillis();
         Coche coche = new Coche(matriculaUnica, "Toyota", "Corolla", 2020, "Rojo", 10000.0, true);
 
-        // Agregar depuración
         try {
             ResponseEntity<Coche> cocheResponse = restTemplate.postForEntity("/api/coche/crear", coche, Coche.class);
             System.out.println("Respuesta coche: " + cocheResponse.getStatusCode() + " - Body: " + cocheResponse.getBody());
@@ -77,7 +70,6 @@ public class IntegrationTest {
         assertNotNull(cocheCreado);
         String cocheId = cocheCreado.getMatricula();
 
-        // 3. Crear una reserva
         Reserva reserva = new Reserva(usuarioCreado, cocheCreado, LocalDate.now().toString(), 100.0, EstadoReserva.PENDIENTE);
         ResponseEntity<Reserva> reservaResponse = restTemplate.postForEntity("/api/reservas/crear", reserva,
                 Reserva.class);
@@ -86,7 +78,6 @@ public class IntegrationTest {
         assertNotNull(reservaCreada);
         int reservaId = reservaCreada.getId();
 
-        // 4. Obtener todas las reservas y verificar que existe
         ResponseEntity<Reserva[]> reservasGetResponse = restTemplate.getForEntity("/api/reservas/pendientes", Reserva[].class);
         assertEquals(HttpStatus.OK, reservasGetResponse.getStatusCode());
         Reserva[] reservas = reservasGetResponse.getBody();
@@ -96,13 +87,10 @@ public class IntegrationTest {
                 .anyMatch(r -> r.getId() == reservaId); 
         assertTrue(reservaEncontrada);
 
-        // 5. Cancelar la reserva
         restTemplate.delete("/api/reservas/eliminar/" + reservaId);
 
-        // 6. Eliminar el coche
         restTemplate.delete("/api/coche/eliminar?matricula=" + cocheId);
 
-        // 7. Eliminar el usuario
         restTemplate.delete("/api/usuario/eliminar?email=" + usuario.getEmail());
 
 

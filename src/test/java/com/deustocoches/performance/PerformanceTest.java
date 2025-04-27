@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class PerformanceTest {
 
     @Rule
-    public ContiPerfRule i = new ContiPerfRule(); // ESTA REGLA ES SUFICIENTE
+    public ContiPerfRule i = new ContiPerfRule(); 
 
     @Autowired
     private ReservaRepository reservaRepository;

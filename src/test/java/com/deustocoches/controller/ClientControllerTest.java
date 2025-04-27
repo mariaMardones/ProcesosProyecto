@@ -30,10 +30,8 @@ import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.TipoRol;
 import com.deustocoches.model.Usuario;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings("deprecation") // Suprimir advertencia de MockBean
-@WebMvcTest(com.deustocoches.client.controller.ClientController.class) // Ruta completa y correcta
+@WebMvcTest(com.deustocoches.client.controller.ClientController.class) 
 public class ClientControllerTest {
 
     @Autowired
@@ -42,8 +40,6 @@ public class ClientControllerTest {
     @MockBean
     private RestTemplateServiceProxy serviceProxy;
 
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private Usuario usuario;
     private Coche coche;
@@ -150,11 +146,10 @@ public class ClientControllerTest {
 
     @Test
     void testPerformLogout() throws Exception {
-        // 1. OPCIÓN: Verifica con cualquier String
         doNothing().when(serviceProxy).logout(any(String.class));
 
         mockMvc.perform(post("/logout")
-                .sessionAttr("token", "token123")) // Añadir token a la sesión si es necesario
+                .sessionAttr("token", "token123")) 
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
                 .andExpect(flash().attributeExists("successMessage"));

@@ -32,7 +32,6 @@ class ReservaServiceTest {
 
     @Test
     void testObtenerReservasConfirmadas() {
-        // Preparar datos de prueba
         Reserva reserva1 = new Reserva();
         reserva1.setEstado(EstadoReserva.COMPRADA);
 
@@ -42,10 +41,8 @@ class ReservaServiceTest {
         when(reservaRepository.findByEstado(EstadoReserva.COMPRADA))
             .thenReturn(Arrays.asList(reserva1, reserva2));
 
-        // Ejecutar el método
         List<Reserva> reservas = reservaService.obtenerReservasConfirmadas();
 
-        // Verificar resultados
         assertNotNull(reservas);
         assertEquals(2, reservas.size());
         verify(reservaRepository, times(1)).findByEstado(EstadoReserva.COMPRADA);
@@ -53,16 +50,13 @@ class ReservaServiceTest {
 
     @Test
     void testObtenerReservaPorId() {
-        // Preparar datos de prueba
         Reserva reserva = new Reserva();
         reserva.setId(1);
 
         when(reservaRepository.findById(1)).thenReturn(Optional.of(reserva));
 
-        // Ejecutar el método
         Optional<Reserva> resultado = reservaService.obtenerReservaPorId(1);
 
-        // Verificar resultados
         assertTrue(resultado.isPresent());
         assertEquals(1, resultado.get().getId());
         verify(reservaRepository, times(1)).findById(1);
@@ -70,16 +64,13 @@ class ReservaServiceTest {
 
     @Test
     void testCrearReserva() {
-        // Preparar datos de prueba
         Reserva reserva = new Reserva();
         reserva.setId(1);
 
         when(reservaRepository.save(reserva)).thenReturn(reserva);
 
-        // Ejecutar el método
         Reserva resultado = reservaService.crearReserva(reserva);
 
-        // Verificar resultados
         assertNotNull(resultado);
         assertEquals(1, resultado.getId());
         verify(reservaRepository, times(1)).save(reserva);
@@ -87,7 +78,6 @@ class ReservaServiceTest {
 
     @Test
     void testActualizarReserva() {
-        // Preparar datos de prueba
         Reserva reservaExistente = new Reserva();
         reservaExistente.setId(1);
 
@@ -99,10 +89,8 @@ class ReservaServiceTest {
         when(reservaRepository.findById(1)).thenReturn(Optional.of(reservaExistente));
         when(reservaRepository.save(any(Reserva.class))).thenReturn(reservaExistente);
 
-        // Ejecutar el método
         Reserva resultado = reservaService.actualizarReserva(1, detallesReserva);
 
-        // Verificar resultados
         assertNotNull(resultado);
         assertEquals(EstadoReserva.COMPRADA, resultado.getEstado());
         verify(reservaRepository, times(1)).findById(1);
@@ -111,13 +99,10 @@ class ReservaServiceTest {
 
     @Test
     void testEliminarReserva() {
-        // Preparar datos de prueba
         when(reservaRepository.existsById(1)).thenReturn(true);
 
-        // Ejecutar el método
         boolean resultado = reservaService.eliminarReserva(1);
 
-        // Verificar resultados
         assertTrue(resultado);
         verify(reservaRepository, times(1)).existsById(1);
         verify(reservaRepository, times(1)).deleteById(1);

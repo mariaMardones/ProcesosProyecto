@@ -78,21 +78,7 @@ public class ReservaControllerTest {
         reserva.setPrecioTotal(500.0);
         reserva.setEstado(EstadoReserva.PENDIENTE);
     }
-
-    @Test
-    void testObtenerReservaPorId() throws Exception {
-        when(reservaService.obtenerReservaPorId(1))
-                .thenReturn(Optional.of(reserva));
-
-        mockMvc.perform(get("/api/reservas/buscar/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.precioTotal").value(500.0))
-                .andExpect(jsonPath("$.estado").exists());
-
-        verify(reservaService, times(1)).obtenerReservaPorId(1);
-    }
-
+    
     @Test
     void testCrearReserva() throws Exception {
         when(reservaService.crearReserva(any(Reserva.class)))
@@ -230,26 +216,5 @@ public class ReservaControllerTest {
                 .andExpect(jsonPath("$[0].estado").exists());
 
         verify(reservaService, times(1)).obtenerReservasCompradasPorUsuario("juan.garcia@example.com");
-    }
-    
-    @Test
-    void testObtenerReservasCanceladas() throws Exception {
-        Reserva reservaCancelada = new Reserva();
-        reservaCancelada.setId(3);
-        reservaCancelada.setUsuario(usuario);
-        reservaCancelada.setCoche(coche);
-        reservaCancelada.setFecha("2023-04-25");
-        reservaCancelada.setPrecioTotal(700.0);
-        reservaCancelada.setEstado(EstadoReserva.CANCELADA);
-
-        when(reservaService.obtenerCanceladas())
-                .thenReturn(Arrays.asList(reservaCancelada));
-
-        mockMvc.perform(get("/api/reservas/canceladas"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(3))
-                .andExpect(jsonPath("$[0].estado").exists());
-
-        verify(reservaService, times(1)).obtenerCanceladas();
     }
 }

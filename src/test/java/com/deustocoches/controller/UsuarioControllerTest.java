@@ -1,7 +1,6 @@
 package com.deustocoches.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -127,42 +126,6 @@ public class UsuarioControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(usuarioService, times(1)).registrarUsuario(any(Usuario.class));
-    }
-
-    @Test
-    void testActualizarUsuario() throws Exception {
-        Usuario usuarioActualizado = new Usuario();
-        usuarioActualizado.setId(1L);
-        usuarioActualizado.setNombre("Juan Carlos");
-        usuarioActualizado.setApellido("García");
-        usuarioActualizado.setEmail("juan.garcia@example.com");
-
-        when(usuarioService.actualizarUsuario(eq("juan.garcia@example.com"), any(Usuario.class)))
-                .thenReturn(usuarioActualizado);
-
-        mockMvc.perform(put("/api/usuario/actualizar")
-                .param("email", "juan.garcia@example.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(usuarioActualizado)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nombre").value("Juan Carlos"));
-
-        verify(usuarioService, times(1)).actualizarUsuario(eq("juan.garcia@example.com"), any(Usuario.class));
-    }
-
-    @Test
-    void testActualizarUsuarioConError() throws Exception {
-        when(usuarioService.actualizarUsuario(eq("juan.garcia@example.com"), any(Usuario.class)))
-                .thenThrow(new RuntimeException("Error al actualizar"));
-
-        mockMvc.perform(put("/api/usuario/actualizar")
-                .param("email", "juan.garcia@example.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(usuario)))
-                .andExpect(status().isBadRequest());
-
-        verify(usuarioService, times(1)).actualizarUsuario(eq("juan.garcia@example.com"), any(Usuario.class));
     }
 
     @Test

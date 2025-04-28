@@ -2,9 +2,7 @@ package com.deustocoches.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
-
 import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.repository.ReservaRepository;
@@ -65,10 +63,6 @@ public class ReservaService {
 
     public List<Reserva> obtenerPendientes() {
         return reservaRepository.findByEstado(EstadoReserva.PENDIENTE);
-    }
-
-    public List<Reserva> obtenerCanceladas() {
-        return reservaRepository.findByEstado(EstadoReserva.CANCELADA);
     }
     
     public List<Reserva> findAll() {

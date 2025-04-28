@@ -260,28 +260,6 @@ class ClientServiceTest {
     }
 
     @Test
-    void testActualizarUsuario() {
-        String url = apiBaseUrl + "/api/usuario/actualizar?email=juan@example.com";
-
-        when(restTemplate.exchange(
-                eq(url),
-                eq(HttpMethod.PUT),
-                any(HttpEntity.class),
-                eq(Usuario.class)))
-                .thenReturn(new ResponseEntity<>(usuario, HttpStatus.OK));
-
-        Usuario resultado = clientService.actualizarUsuario("juan@example.com", usuario);
-
-        assertNotNull(resultado);
-        assertEquals(usuario, resultado);
-        verify(restTemplate, times(1)).exchange(
-                eq(url),
-                eq(HttpMethod.PUT),
-                any(HttpEntity.class),
-                eq(Usuario.class));
-    }
-
-    @Test
     void testGetUsuarioByEmail() {
         String url = apiBaseUrl + "/api/usuario/buscar?email=juan@example.com";
 
@@ -462,22 +440,6 @@ class ClientServiceTest {
     }
 
     @Test
-    void testObtenerReservaPorId() {
-        Integer id = 1;
-        Reserva reservaEsperada = new Reserva();
-        reservaEsperada.setId(id);
-        
-        when(restTemplate.getForObject(contains("/api/reservas/buscar/" + id), eq(Reserva.class)))
-            .thenReturn(reservaEsperada);
-        
-        Reserva resultado = clientService.obtenerReservaPorId(id);
-        
-        assertNotNull(resultado);
-        assertEquals(id, resultado.getId());
-        verify(restTemplate).getForObject(contains("/api/reservas/buscar/" + id), eq(Reserva.class));
-    }
-
-    @Test
     void testHacerPedido() {
         Reserva reserva = new Reserva();
         reserva.setPrecioTotal(150.0);
@@ -527,20 +489,6 @@ class ClientServiceTest {
         clientService.eliminarReserva(1);
         
         verify(restTemplate).delete(contains("/api/reservas/eliminar/1"));
-    }
-
-    @Test
-    void testObtenerReservasCanceladas() {
-        List<Reserva> reservasCanceladas = Arrays.asList(new Reserva(), new Reserva());
-        
-        when(restTemplate.getForObject(contains("/api/reservas/canceladas"), eq(List.class)))
-            .thenReturn(reservasCanceladas);
-        
-        List<Reserva> resultado = clientService.obtenerReservasCanceladas();
-        
-        assertNotNull(resultado);
-        assertEquals(2, resultado.size());
-        verify(restTemplate).getForObject(contains("/api/reservas/canceladas"), eq(List.class));
     }
 
     @Test
@@ -751,28 +699,6 @@ class ClientServiceTest {
     }
 
     @Test
-    void testActualizarUsuarioConErrorDeConexion() {
-        when(restTemplate.exchange(
-                contains("/api/usuario/actualizar"),
-                eq(HttpMethod.PUT),
-                any(HttpEntity.class),
-                eq(Usuario.class)))
-            .thenThrow(new ResourceAccessException("Error de conexión al servidor"));
-        
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            clientService.actualizarUsuario("juan@example.com", usuario);
-        });
-        
-        assertNotNull(exception.getMessage());
-        assertTrue(
-            exception.getMessage().contains("Error") || 
-            exception.getMessage().contains("Failed") ||
-            exception.getMessage().contains("actualizar") ||
-            exception.getMessage().contains("usuario")
-        );
-    }
-
-    @Test
     void testActualizarReservaConErrorDeServidor() {
         when(restTemplate.exchange(
                 contains("/api/reservas/actualizar"),
@@ -852,27 +778,6 @@ class ClientServiceTest {
     }
 
     @Test
-    void testObtenerReservaPorIdConErrorDeAcceso() {
-        when(restTemplate.getForObject(
-                contains("/api/reservas/buscar/1"),
-                eq(Reserva.class)))
-            .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "Permisos insuficientes"));
-        
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            clientService.obtenerReservaPorId(1);
-        });
-        
-
-        assertNotNull(exception.getMessage());
-        assertTrue(
-            exception.getMessage().contains("Error") || 
-            exception.getMessage().contains("Failed") ||
-            exception.getMessage().contains("reserva") ||
-            exception.getMessage().contains("obtener")
-        );
-    }
-
-    @Test
     void testHacerPedidoConErrorDeConexion() {
         when(restTemplate.postForObject(
                 contains("/api/reserva/pedido"),
@@ -890,26 +795,6 @@ class ClientServiceTest {
             exception.getMessage().contains("Failed") ||
             exception.getMessage().contains("pedido") ||
             exception.getMessage().contains("reserva")
-        );
-    }
-
-    @Test
-    void testObtenerReservasCanceladasConErrorDeConexion() {
-        when(restTemplate.getForObject(
-                contains("/api/reservas/canceladas"),
-                eq(List.class)))
-            .thenThrow(new ResourceAccessException("Error de conexión"));
-        
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            clientService.obtenerReservasCanceladas();
-        });
-        
-        assertNotNull(exception.getMessage());
-        assertTrue(
-            exception.getMessage().contains("Error") || 
-            exception.getMessage().contains("Failed") ||
-            exception.getMessage().contains("reservas") ||
-            exception.getMessage().contains("canceladas")
         );
     }
 

@@ -33,16 +33,6 @@ public class UsuarioController {
         return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/actualizar")
-    public ResponseEntity<Usuario> actualizarUsuario(@RequestParam("email") String email, @RequestBody Usuario usuario) {
-        try {
-            Usuario usuarioActualizado = usuarioService.actualizarUsuario(email, usuario);
-            return ResponseEntity.ok(usuarioActualizado);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @DeleteMapping("/eliminar")
     public ResponseEntity<Void> eliminarUsuario(@RequestParam("email") String email) {
         Optional<Usuario> usuario = usuarioService.getUsuarioByEmail(email);

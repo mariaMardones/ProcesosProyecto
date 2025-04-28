@@ -32,12 +32,6 @@ public class ReservaController {
     @Autowired
     private CocheController cocheController;
 
-    @GetMapping("/buscar/{id}")
-    public ResponseEntity<Reserva> obtenerReservaPorId(@PathVariable Integer id) {
-        return reservaService.obtenerReservaPorId(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
 
     @PostMapping("/crear")
     public ResponseEntity<Reserva> crearReserva(@RequestBody Reserva reserva) {
@@ -86,13 +80,6 @@ public class ReservaController {
             reserva.setFecha(LocalDate.now().toString());
         }
 
-        if (reserva.getEstado() == EstadoReserva.CANCELADA) {
-            reserva.getCoche().setDisponible(true);
-        }
-        else{
-            reserva.getCoche().setDisponible(false);
-        }
-
         cocheController.actualizarCoche(reserva.getCoche().getMatricula(), reserva.getCoche());
         Reserva nuevaReserva = reservaService.crearReserva(reserva);
         return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
@@ -116,11 +103,6 @@ public class ReservaController {
     @GetMapping("/pendientes")
     public List<Reserva> obtenerReservasPendientes() {
         return reservaService.obtenerPendientes();
-    }
-
-    @GetMapping("/canceladas")
-    public List<Reserva> obtenerReservasCanceladas() {
-        return reservaService.obtenerCanceladas();
     }
     
 }

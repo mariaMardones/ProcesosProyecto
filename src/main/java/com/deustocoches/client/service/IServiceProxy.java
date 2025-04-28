@@ -9,7 +9,6 @@ import com.deustocoches.model.Usuario;
 public interface IServiceProxy {
 	// CRUD operations for Usuario
 	void eliminarUsuario(String email);
-	Usuario actualizarUsuario(String email, Usuario usuario);
 	Usuario getUsuarioByEmail(String email);
 	List<Usuario> listarUsuariosResgistrados();
 	Usuario registrarUsuario(Usuario usuario);
@@ -27,7 +26,6 @@ public interface IServiceProxy {
 	Coche crearCoche(Coche coche);
 
 	// CRUD operations for Reserva
-	Reserva obtenerReservaPorId(Integer id);
 	Reserva crearReserva(Reserva reserva);
 	Reserva actualizarReserva(Integer id, Reserva detallesReserva);
 	void eliminarReserva(Integer id);
@@ -36,5 +34,4 @@ public interface IServiceProxy {
 	List<Reserva> obtenerReservasPendientesPorUsuario(String email);
 	List<Reserva> obtenerReservasCompradas();
 	List<Reserva> obtenerReservasPendientes();
-	List<Reserva> obtenerReservasCanceladas();
 }

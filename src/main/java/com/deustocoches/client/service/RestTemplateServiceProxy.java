@@ -52,16 +52,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     }
 
     @Override
-    public Usuario actualizarUsuario(String email, Usuario usuario) {
-        String url = apiBaseUrl + "/api/usuario/actualizar?email=" + email;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(usuario), Usuario.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to update user: " + e.getStatusText());
-        }
-    }
-
-    @Override
     public void eliminarUsuario(String email) {
         String url = apiBaseUrl + "/api/usuario/eliminar?email=" + email;
         try {
@@ -102,17 +92,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Logout failed: " + e.getStatusText());
         }
     }
-
-    @Override
-    public Reserva obtenerReservaPorId(Integer id) {
-        String url = apiBaseUrl + "/api/reservas/buscar/" + id;
-        try {
-            return restTemplate.getForObject(url, Reserva.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve reservations: " + e.getStatusText());
-        }
-    }
-
     @Override
     public Reserva crearReserva(Reserva reserva) {
         String url = apiBaseUrl + "/api/reservas/pedidos";
@@ -279,17 +258,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             return restTemplate.getForObject(url, List.class);
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to retrieve pending reservations: " + e.getStatusText());
-        }
-    }
-
-    // Obtener todas las reservas canceladas
-    @SuppressWarnings("unchecked")
-    public List<Reserva> obtenerReservasCanceladas() {
-        String url = apiBaseUrl + "/api/reservas/canceladas";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve cancelled reservations: " + e.getStatusText());
         }
     }
 

@@ -95,7 +95,7 @@ public class UsuarioService {
         }
     }
 
-    public static Map<String, Usuario> getTokens() {
+    public Map<String, Usuario> getTokens() {
         return tokens;
     }
     

@@ -3,7 +3,6 @@ package com.deustocoches.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.deustocoches.model.EstadoReserva;
@@ -14,7 +13,6 @@ import com.deustocoches.repository.ReservaRepository;
 public class ReservaService {
 	private final ReservaRepository reservaRepository;
 
-    @Autowired
     public ReservaService(ReservaRepository reservaRepository) {
         this.reservaRepository = reservaRepository;
     }

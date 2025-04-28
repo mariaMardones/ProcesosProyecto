@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.deustocoches.model.Coche;
@@ -14,7 +13,6 @@ import com.deustocoches.repository.CocheRepository;
 public class CocheService {
 
     private final CocheRepository cocheRepository;
-    @Autowired
     public CocheService(CocheRepository cocheRepository) {
         this.cocheRepository = cocheRepository;
     }

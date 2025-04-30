@@ -7,6 +7,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    #MySQL
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: restapidb
+          MYSQL_USER: root              
+          MYSQL_PASSWORD: root          
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
     steps:
       - uses: actions/checkout@v3
       
@@ -16,9 +30,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-
+      
+      # Inicializar la base de datos con el script dbsetup.sql
+      - name: Initialize Database
+        run: mysql -h127.0.0.1 -uroot -proot < src/main/resources/dbsetup.sql
+      
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package --file pom.xml -DskipTests
       
       - name: Run unit tests
         run: mvn test
@@ -33,7 +51,7 @@ jobs:
         run: mvn jacoco:report
       
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report
           path: target/site/jacoco/

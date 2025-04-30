@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.deustocoches.DeustocochesApplication;
 import com.deustocoches.model.Coche;
@@ -23,6 +24,7 @@ import com.deustocoches.model.Usuario;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = DeustocochesApplication.class)
+@ActiveProfiles("test")
 public class IntegrationTest {
 
     @Autowired

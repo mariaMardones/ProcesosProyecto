@@ -42,7 +42,7 @@ jobs:
         run: mvn test
       
       - name: Run integration tests
-        run: mvn integration-test
+        run: mvn integration-test -Dspring.profiles.active=test
       
       - name: Run performance tests
         run: mvn test -Dtest=com.deustocoches.performance.*PerformanceTest

@@ -16,6 +16,8 @@ public interface IServiceProxy {
 	void logout(String token);
 	Usuario bloquearUsuario(String email);
 	Usuario desbloquearUsuario(String email);
+	Usuario crearAdmin(String email);
+	Usuario eliminarAdmin(String email);
 
 	// CRUD operations for Coche
 	List<Coche> ListarCoches();

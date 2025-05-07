@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.deustocoches.model.TipoRol;
 import com.deustocoches.model.Usuario;
 import com.deustocoches.repository.UsuarioRepository;
 
@@ -30,6 +31,9 @@ public class UsuarioService {
     }
 
     public Usuario registrarUsuario(Usuario usuario) {
+        if (usuario.getRol()== null) {
+            usuario.setRol(TipoRol.CLIENTE);
+        }
         return repository.save(usuario);
     }
 
@@ -114,6 +118,24 @@ public class UsuarioService {
             throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
         }
         usuario.setBloqueado(false);
+        return actualizarUsuario(usuario.getEmail(), usuario);
+    }
+
+    public Usuario crearAdmin(String email) {
+        Usuario usuario = repository.findByEmail(email);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
+        }
+        usuario.setRol(TipoRol.ADMIN);
+        return actualizarUsuario(usuario.getEmail(), usuario);
+    }
+
+    public Usuario eliminarAdmin(String email) {
+        Usuario usuario = repository.findByEmail(email);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no encontrado con el email proporcionado.");
+        }
+        usuario.setRol(TipoRol.CLIENTE);
         return actualizarUsuario(usuario.getEmail(), usuario);
     }
 

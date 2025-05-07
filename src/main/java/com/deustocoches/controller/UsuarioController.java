@@ -124,4 +124,28 @@ public class UsuarioController {
         }
     }
 
+    @PutMapping("/crearadmin")
+    public ResponseEntity<Usuario> crearAdmin(@RequestParam("email") String email) {
+        try {
+            Usuario usuarioRolAdmin = usuarioService.crearAdmin(email);
+            return ResponseEntity.ok(usuarioRolAdmin);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/eliminaradmin")
+    public ResponseEntity<Usuario> eliminarAdmin(@RequestParam("email") String email) {
+        try {
+            Usuario usuarioRolCliente = usuarioService.eliminarAdmin(email);
+            return ResponseEntity.ok(usuarioRolCliente);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    } 
+
 }

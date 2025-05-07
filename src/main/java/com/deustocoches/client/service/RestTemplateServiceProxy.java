@@ -270,6 +270,26 @@ public class RestTemplateServiceProxy implements IServiceProxy {
         }
     }
 
+    @Override
+    public Usuario crearAdmin(String email) {
+        String url = apiBaseUrl + "/api/usuario/crearadmin?email=" + email;
+        try {
+            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to change user rol: " + e.getStatusText());
+        }
+    }
+
+    @Override
+    public Usuario eliminarAdmin(String email) {
+        String url = apiBaseUrl + "/api/usuario/eliminaradmin?email=" + email;
+        try {
+            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to change user rol: " + e.getStatusText());
+        }
+    }
+
     // Obtener reservas confirmadas por usuario
     @SuppressWarnings("unchecked")
     public List<Reserva> obtenerReservasConfirmadasPorUsuario(String email) {

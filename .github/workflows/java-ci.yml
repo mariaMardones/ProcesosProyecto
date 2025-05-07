@@ -4,17 +4,19 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     
-    #MySQL
     services:
       mysql:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: restapidb      
+          MYSQL_DATABASE: restapidb
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -29,29 +31,26 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
-      # Inicializar la base de datos con el script dbsetup.sql
       - name: Initialize Database
-        run: mysql -h127.0.0.1 -uroot -proot < src/main/resources/dbsetup.sql
+        run: |
+          mysql -h127.0.0.1 -uroot -proot < src/main/resources/dbsetup.sql
+          mysql -h127.0.0.1 -uroot -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'user'@'%'"
       
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml -DskipTests
+      - name: Build and Run All Tests
+        run: mvn clean verify
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/restapidb
+          SPRING_DATASOURCE_USERNAME: user
+          SPRING_DATASOURCE_PASSWORD: password
       
-      # Modif para excluir tests de integración
-      - name: Run unit tests
-        run: mvn test -Dtest=!*IntegrationTest,!RestApiApplicationTests
+      - name: Run Performance Tests
+        run: mvn verify -Pperformance
+        continue-on-error: true
       
-      # Omitir ya que da error
-      # - name: Run integration tests
-      #   run: mvn integration-test
-      #   continue-on-error: true
-      
-      - name: Run performance tests
-        run: mvn test -Dtest=com.deustocoches.performance.*PerformanceTest
-      
-      - name: Generate and Archive JaCoCo Reports
+      - name: Generate Coverage Report
         run: mvn jacoco:report
       
-      - name: Archive code coverage results
+      - name: Upload Coverage Report
         uses: actions/upload-artifact@v4.6.2
         with:
           name: code-coverage-report

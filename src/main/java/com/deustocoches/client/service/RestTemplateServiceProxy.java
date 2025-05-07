@@ -175,6 +175,20 @@ public class RestTemplateServiceProxy implements IServiceProxy {
         }
     }
 
+    public List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax) {
+        String url = apiBaseUrl + "/api/coche/filtrar?";
+        if (marca != null) url += "marca=" + marca + "&";
+        if (modelo != null) url += "modelo=" + modelo + "&";
+        if (precioMin != null) url += "precioMin=" + precioMin + "&";
+        if (precioMax != null) url += "precioMax=" + precioMax;
+        
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to filter cars: " + e.getStatusText());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<Coche> ListarCochesDisponibles() {

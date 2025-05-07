@@ -31,7 +31,7 @@
         <java.version>17</java.version>
         <server.hostname>127.0.0.1</server.hostname>
         <server.port>8080</server.port>
-        <api.base.url>http://${server.hostname}:${server.port}</api.base.url>
+        <api.base.url>http://${server.hostname}:${server.port}/api.base.url</api.base.url>
         <jacoco.version>0.8.11</jacoco.version> <!-- Cambiar a la versión más reciente compatible con Java 21 -->
     </properties>
     <dependencies>
@@ -184,4 +184,45 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <includes>
+                                <include>**/*IntegrationTest.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>performance</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>**/performance/*PerformanceTest.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

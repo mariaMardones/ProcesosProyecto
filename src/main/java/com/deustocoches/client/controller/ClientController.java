@@ -199,6 +199,23 @@ public class ClientController {
         }
     }
 
+    @GetMapping("/coches/filtrar")
+    public String filtrarCoches(
+            @RequestParam(required = false) String marca,
+            @RequestParam(required = false) String modelo,
+            @RequestParam(required = false) Double precioMin,
+            @RequestParam(required = false) Double precioMax,
+            Model model) {
+        try {
+            List<Coche> coches = serviceProxy.filtrarCoches(marca, modelo, precioMin, precioMax);
+            model.addAttribute("coches", coches);
+            return "coches";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Error al filtrar coches: " + e.getMessage());
+            return "coches";
+        }
+    }
+
     @PostMapping("/usuario/bloquear")
     public String bloquearUsuario(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
         try {

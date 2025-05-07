@@ -72,4 +72,18 @@ public class CocheController {
     public List<Coche> ListarCochesDisponibles() {
         return cocheService.ListarCochesDisponibles();
     }
+    
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<Coche>> filtrarCoches(
+            @RequestParam(required = false) String marca,
+            @RequestParam(required = false) String modelo,
+            @RequestParam(required = false) Double precioMin,
+            @RequestParam(required = false) Double precioMax) {
+        try {
+            List<Coche> cochesFiltrados = cocheService.filtrarCoches(marca, modelo, precioMin, precioMax);
+            return ResponseEntity.ok(cochesFiltrados);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

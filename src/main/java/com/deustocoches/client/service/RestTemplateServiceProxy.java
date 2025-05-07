@@ -193,6 +193,9 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             return restTemplate.postForObject(url, reserva, Reserva.class);
         } catch (HttpStatusCodeException e) {
             throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
+        }
+    }
+          
 
     @SuppressWarnings("unchecked")
     public List<Reserva> obtenerReservasPorFecha(String fecha) {
@@ -294,6 +297,9 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             return restTemplate.getForObject(url, List.class);
         } catch (RestClientException e) {
             throw new RuntimeException("Error al recuperar la lista de elementos: " + e.getMessage(), e);
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     public List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta) {
         String url = apiBaseUrl + "/api/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;

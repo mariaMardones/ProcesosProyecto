@@ -48,6 +48,16 @@ public class ReservaService {
         }
         return false;
     }
+    
+    public List<Reserva> obtenerReservasPorFecha(String fecha) {
+        return reservaRepository.findByFecha(fecha);
+    }
+
+    public List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta) {
+        return reservaRepository.findByFechaBetween(desde, hasta);
+    }
+
+
 
     public List<Reserva> obtenerReservasCompradasPorUsuario(String emailUsuario) {
         return reservaRepository.findByUsuarioEmailAndEstado(emailUsuario, EstadoReserva.COMPRADA);

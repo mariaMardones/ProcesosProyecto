@@ -34,4 +34,6 @@ public interface IServiceProxy {
 	List<Reserva> obtenerReservasPendientesPorUsuario(String email);
 	List<Reserva> obtenerReservasCompradas();
 	List<Reserva> obtenerReservasPendientes();
+	List<Reserva> obtenerReservasPorFecha(String fecha);
+	List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta);
 }

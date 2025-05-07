@@ -105,4 +105,16 @@ public class ReservaController {
         return reservaService.obtenerPendientes();
     }
     
+    @GetMapping("/filtrar/rango")
+    public ResponseEntity<List<Reserva>> obtenerReservasPorRangoFechas(
+            @RequestParam String desde,
+            @RequestParam String hasta) {
+        try {
+            List<Reserva> reservas = reservaService.obtenerReservasPorRangoFechas(desde, hasta);
+            return ResponseEntity.ok(reservas);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+	 
 }

@@ -10,4 +10,8 @@ import com.deustocoches.model.EstadoReserva;
     public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
         List<Reserva> findByEstado(EstadoReserva estado);
         List<Reserva> findByUsuarioEmailAndEstado(String email, EstadoReserva estado);
+        
+        List<Reserva> findByFecha(String fecha);
+        List<Reserva> findByFechaBetween(String desde, String hasta);
+        
 }

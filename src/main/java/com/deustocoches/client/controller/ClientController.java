@@ -50,21 +50,28 @@ public class ClientController {
             RedirectAttributes redirectAttributes) {
         try {
             String token = serviceProxy.login(email, password);
+            
             if (token != null) {
                 this.token = token;
                 currentUserEmail = email;
                 Usuario u = serviceProxy.getUsuarioByEmail(email);
+                
+                if (u == null) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "No se pudo recuperar la información del usuario");
+                    return "redirect:/login";
+                }
+                
                 if (u.getRol() == TipoRol.ADMIN) {
                     return "redirect:/usuarios";
                 } else {
                     return "redirect:/coches/disponibles";
                 }
             }
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid credentials");
-            return "redirect:/";
+            redirectAttributes.addFlashAttribute("errorMessage", "Credenciales inválidas");
+            return "redirect:/login";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Login failed: " + e.getMessage());
-            return "redirect:/";
+            return "redirect:/login";
         }
     }
 

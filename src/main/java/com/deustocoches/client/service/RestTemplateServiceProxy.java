@@ -4,15 +4,20 @@ import com.deustocoches.model.Reserva;
 import com.deustocoches.model.Usuario;
 import com.deustocoches.model.Coche;
 
+
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RestTemplateServiceProxy implements IServiceProxy {
@@ -24,6 +29,14 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     public RestTemplateServiceProxy(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    @PostConstruct
+    public void init() {
+        // Este método se ejecuta automáticamente después de inyectar las propiedades
+        if (apiBaseUrl == null || apiBaseUrl.contains("/api.base.url")) {
+            apiBaseUrl = "http://127.0.0.1:8080";
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -39,10 +52,15 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public Usuario getUsuarioByEmail(String email) {
-        String url = apiBaseUrl + "/api/usuario/buscar?email=" + email;
         try {
-            Usuario usuario = restTemplate.getForObject(url, Usuario.class);
-            return usuario;
+            String url = apiBaseUrl + "/api/usuario/buscar?email=" + email;
+            
+            ResponseEntity<Usuario> response = restTemplate.getForEntity(url, Usuario.class);
+            
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return response.getBody();
+            }
+            return null;
         } catch (HttpStatusCodeException e) {
             if (e.getStatusCode().value() == 404) {
                 return null;
@@ -73,12 +91,23 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public String login(String email, String password) {
-        String url = apiBaseUrl + "/api/usuario/login?email=" + email + "&password=" + password;
         try {
-            String token = restTemplate.postForObject(url, null, String.class);
-            return token;
+            // URL con parámetros en la query string
+            String url = apiBaseUrl + "/api/usuario/login?email=" + email + "&password=" + password;
+            
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                url,
+                null,  // No enviamos body, los parámetros van en la URL
+                String.class
+            );
+            
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return response.getBody();
+            }
+            
+            throw new RuntimeException("Login failed: " + response.getStatusCode());
         } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Login failed: " + e.getStatusText());
+            throw new RuntimeException("Login failed: " + e.getStatusCode());
         }
     }
 

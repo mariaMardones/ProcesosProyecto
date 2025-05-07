@@ -353,4 +353,25 @@ public class ClientController {
         }
     }
 
+    @PostMapping("/usuario/crearadmin")
+    public String crearAdmin(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
+        try {
+            serviceProxy.crearAdmin(email);
+            redirectAttributes.addFlashAttribute("successMessage", "Rol del usuario cambiado correctamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al cambiar el rol usuario: " + e.getMessage());
+        }
+        return "redirect:/usuarios";
+    }
+
+    @PostMapping("/usuario/eliminaradmin")
+    public String eliminarAdmin(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
+        try {
+            serviceProxy.eliminarAdmin(email);
+            redirectAttributes.addFlashAttribute("successMessage", "Rol del usuario cambiado correctamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al cambiar el rol usuario: " + e.getMessage());
+        }
+        return "redirect:/usuarios";
+    }
 }

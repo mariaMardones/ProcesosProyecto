@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.deustocoches.model.EstadoReserva;
@@ -94,7 +95,16 @@ public class ReservaController {
         return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
     }
     
-
-
+    @GetMapping("/filtrar/rango")
+    public ResponseEntity<List<Reserva>> obtenerReservasPorRangoFechas(
+            @RequestParam String desde,
+            @RequestParam String hasta) {
+        try {
+            List<Reserva> reservas = reservaService.obtenerReservasPorRangoFechas(desde, hasta);
+            return ResponseEntity.ok(reservas);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 	 
 }

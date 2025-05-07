@@ -30,4 +30,6 @@ public interface IServiceProxy {
 	Reserva crearReserva(Reserva reserva);
 	Reserva actualizarReserva(Integer id, Reserva detallesReserva);
 	void eliminarReserva(Integer id);
+	List<Reserva> obtenerReservasPorFecha(String fecha);
+	List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta);
 }

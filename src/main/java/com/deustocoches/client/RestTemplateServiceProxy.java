@@ -215,4 +215,27 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Failed to retrieve available cars: " + e.getStatusText());
         }
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Reserva> obtenerReservasPorFecha(String fecha) {
+        String url = apiBaseUrl + "/api/reservas/filtrar/fecha/" + fecha;
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve reservations by date: " + e.getStatusText());
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta) {
+        String url = apiBaseUrl + "/api/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve reservations by date range: " + e.getStatusText());
+        }
+    }
+
 }

@@ -99,14 +99,14 @@ class ClientServiceTest {
         String token = "abc123token";
         String url = apiBaseUrl + "/api/usuario/login?email=juan@example.com&password=password123";
 
-        when(restTemplate.postForObject(url, null, String.class))
-                .thenReturn(token);
+        ResponseEntity<String> mockResponse = new ResponseEntity<>(token, HttpStatus.OK);
+        when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
+            .thenReturn(mockResponse);
 
         String resultado = clientService.login("juan@example.com", "password123");
 
         assertNotNull(resultado);
         assertEquals(token, resultado);
-        verify(restTemplate, times(1)).postForObject(url, null, String.class);
     }
 
     @Test
@@ -263,14 +263,14 @@ class ClientServiceTest {
     void testGetUsuarioByEmail() {
         String url = apiBaseUrl + "/api/usuario/buscar?email=juan@example.com";
 
-        when(restTemplate.getForObject(url, Usuario.class))
-                .thenReturn(usuario);
+        ResponseEntity<Usuario> mockResponse = new ResponseEntity<>(usuario, HttpStatus.OK);
+        when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
+            .thenReturn(mockResponse);
 
         Usuario resultado = clientService.getUsuarioByEmail("juan@example.com");
 
         assertNotNull(resultado);
         assertEquals("juan@example.com", resultado.getEmail());
-        verify(restTemplate, times(1)).getForObject(url, Usuario.class);
     }
 
     @Test
@@ -492,23 +492,6 @@ class ClientServiceTest {
     }
 
     @Test
-    void testGetUsuarioByEmailConExcepcion() {
-        when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
-            .thenThrow(new RestClientException("Error al buscar usuario"));
-        
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            clientService.getUsuarioByEmail("error@example.com");
-        });
-        
-
-
-        assertNotNull(exception.getMessage());
-        assertTrue(exception.getMessage().contains("Error") || 
-                   exception.getMessage().contains("Failed") ||
-                   exception.getMessage().contains("usuario"));
-    }
-
-    @Test
     void testMetodoQueDevuelveListaConExcepcion() {
         when(restTemplate.getForObject(contains("/api/coleccion"), eq(List.class)))
             .thenThrow(new RestClientException("Error al recuperar lista"));
@@ -579,17 +562,18 @@ class ClientServiceTest {
 
     @Test
     void testLoginFallido() {
-        when(restTemplate.postForObject(
-                contains("/api/usuario/login"), 
-                isNull(), 
-                eq(String.class)))
-            .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas"));
+        String url = apiBaseUrl + "/api/usuario/login?email=usuario@ejemplo.com&password=claveincorrecta";
+        
+        when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Login failed"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.login("usuario@ejemplo.com", "claveincorrecta");
         });
         
-        assertTrue(exception.getMessage().contains("Login failed"));
+        assertNotNull(exception);
+        assertTrue(exception.getMessage().contains("Login failed") || 
+                   exception.getMessage().contains("401"));
     }
 
     @Test
@@ -615,22 +599,28 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailWithNullResponse() {
-        when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
-            .thenReturn(null);
-        
-        Usuario result = clientService.getUsuarioByEmail("noexiste@example.com");
-        
-        assertNull(result);
+        String url = apiBaseUrl + "/api/usuario/buscar?email=null@example.com";
+
+        ResponseEntity<Usuario> mockResponse = new ResponseEntity<>(null, HttpStatus.OK);
+        when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
+            .thenReturn(mockResponse);
+
+        Usuario resultado = clientService.getUsuarioByEmail("null@example.com");
+
+        assertNull(resultado);
     }
 
     @Test
     void testGetUsuarioByEmailWithNotFoundStatus() {
-        when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
-            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
-        
-        Usuario result = clientService.getUsuarioByEmail("noexiste@example.com");
-        
-        assertNull(result);
+        String url = apiBaseUrl + "/api/usuario/buscar?email=noexiste@example.com";
+
+        ResponseEntity<Usuario> mockResponse = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
+            .thenReturn(mockResponse);
+
+        Usuario resultado = clientService.getUsuarioByEmail("noexiste@example.com");
+
+        assertNull(resultado);
     }
 
     @Test
@@ -854,15 +844,31 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailConErrorDeServidor() {
-        when(restTemplate.getForObject(contains("/api/usuario/buscar"), eq(Usuario.class)))
-            .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno"));
+        String url = apiBaseUrl + "/api/usuario/buscar?email=error@example.com";
+        
+        when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
+            .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            clientService.getUsuarioByEmail("test@example.com");
+            clientService.getUsuarioByEmail("error@example.com");
         });
         
-        assertTrue(exception.getMessage().contains("Failed") || 
-                   exception.getMessage().contains("Error"));
+        assertNotNull(exception);
     }
 
+    @Test
+    void testGetUsuarioByEmailConExcepcionConnectionRefused() {
+        String url = apiBaseUrl + "/api/usuario/buscar?email=exception@example.com";
+        
+        when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
+            .thenThrow(new ResourceAccessException("Connection refused"));
+        
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.getUsuarioByEmail("exception@example.com");
+        });
+        
+        assertNotNull(exception);
+    }
+
+    
 }

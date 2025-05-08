@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class RestTemplateServiceProxy implements IServiceProxy {
@@ -107,6 +104,9 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             
             throw new RuntimeException("Login failed: " + response.getStatusCode());
         } catch (HttpStatusCodeException e) {
+            if (e.getStatusCode().value() == 400) {
+                return null; 
+            }
             throw new RuntimeException("Login failed: " + e.getStatusCode());
         }
     }

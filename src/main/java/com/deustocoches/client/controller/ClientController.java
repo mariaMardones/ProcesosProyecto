@@ -66,8 +66,8 @@ public class ClientController {
                 } else {
                     return "redirect:/coches/disponibles";
                 }
-            }
-            redirectAttributes.addFlashAttribute("errorMessage", "Credenciales inválidas");
+            } 
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuario no registrado");
             return "redirect:/login";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Login failed: " + e.getMessage());

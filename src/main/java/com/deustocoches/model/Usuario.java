@@ -26,17 +26,16 @@ public class Usuario {
     public Usuario() {
     	this.bloqueado = false;
     }
-
-    // Constructor con todos los argumentos
+    
     public Usuario( String nombre, String apellido, String fechaNacimiento, String email, String password,
-                   String tlf, TipoRol rol) {
+    String tlf) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
         this.email = email;
         this.password = password;
         this.tlf = tlf;
-        this.rol = rol;
+        this.rol = TipoRol.CLIENTE;
         this.bloqueado = false;
     }
 

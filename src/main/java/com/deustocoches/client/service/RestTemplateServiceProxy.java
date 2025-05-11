@@ -3,8 +3,6 @@ package com.deustocoches.client.service;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.Usuario;
 import com.deustocoches.model.Coche;
-import com.deustocoches.model.Promocion;
-
 
 
 import jakarta.annotation.PostConstruct;
@@ -20,17 +18,6 @@ import java.util.List;
 
 @Service
 public class RestTemplateServiceProxy implements IServiceProxy {
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Promocion> getAllPromociones() {
-        String url = apiBaseUrl + "/api/promociones";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve promotions: " + e.getStatusText());
-        }
-    }
 
     private final RestTemplate restTemplate;
 

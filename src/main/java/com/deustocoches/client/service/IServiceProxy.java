@@ -1,12 +1,10 @@
 package com.deustocoches.client.service;
 
 import java.util.List;
-import com.deustocoches.model.Promocion;
 
 import com.deustocoches.model.Coche;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.Usuario;
-
 
 public interface IServiceProxy {
 	// CRUD operations for Usuario
@@ -41,8 +39,4 @@ public interface IServiceProxy {
 	List<Reserva> obtenerReservasPendientes();
 	List<Reserva> obtenerReservasPorFecha(String fecha);
 	List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta);
-
-	List<Promocion> getAllPromociones();
-
 }
-

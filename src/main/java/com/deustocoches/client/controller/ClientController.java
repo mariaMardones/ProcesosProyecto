@@ -3,7 +3,6 @@ package com.deustocoches.client.controller;
 import com.deustocoches.client.service.RestTemplateServiceProxy;
 import com.deustocoches.model.Coche;
 import com.deustocoches.model.EstadoReserva;
-import com.deustocoches.model.Promocion;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.TipoRol;
 import com.deustocoches.model.Usuario;
@@ -382,12 +381,4 @@ public class ClientController {
         }
         return "redirect:/usuarios";
     }
-    
-    @GetMapping("/ver-promociones")
-    public String verPromociones(Model model) {
-        List<Promocion> promociones = serviceProxy.getAllPromociones();
-        model.addAttribute("promociones", promociones);
-        return "verPromociones";
-    }
-    
 }

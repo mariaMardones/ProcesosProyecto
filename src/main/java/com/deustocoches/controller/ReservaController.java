@@ -116,5 +116,25 @@ public class ReservaController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PutMapping("/aplicar-descuento/{id}")
+    public ResponseEntity<Reserva> aplicarDescuento(@PathVariable Integer id, @RequestParam double descuento) {
+        try {
+            Reserva reservaActualizada = reservaService.aplicarDescuento(id, descuento);
+            return ResponseEntity.ok(reservaActualizada);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/eliminar-descuento/{id}")
+    public ResponseEntity<Reserva> eliminarDescuento(@PathVariable Integer id) {
+        try {
+            Reserva reservaActualizada = reservaService.eliminarDescuento(id);
+            return ResponseEntity.ok(reservaActualizada);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 	 
 }

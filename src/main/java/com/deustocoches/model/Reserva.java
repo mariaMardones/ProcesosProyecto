@@ -28,17 +28,20 @@ public class Reserva {
     @Enumerated(EnumType.STRING)
     private EstadoReserva estado;
 
+    private double descuento; 
+
     // Constructor sin argumentos
     public Reserva() {
     }
 
     // Constructor con todos los argumentos
-    public Reserva(Usuario usuario, Coche coche, String fecha, double precioTotal, EstadoReserva estado) {
+    public Reserva(Usuario usuario, Coche coche, String fecha, double precioTotal, EstadoReserva estado, double descuento) {
         this.usuario = usuario;
         this.coche = coche;
         this.fecha = fecha;
         this.precioTotal = precioTotal;
         this.estado = estado;
+        this.descuento = descuento;
     }
 
     public int getId() {
@@ -89,8 +92,17 @@ public class Reserva {
         this.estado = estado;
     }
 
+    public double getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(double descuento) {
+        this.descuento = descuento;
+    }
+
     @Override
     public String toString() {
-        return "Reserva [idReserva=" + id + ", usuario=" + usuario + ", coche=" + coche + ", fecha=" + fecha + ", precioTotal=" + precioTotal + ", estado=" + estado + "]";
+        return "Reserva [idReserva=" + id + ", usuario=" + usuario + ", coche=" + coche + ", fecha=" + fecha + 
+               ", precioTotal=" + precioTotal + ", estado=" + estado + ", descuento=" + descuento + "]";
     }
 }

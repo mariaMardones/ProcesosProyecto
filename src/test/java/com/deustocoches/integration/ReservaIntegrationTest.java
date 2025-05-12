@@ -34,7 +34,6 @@ public class ReservaIntegrationTest {
 
     @Test
     void testFlujoCompletaDeReserva() {
-        // Crear usuario
         Usuario usuario = new Usuario();
         usuario.setNombre("Ana");
         usuario.setApellido("Martínez");
@@ -49,7 +48,6 @@ public class ReservaIntegrationTest {
         Usuario usuarioCreado = userResponse.getBody();
         assertNotNull(usuarioCreado);
         
-        // Crear coche
         String matriculaUnica = "TEST" + System.currentTimeMillis();
         Coche coche = new Coche(matriculaUnica, "Ford", "Focus", 2019, "Blanco", 12000.0, true);
         
@@ -58,8 +56,7 @@ public class ReservaIntegrationTest {
         Coche cocheCreado = cocheResponse.getBody();
         assertNotNull(cocheCreado);
         
-        // Crear reserva con descuento
-        Reserva reserva = new Reserva(usuarioCreado, cocheCreado, LocalDate.now().toString(), 200.0, EstadoReserva.PENDIENTE, 15.0);
+        Reserva reserva = new Reserva(usuarioCreado, cocheCreado, LocalDate.now().toString(), 200.0, EstadoReserva.PENDIENTE);
         
         ResponseEntity<Reserva> reservaResponse = restTemplate.postForEntity("/api/reservas/crear", reserva, Reserva.class);
         assertEquals(HttpStatus.OK, reservaResponse.getStatusCode());
@@ -67,7 +64,6 @@ public class ReservaIntegrationTest {
         assertNotNull(reservaCreada);
         int reservaId = reservaCreada.getId();
         
-        // Verificar reservas pendientes
         ResponseEntity<List<Reserva>> pendientesResponse = restTemplate.exchange(
                 "/api/reservas/pendientes", 
                 HttpMethod.GET, 
@@ -79,13 +75,11 @@ public class ReservaIntegrationTest {
         assertNotNull(reservasPendientes);
         assertTrue(reservasPendientes.stream().anyMatch(r -> r.getId() == reservaId));
         
-        // Actualizar reserva a estado COMPRADA
         Reserva reservaActualizar = reservaCreada;
         reservaActualizar.setEstado(EstadoReserva.COMPRADA);
         
         restTemplate.put("/api/reservas/actualizar/" + reservaId, reservaActualizar);
         
-        // Verificar reservas compradas
         ResponseEntity<List<Reserva>> compradasResponse = restTemplate.exchange(
                 "/api/reservas/compradas", 
                 HttpMethod.GET, 
@@ -97,7 +91,6 @@ public class ReservaIntegrationTest {
         assertNotNull(reservasCompradas);
         assertTrue(reservasCompradas.stream().anyMatch(r -> r.getId() == reservaId));
         
-        // Verificar que la reserva ya no está en pendientes
         ResponseEntity<List<Reserva>> pendientesDespuesResponse = restTemplate.exchange(
                 "/api/reservas/pendientes", 
                 HttpMethod.GET, 
@@ -108,7 +101,6 @@ public class ReservaIntegrationTest {
         assertNotNull(reservasPendientesDespues);
         assertFalse(reservasPendientesDespues.stream().anyMatch(r -> r.getId() == reservaId));
         
-        // Eliminar reserva, coche y usuario
         restTemplate.delete("/api/reservas/eliminar/" + reservaId);
         restTemplate.delete("/api/coche/eliminar?matricula=" + matriculaUnica);
         restTemplate.delete("/api/usuario/eliminar?email=" + usuario.getEmail());

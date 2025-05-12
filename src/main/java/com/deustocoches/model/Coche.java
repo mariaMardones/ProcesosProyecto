@@ -18,6 +18,9 @@ public class Coche {
     private double precio;
     private boolean disponible;
 
+    private double descuento;
+    private double precioFinal;
+
     // Constructor sin argumentos
     public Coche() {
     }
@@ -31,6 +34,8 @@ public class Coche {
         this.color = color;
         this.precio = precio;
         this.disponible = disponible;
+        this.descuento = 0.0; // Inicializar descuento a 0
+        this.precioFinal = precio; // Inicializar precio final al precio original
     }
 
     // Getters y setters
@@ -90,8 +95,39 @@ public class Coche {
         this.disponible = disponible;
     }
 
+    public double getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(double descuento) {
+        this.descuento = descuento;
+        calcularPrecioFinal();
+    }
+
+    public double getPrecioFinal() {
+        return precioFinal;
+    }
+
+    private void calcularPrecioFinal() {
+        if (descuento > 0) {
+            precioFinal = precio - (precio * descuento / 100);
+        } else {
+            precioFinal = precio;
+        }
+    }
+
     @Override
     public String toString() {
-        return "Coche [matricula=" + matricula + ", marca=" + marca + ", modelo=" + modelo + ", anio=" + anio + ", color=" + color + ", precio=" + precio + ", disponible=" + disponible + "]";
+        return "Coche{" +
+                "matricula='" + matricula + '\'' +
+                ", marca='" + marca + '\'' +
+                ", modelo='" + modelo + '\'' +
+                ", anio=" + anio +
+                ", color='" + color + '\'' +
+                ", precio=" + precio +
+                ", disponible=" + disponible +
+                ", descuento=" + descuento +
+                ", precioFinal=" + precioFinal +
+                '}';
     }
 }

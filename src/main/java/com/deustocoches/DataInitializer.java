@@ -57,9 +57,9 @@ public class DataInitializer {
                 logger.info("Coches guardados!");
 
                 // Inicialización de reservas
-                Reserva reserva1 = new Reserva(cliente1, coche1, "2025-05-10", 9000.0, EstadoReserva.COMPRADA, 10.0);
-                Reserva reserva2 = new Reserva(cliente2, coche2, "2025-05-12", 8000.0, EstadoReserva.PENDIENTE, 5.0);
-                Reserva reserva3 = new Reserva(cliente1, coche3, "2025-05-15", 10000.0, EstadoReserva.CANCELADA, 0.0);
+                Reserva reserva1 = new Reserva(cliente1, coche1, "2025-05-10", 9000.0, EstadoReserva.COMPRADA);
+                Reserva reserva2 = new Reserva(cliente2, coche2, "2025-05-12", 8000.0, EstadoReserva.PENDIENTE);
+                Reserva reserva3 = new Reserva(cliente1, coche3, "2025-05-15", 10000.0, EstadoReserva.CANCELADA);
 
                 reservaRepo.saveAll(List.of(reserva1, reserva2, reserva3));
                 logger.info("Reservas guardadas!");

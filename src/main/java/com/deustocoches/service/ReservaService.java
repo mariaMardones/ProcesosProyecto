@@ -78,24 +78,4 @@ public class ReservaService {
     public List<Reserva> findAll() {
         return reservaRepository.findAll();
     }
-
-    public Reserva aplicarDescuento(Integer id, double descuento) {
-        return reservaRepository.findById(id)
-                .map(reserva -> {
-                    reserva.setDescuento(descuento);
-                    reserva.setPrecioTotal(reserva.getPrecioTotal() - (reserva.getPrecioTotal() * (descuento / 100)));
-                    return reservaRepository.save(reserva);
-                })
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-    }
-
-    public Reserva eliminarDescuento(Integer id) {
-        return reservaRepository.findById(id)
-                .map(reserva -> {
-                    reserva.setPrecioTotal(reserva.getPrecioTotal() / (1 - (reserva.getDescuento() / 100)));
-                    reserva.setDescuento(0.0);
-                    return reservaRepository.save(reserva);
-                })
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-    }
 }

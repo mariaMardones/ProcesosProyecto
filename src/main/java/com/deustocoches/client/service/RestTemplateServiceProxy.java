@@ -3,7 +3,7 @@ package com.deustocoches.client.service;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.Usuario;
 import com.deustocoches.model.Coche;
-
+import com.deustocoches.model.Promocion;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

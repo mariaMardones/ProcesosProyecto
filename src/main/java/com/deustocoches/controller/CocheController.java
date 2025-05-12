@@ -68,6 +68,7 @@ public class CocheController {
             return ResponseEntity.notFound().build();
         }
     }
+    
     @GetMapping("/disponibles")
     public List<Coche> ListarCochesDisponibles() {
         return cocheService.ListarCochesDisponibles();
@@ -82,6 +83,26 @@ public class CocheController {
         try {
             List<Coche> cochesFiltrados = cocheService.filtrarCoches(marca, modelo, precioMin, precioMax);
             return ResponseEntity.ok(cochesFiltrados);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/aplicar-descuento")
+    public ResponseEntity<Coche> aplicarDescuento(@RequestParam("matricula") String matricula, @RequestParam("descuento") double descuento) {
+        try {
+            Coche cocheActualizado = cocheService.aplicarDescuento(matricula, descuento);
+            return ResponseEntity.ok(cocheActualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/eliminar-descuento")
+    public ResponseEntity<Coche> eliminarDescuento(@RequestParam("matricula") String matricula) {
+        try {
+            Coche cocheActualizado = cocheService.eliminarDescuento(matricula);
+            return ResponseEntity.ok(cocheActualizado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

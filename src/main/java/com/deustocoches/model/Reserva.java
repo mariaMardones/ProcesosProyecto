@@ -92,6 +92,6 @@ public class Reserva {
     @Override
     public String toString() {
         return "Reserva [idReserva=" + id + ", usuario=" + usuario + ", coche=" + coche + ", fecha=" + fecha + 
-               ", precioTotal=" + precioTotal + ", estado=" + estado + ", descuento=" + descuento + "]";
+               ", precioTotal=" + precioTotal + ", estado=" + estado + "]";
     }
 }

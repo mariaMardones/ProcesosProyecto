@@ -68,7 +68,7 @@ public class CocheService {
         }
     }
     
-     public List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax) {
+    public List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax) {
         List<Coche> todos = cocheRepository.findAll();
         return todos.stream()
             .filter(c -> marca == null || c.getMarca().toLowerCase().contains(marca.toLowerCase()))
@@ -76,5 +76,27 @@ public class CocheService {
             .filter(c -> precioMin == null || c.getPrecio() >= precioMin)
             .filter(c -> precioMax == null || c.getPrecio() <= precioMax)
             .collect(Collectors.toList());
+    }
+
+    public Coche aplicarDescuento(String matricula, double descuento) {
+        Optional<Coche> cocheOptional = cocheRepository.findById(matricula);
+        if (cocheOptional.isPresent()) {
+            Coche coche = cocheOptional.get();
+            coche.setDescuento(descuento); // Esto recalcula automáticamente el precio final
+            return cocheRepository.save(coche);
+        } else {
+            throw new RuntimeException("Coche con matrícula " + matricula + " no encontrado");
+        }
+    }
+
+    public Coche eliminarDescuento(String matricula) {
+        Optional<Coche> cocheOptional = cocheRepository.findById(matricula);
+        if (cocheOptional.isPresent()) {
+            Coche coche = cocheOptional.get();
+            coche.setDescuento(0.0); // Esto recalcula automáticamente el precio final
+            return cocheRepository.save(coche);
+        } else {
+            throw new RuntimeException("Coche con matrícula " + matricula + " no encontrado");
+        }
     }
 }

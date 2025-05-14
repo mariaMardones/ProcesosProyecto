@@ -71,8 +71,8 @@ public class CocheService {
     public List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax) {
         List<Coche> todos = cocheRepository.findAll();
         return todos.stream()
-            .filter(c -> (marca == null || marca.isBlank() || c.getMarca().toLowerCase().contains(marca.toLowerCase())))
-            .filter(c -> (modelo == null || modelo.isBlank() || c.getModelo().toLowerCase().contains(modelo.toLowerCase())))
+            .filter(c -> (marca == null || c.getMarca().toLowerCase().contains(marca.toLowerCase())))
+            .filter(c -> (modelo == null || c.getModelo().toLowerCase().contains(modelo.toLowerCase())))
             .filter(c -> (precioMin == null || c.getPrecio() >= precioMin))
             .filter(c -> (precioMax == null || c.getPrecio() <= precioMax))
             .collect(Collectors.toList());

@@ -27,6 +27,9 @@ public interface IServiceProxy {
 	void eliminarCoche(String matricula);
 	Coche crearCoche(Coche coche);
 	List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax);
+	List<String> obtenerMarcas();
+	Coche aplicarDescuento(String matricula, Double descuento);
+	Coche eliminarDescuento(String matricula);
 
 	// CRUD operations for Reserva
 	Reserva crearReserva(Reserva reserva);

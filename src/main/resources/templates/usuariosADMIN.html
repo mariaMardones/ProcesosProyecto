@@ -39,13 +39,13 @@
                         <div th:if="${usuario.email != currentUserEmail and usuario.email != 'admin@deusto.com'}">
                             <form th:if="${usuario.rol == 'CLIENTE'}" th:action="@{/usuario/crearadmin}" method="post" style="display:inline;">
                                 <input type="hidden" name="email" th:value="${usuario.email}" />
-                                <button type="submit" class="btn btn-info btn-sm">
+                                <button type="submit" class="btn btn-info btn-sm w-100 mb-1">
                                     <i class="fas fa-user-shield"></i> Hacer Admin
                                 </button>
                             </form>
                             <form th:if="${usuario.rol == 'ADMIN'}" th:action="@{/usuario/eliminaradmin}" method="post" style="display:inline;">
                                 <input type="hidden" name="email" th:value="${usuario.email}" />
-                                <button type="submit" class="btn btn-secondary btn-sm">
+                                <button type="submit" class="btn btn-secondary btn-sm w-100 mb-1">
                                     <i class="fas fa-user"></i> Quitar Admin
                                 </button>
                             </form>
@@ -58,13 +58,13 @@
                         <div th:if="${usuario.email != currentUserEmail and usuario.email != 'admin@deusto.com'}">
                             <form th:if="${usuario.bloqueado}" th:action="@{/usuario/desbloquear}" method="post" style="display:inline;">
                                 <input type="hidden" name="email" th:value="${usuario.email}" />
-                                <button type="submit" class="btn btn-success btn-sm">
+                                <button type="submit" class="btn btn-success btn-sm w-100 mb-1">
                                     <i class="fas fa-unlock"></i> Desbloquear
                                 </button>
                             </form>
                             <form th:if="${!usuario.bloqueado}" th:action="@{/usuario/bloquear}" method="post" style="display:inline;">
                                 <input type="hidden" name="email" th:value="${usuario.email}" />
-                                <button type="submit" class="btn btn-warning btn-sm">
+                                <button type="submit" class="btn btn-warning btn-sm w-100 mb-1">
                                     <i class="fas fa-lock"></i> Bloquear
                                 </button>
                             </form>

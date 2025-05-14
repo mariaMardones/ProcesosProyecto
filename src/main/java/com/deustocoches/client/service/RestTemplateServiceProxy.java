@@ -220,6 +220,37 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @SuppressWarnings("unchecked")
     @Override
+    public List<String> obtenerMarcas() {
+        String url = apiBaseUrl + "/api/coche/marcas";
+        try {
+            return restTemplate.getForObject(url, List.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to retrieve brands: " + e.getStatusText());
+        }
+    }
+
+    @Override
+    public Coche aplicarDescuento(String matricula, Double descuento) {
+        String url = apiBaseUrl + "/api/coche/aplicarDescuento?matricula=" + matricula + "&descuento=" + descuento;
+        try {
+            return restTemplate.exchange(url, HttpMethod.PUT, null, Coche.class).getBody();
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to apply discount: " + e.getStatusText());
+        }
+    }
+
+    @Override
+    public Coche eliminarDescuento(String matricula) {
+        String url = apiBaseUrl + "/api/coche/eliminarDescuento?matricula=" + matricula;
+        try {
+            return restTemplate.exchange(url, HttpMethod.PUT, null, Coche.class).getBody();
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Failed to remove discount: " + e.getStatusText());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public List<Coche> ListarCochesDisponibles() {
         String url = apiBaseUrl + "/api/coche/disponibles";
         try {
@@ -372,5 +403,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Failed to retrieve reservations by date range: " + e.getStatusText());
         }
     }
+
 
 }

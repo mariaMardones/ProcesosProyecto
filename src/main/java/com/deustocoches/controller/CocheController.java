@@ -88,7 +88,7 @@ public class CocheController {
         }
     }
 
-    @PutMapping("/aplicar-descuento")
+    @PutMapping("/aplicarDescuento")
     public ResponseEntity<Coche> aplicarDescuento(@RequestParam("matricula") String matricula, @RequestParam("descuento") double descuento) {
         try {
             Coche cocheActualizado = cocheService.aplicarDescuento(matricula, descuento);
@@ -98,7 +98,7 @@ public class CocheController {
         }
     }
 
-    @PutMapping("/eliminar-descuento")
+    @PutMapping("/eliminarDescuento")
     public ResponseEntity<Coche> eliminarDescuento(@RequestParam("matricula") String matricula) {
         try {
             Coche cocheActualizado = cocheService.eliminarDescuento(matricula);
@@ -106,5 +106,10 @@ public class CocheController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/marcas")
+    public List<String> ListarMarcasCoches() {
+        return cocheService.ListarMarcasCoches();
     }
 }

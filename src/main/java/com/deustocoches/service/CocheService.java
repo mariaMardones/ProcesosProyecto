@@ -71,10 +71,10 @@ public class CocheService {
     public List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax) {
         List<Coche> todos = cocheRepository.findAll();
         return todos.stream()
-            .filter(c -> marca == null || c.getMarca().toLowerCase().contains(marca.toLowerCase()))
-            .filter(c -> modelo == null || c.getModelo().toLowerCase().contains(modelo.toLowerCase()))
-            .filter(c -> precioMin == null || c.getPrecio() >= precioMin)
-            .filter(c -> precioMax == null || c.getPrecio() <= precioMax)
+            .filter(c -> (marca == null || marca.isBlank() || c.getMarca().toLowerCase().contains(marca.toLowerCase())))
+            .filter(c -> (modelo == null || modelo.isBlank() || c.getModelo().toLowerCase().contains(modelo.toLowerCase())))
+            .filter(c -> (precioMin == null || c.getPrecio() >= precioMin))
+            .filter(c -> (precioMax == null || c.getPrecio() <= precioMax))
             .collect(Collectors.toList());
     }
 
@@ -98,5 +98,17 @@ public class CocheService {
         } else {
             throw new RuntimeException("Coche con matrícula " + matricula + " no encontrado");
         }
+    }
+
+    public List<String> ListarMarcasCoches() {
+        List<Coche> coches = ListarCochesDisponibles();
+        List<String> marcas = new ArrayList<>();
+        for (Coche c : coches) {
+            String marca = c.getMarca();
+            if (!marcas.contains(marca)) {
+                marcas.add(marca);
+            }
+        }
+        return marcas;
     }
 }

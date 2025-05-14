@@ -110,7 +110,7 @@ public class Coche {
 
     private void calcularPrecioFinal() {
         if (descuento > 0) {
-            precioFinal = precio - (precio * descuento / 100);
+            precioFinal = precio - (precio * (descuento / 100));
         } else {
             precioFinal = precio;
         }

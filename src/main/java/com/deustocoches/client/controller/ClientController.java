@@ -30,6 +30,9 @@ public class ClientController {
         model.addAttribute("currentUrl", currentUrl);
         model.addAttribute("token", token);
         model.addAttribute("currentUserEmail", currentUserEmail);
+        List<String> marcas = serviceProxy.obtenerMarcas();
+        model.addAttribute("marcas", marcas != null ? marcas : List.of());
+        
     }
 
     // Página principal: login (index.html)
@@ -190,7 +193,7 @@ public class ClientController {
             return "redirect:/coches";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update car: " + e.getMessage());
-            return "redirect:/coche";
+            return "redirect:/coches";
         }
     }
 
@@ -206,7 +209,7 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/coches/filtrar")
+    @GetMapping("/coche/filtrar")
     public String filtrarCoches(
             @RequestParam(required = false) String marca,
             @RequestParam(required = false) String modelo,
@@ -221,6 +224,33 @@ public class ClientController {
             model.addAttribute("errorMessage", "Error al filtrar coches: " + e.getMessage());
             return "coches";
         }
+    }
+
+    @PostMapping("/coche/aplicarDescuento")
+    public String aplicarDescuento(
+            @RequestParam("matricula") String matricula,
+            @RequestParam("descuento") double descuento,
+            RedirectAttributes redirectAttributes) {
+        try {
+            serviceProxy.aplicarDescuento(matricula, descuento);
+            redirectAttributes.addFlashAttribute("successMessage", "Descuento aplicado correctamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al aplicar descuento: " + e.getMessage());
+        }
+        return "redirect:/coches"; 
+    }
+
+    @PostMapping("/coche/eliminarDescuento")
+    public String eliminarDescuento(
+            @RequestParam("matricula") String matricula,
+            RedirectAttributes redirectAttributes) {
+        try {
+            serviceProxy.eliminarDescuento(matricula);
+            redirectAttributes.addFlashAttribute("successMessage", "Descuento eliminado correctamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar descuento: " + e.getMessage());
+        }
+        return "redirect:/coches";
     }
 
     @PostMapping("/usuario/bloquear")

@@ -60,6 +60,8 @@
                     <th>Año</th>
                     <th>Color</th>
                     <th>Precio (€)</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Final (€)</th>
                     <th>Disponible</th>
                 </tr>
             </thead>
@@ -73,6 +75,11 @@
                     <td th:text="${coche.anio}"></td>
                     <td th:text="${coche.color}"></td>
                     <td th:text="${coche.precio}"></td>
+                    <td>
+                        <span th:if="${coche.descuento == null or coche.descuento == 0}">NO</span>
+                        <span th:unless="${coche.descuento == null or coche.descuento == 0}" th:text="${coche.descuento + ' %'}"></span>
+                    </td>
+                    <td th:text="${coche.precioFinal}"></td>
                     <td>
                         <span th:text="${coche.disponible} ? 'Sí' : 'No'"></span>
                     </td>

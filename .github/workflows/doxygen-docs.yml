@@ -1,0 +1,20 @@
+name: Generate and Deploy Doxygen
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Doxygen
+      run: sudo apt-get install doxygen -y
+    - name: Generate Doxygen Documentation
+      run: doxygen src/main/resources/Doxyfile
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: gh-pages
+        folder: target/doxygen/html

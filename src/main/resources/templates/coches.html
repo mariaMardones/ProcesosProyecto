@@ -15,27 +15,30 @@
         <form class="row g-3 mb-4" method="get" th:action="@{/coche/filtrar}">
             <div class="col-md-2">
                 <label for="marca" class="form-label">Marca</label>
-                <select class="form-select" id="marca" name="marca">
+                <select class="form-select shadow-sm" id="marca" name="marca">
                     <option value="">Todas</option>
                     <option th:each="m : ${marcas}" th:value="${m}" th:text="${m}" th:selected="${m == marca}"></option>
                 </select>
             </div>
             <div class="col-md-2">
                 <label for="modelo" class="form-label">Modelo</label>
-                <input type="text" class="form-control" id="modelo" name="modelo" th:value="${modelo}">
+                <input type="text" class="form-control shadow-sm" id="modelo" name="modelo" th:value="${modelo}" placeholder="Modelo">
             </div>
             <div class="col-md-2">
                 <label for="precioMin" class="form-label">Precio Mín</label>
-                <input type="number" step="0.01" class="form-control" id="precioMin" name="precioMin" th:value="${precioMin}">
+                <input type="number" step="0.01" class="form-control shadow-sm" id="precioMin" name="precioMin" th:value="${precioMin}" placeholder="Mínimo">
             </div>
             <div class="col-md-2">
                 <label for="precioMax" class="form-label">Precio Máx</label>
-                <input type="number" step="0.01" class="form-control" id="precioMax" name="precioMax" th:value="${precioMax}">
+                <input type="number" step="0.01" class="form-control shadow-sm" id="precioMax" name="precioMax" th:value="${precioMax}" placeholder="Máximo">
             </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
+            <div class="col-md-4 d-flex align-items-end justify-content-end gap-2">
+                <button type="submit" class="btn btn-primary px-4 shadow">
                     <i class="fas fa-filter me-2"></i>Filtrar
                 </button>
+                <a href="/coches/disponibles" class="btn btn-secondary px-4 shadow">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a ver los coches
+                </a>
             </div>
         </form>
 
@@ -58,7 +61,7 @@
                     <td th:text="${coche.modelo}"></td>
                     <td th:text="${coche.anio}"></td>
                     <td th:text="${coche.color}"></td>
-                    <td th:text="${coche.precio}"></td>
+                    <td th:text="${coche.precioFinal}"></td>
                     <td>
                         <form th:action="@{/reserva/pedido}" method="post" style="display:inline;">
                             <input type="hidden" name="email" th:value="${currentUserEmail}" />

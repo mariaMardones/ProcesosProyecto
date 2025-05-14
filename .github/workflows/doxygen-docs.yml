@@ -52,7 +52,12 @@ jobs:
       run: sudo apt-get install -y graphviz
     
     - name: Generate Doxygen Documentation
-      run: mvn doxygen:report
+      run: |
+        # Usar directamente el Doxyfile existente
+        doxygen src/main/resources/Doxyfile
+        
+        # Asegurar que el directorio de salida exista
+        mkdir -p target/doxygen/html
     
     - name: Publish on Github Pages
       uses: crazy-max/ghaction-github-pages@v2.3.0

@@ -135,7 +135,7 @@ public class ReservaControllerTest {
 
     @Test
     void testHacerPedido() throws Exception {
-        when(reservaService.crearReserva(any(Reserva.class)))
+        when(reservaService.hacerPedido(any(Reserva.class)))
                 .thenReturn(reserva);
 
         mockMvc.perform(post("/api/reservas/pedidos")
@@ -145,7 +145,7 @@ public class ReservaControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.precioTotal").value(500.0));
 
-        verify(reservaService, times(1)).crearReserva(any(Reserva.class));
+        verify(reservaService, times(1)).hacerPedido(any(Reserva.class));
     }
 
     @Test

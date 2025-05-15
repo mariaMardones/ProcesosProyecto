@@ -226,6 +226,7 @@ class ClientServiceTest {
         assertNotNull(resultado);
         assertEquals(reserva, resultado);
         verify(restTemplate, times(1)).postForObject(url, reserva, Reserva.class);
+        verify(restTemplate).postForObject(contains("/api/reservas/pedidos"), eq(reserva), eq(Reserva.class));
     }
 
     @Test
@@ -448,7 +449,7 @@ class ClientServiceTest {
         reservaCreada.setId(1);
         reservaCreada.setPrecioTotal(150.0);
         
-        when(restTemplate.postForObject(contains("/api/reserva/pedido"), eq(reserva), eq(Reserva.class)))
+        when(restTemplate.postForObject(contains("/api/reservas/pedidos"), eq(reserva), eq(Reserva.class)))
             .thenReturn(reservaCreada);
         
         Reserva resultado = clientService.hacerPedido(reserva);
@@ -456,7 +457,7 @@ class ClientServiceTest {
         assertNotNull(resultado);
         assertEquals(1, resultado.getId());
         assertEquals(150.0, resultado.getPrecioTotal());
-        verify(restTemplate).postForObject(contains("/api/reserva/pedido"), eq(reserva), eq(Reserva.class));
+        verify(restTemplate).postForObject(contains("/api/reservas/pedidos"), eq(reserva), eq(Reserva.class));
     }
 
     @Test
@@ -770,7 +771,7 @@ class ClientServiceTest {
     @Test
     void testHacerPedidoConErrorDeConexion() {
         when(restTemplate.postForObject(
-                contains("/api/reserva/pedido"),
+                contains("/api/reservas/pedidos"),
                 any(Reserva.class),
                 eq(Reserva.class)))
             .thenThrow(new ResourceAccessException("Error de conexión"));

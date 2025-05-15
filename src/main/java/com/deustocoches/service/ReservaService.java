@@ -57,8 +57,6 @@ public class ReservaService {
         return reservaRepository.findByFechaBetween(desde, hasta);
     }
 
-
-
     public List<Reserva> obtenerReservasCompradasPorUsuario(String emailUsuario) {
         return reservaRepository.findByUsuarioEmailAndEstado(emailUsuario, EstadoReserva.COMPRADA);
     }
@@ -74,8 +72,9 @@ public class ReservaService {
     public List<Reserva> obtenerPendientes() {
         return reservaRepository.findByEstado(EstadoReserva.PENDIENTE);
     }
-    
-    public List<Reserva> findAll() {
+
+    public List<Reserva> obtenerTodasReservas() {
         return reservaRepository.findAll();
     }
+    
 }

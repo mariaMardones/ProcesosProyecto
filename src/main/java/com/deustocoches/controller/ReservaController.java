@@ -81,7 +81,7 @@ public class ReservaController {
         }
 
         cocheController.actualizarCoche(reserva.getCoche().getMatricula(), reserva.getCoche());
-        Reserva nuevaReserva = reservaService.crearReserva(reserva);
+        Reserva nuevaReserva = reservaService.hacerPedido(reserva);
         return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
     }
     
@@ -108,7 +108,8 @@ public class ReservaController {
     @GetMapping("/filtrar/rango")
     public ResponseEntity<List<Reserva>> obtenerReservasPorRangoFechas(
             @RequestParam String desde,
-            @RequestParam String hasta) {
+            @RequestParam String hasta
+            ) {
         try {
             List<Reserva> reservas = reservaService.obtenerReservasPorRangoFechas(desde, hasta);
             return ResponseEntity.ok(reservas);
@@ -116,5 +117,4 @@ public class ReservaController {
             return ResponseEntity.badRequest().build();
         }
     }
-	 
 }

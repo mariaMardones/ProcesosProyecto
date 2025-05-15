@@ -53,13 +53,33 @@
                 <td th:text="${reserva.coche.marca}"></td>
                 <td th:text="${reserva.coche.modelo}"></td>
                 <td th:text="${reserva.fecha}"></td>
-                <td th:text="${#numbers.formatDecimal(reserva.precioTotal, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${#numbers.formatDecimal(reserva.coche.precioFinal, 1, 'COMMA', 2, 'POINT')}"></td>
                 <td th:text="${reserva.estado}"></td>
                 <td th:text="${reserva.usuario.email}"></td>
                 </td>
             </tr>
         </tbody>
     </table>
+        <!-- Filtro de reservas -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form class="row g-3 align-items-end" method="get" th:action="@{/reservas/filtrar/rango}">
+                <div class="col-md-3">
+                    <label for="desde" class="form-label">Fecha desde</label>
+                    <input type="date" class="form-control" id="desde" name="desde" th:value="${desde}">
+                </div>
+                <div class="col-md-3">
+                    <label for="hasta" class="form-label">Fecha hasta</label>
+                    <input type="date" class="form-control" id="hasta" name="hasta" th:value="${hasta}">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <a href="/coches" class="btn btn-secondary mt-3">
         <i class="fas fa-arrow-left me-2"></i>Volver a gestionar los coches
     </a>

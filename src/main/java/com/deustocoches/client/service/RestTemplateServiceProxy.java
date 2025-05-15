@@ -121,15 +121,6 @@ public class RestTemplateServiceProxy implements IServiceProxy {
             throw new RuntimeException("Logout failed: " + e.getStatusText());
         }
     }
-    @Override
-    public Reserva crearReserva(Reserva reserva) {
-        String url = apiBaseUrl + "/api/reservas/pedidos";
-        try {
-            return restTemplate.postForObject(url, reserva, Reserva.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
-        }
-    }
 
     @Override
     public Reserva actualizarReserva(Integer id, Reserva detallesReserva) {
@@ -262,7 +253,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public Reserva hacerPedido(Reserva reserva) {
-        String url = apiBaseUrl + "/api/reserva/pedido";
+        String url = apiBaseUrl + "/api/reserva/pedidos";
         try {
             return restTemplate.postForObject(url, reserva, Reserva.class);
         } catch (HttpStatusCodeException e) {

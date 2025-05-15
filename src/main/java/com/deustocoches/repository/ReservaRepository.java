@@ -14,4 +14,5 @@ import com.deustocoches.model.EstadoReserva;
         List<Reserva> findByFecha(String fecha);
         List<Reserva> findByFechaBetween(String desde, String hasta);
         
+        List<Reserva> findAll();
 }

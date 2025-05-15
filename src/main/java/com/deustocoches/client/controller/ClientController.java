@@ -23,6 +23,7 @@ public class ClientController {
 
     private String token;
     private String currentUserEmail;
+    private String selectedEstado = "PENDIENTE";
 
     @ModelAttribute
     public void addAttributes(Model model, HttpServletRequest request) {
@@ -32,7 +33,7 @@ public class ClientController {
         model.addAttribute("currentUserEmail", currentUserEmail);
         List<String> marcas = serviceProxy.obtenerMarcas();
         model.addAttribute("marcas", marcas != null ? marcas : List.of());
-        
+        model.addAttribute("selectedEstado", selectedEstado);
     }
 
     // Página principal: login (index.html)
@@ -282,7 +283,6 @@ public class ClientController {
         Reserva reserva = new Reserva();
         reserva.setUsuario(usuario);    
         reserva.setCoche(coche);
-        reserva.setPrecioTotal(coche.getPrecio()*1.21); // Precio del coche + IVA del 21%
         reserva.setEstado(EstadoReserva.valueOf(estado));
         String fechaActual = java.time.LocalDate.now().toString(); // yyyy-MM-dd
         reserva.setFecha(fechaActual);
@@ -292,7 +292,7 @@ public class ClientController {
         }
 
         try {
-            serviceProxy.crearReserva(reserva);
+            serviceProxy.hacerPedido(reserva);
             redirectAttributes.addFlashAttribute("successMessage", "Pedido realizado correctamente.");
             return "redirect:/coches/disponibles";
         } catch (RuntimeException e) {
@@ -410,5 +410,23 @@ public class ClientController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al cambiar el rol usuario: " + e.getMessage());
         }
         return "redirect:/usuarios";
+    }
+
+    @GetMapping("/reservas/filtrar/rango")
+    public String filtrarReservasPorRangoFechas(
+            @RequestParam("desde") String desde,
+            @RequestParam("hasta") String hasta,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            List<Reserva> reservas = serviceProxy.obtenerReservasPorRangoFechas(desde, hasta);
+            model.addAttribute("reservas", reservas);
+            redirectAttributes.addFlashAttribute("successMessage", "Rol del usuario cambiado correctamente.");
+            return "reservasADMIN";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al cambiar el rol usuario: " + e.getMessage());
+            return "reservasADMIN";
+        }
     }
 }

@@ -1,6 +1,9 @@
 package com.deustocoches.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -19,17 +22,22 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.deustocoches.client.controller.ClientController;
 import com.deustocoches.client.service.RestTemplateServiceProxy;
 import com.deustocoches.model.Coche;
 import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.model.Reserva;
 import com.deustocoches.model.TipoRol;
 import com.deustocoches.model.Usuario;
+
+import org.springframework.ui.Model;
 
 @WebMvcTest(com.deustocoches.client.controller.ClientController.class) 
 public class ClientControllerTest {
@@ -39,6 +47,15 @@ public class ClientControllerTest {
 
     @MockBean
     private RestTemplateServiceProxy serviceProxy;
+
+    @MockBean
+    private ClientController clientController;
+
+    @Mock
+    private Model model;
+
+    @Mock
+    private RedirectAttributes redirectAttributes;
 
 
     private Usuario usuario;
@@ -385,4 +402,33 @@ public class ClientControllerTest {
 
         verify(serviceProxy, times(1)).obtenerReservasPendientes();
     }
+
+    @Test
+    void testFiltrarReservasPorRangoFechas_ok() {
+        String desde = "2024-01-01";
+        String hasta = "2024-01-31";
+        List<Reserva> reservasMock = Arrays.asList(new Reserva(), new Reserva());
+
+        when(serviceProxy.obtenerReservasPorRangoFechas(desde, hasta)).thenReturn(reservasMock);
+
+        String view = clientController.filtrarReservasPorRangoFechas(desde, hasta, model, redirectAttributes);
+
+        assertEquals("reservasADMIN", view);
+        verify(model).addAttribute("reservas", reservasMock);
+        verify(redirectAttributes).addFlashAttribute(eq("successMessage"), anyString());
+    }
+
+    @Test
+    void testFiltrarReservasPorRangoFechas_error() {
+        String desde = "2024-01-01";
+        String hasta = "2024-01-31";
+
+        when(serviceProxy.obtenerReservasPorRangoFechas(desde, hasta)).thenThrow(new RuntimeException("Error"));
+
+        String view = clientController.filtrarReservasPorRangoFechas(desde, hasta, model, redirectAttributes);
+
+        assertEquals("reservasADMIN", view);
+        verify(redirectAttributes).addFlashAttribute(eq("errorMessage"), contains("Error"));
+    }
+
 }

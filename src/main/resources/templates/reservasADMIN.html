@@ -72,17 +72,21 @@
                     <label for="hasta" class="form-label">Fecha hasta</label>
                     <input type="date" class="form-control" id="hasta" name="hasta" th:value="${hasta}">
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
+                <div class="col-md-3 d-flex align-items-end gap-2">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-filter me-2"></i>Filtrar
                     </button>
                 </div>
             </form>
+            <a href="/reservas/pendientes" class="btn btn-outline-primary">
+                <i class="fas fa-users me-2"></i>Reiniciar Busqueda
+            </a>
         </div>
     </div>
     <a href="/coches" class="btn btn-secondary mt-3">
         <i class="fas fa-arrow-left me-2"></i>Volver a gestionar los coches
     </a>
+
     <!-- Footer -->
     <footer class="bg-light shadow-sm mt-5">
         <div class="container py-3 text-center">

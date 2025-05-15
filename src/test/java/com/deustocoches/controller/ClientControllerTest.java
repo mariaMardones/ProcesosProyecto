@@ -22,7 +22,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,22 +50,15 @@ public class ClientControllerTest {
     @MockBean
     private RestTemplateServiceProxy serviceProxy;
 
-    @MockBean
-    private ClientController clientController;
-
-    @Mock
-    private Model model;
-
-    @Mock
-    private RedirectAttributes redirectAttributes;
-
-
     private Usuario usuario;
     private Coche coche;
     private Reserva reserva;
 
     @BeforeEach
     void setUp() {
+
+        MockitoAnnotations.openMocks(this);
+        
         usuario = new Usuario();
         usuario.setId(1L);
         usuario.setNombre("Juan");
@@ -404,31 +399,79 @@ public class ClientControllerTest {
     }
 
     @Test
-    void testFiltrarReservasPorRangoFechas_ok() {
+    void testFiltrarReservasPorRangoFechas_ok() throws Exception {
         String desde = "2024-01-01";
         String hasta = "2024-01-31";
-        List<Reserva> reservasMock = Arrays.asList(new Reserva(), new Reserva());
+
+        // Crea un coche y usuario de prueba
+        Coche coche = new Coche();
+        coche.setMatricula("1234ABC");
+        coche.setMarca("Toyota");
+        coche.setModelo("Corolla");
+        coche.setAnio(2020);
+        coche.setColor("Azul");
+        coche.setPrecio(20000.0);
+        coche.setDisponible(true);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setNombre("Juan");
+        usuario.setApellido("García");
+        usuario.setEmail("juan@example.com");
+        usuario.setPassword("password123");
+        usuario.setTlf("666777888");
+        usuario.setRol(TipoRol.CLIENTE);
+
+        Reserva reserva1 = new Reserva();
+        reserva1.setId(1);
+        reserva1.setUsuario(usuario);
+        reserva1.setCoche(coche);
+        reserva1.setFecha("2023-04-23");
+        reserva1.setPrecioTotal(500.0);
+        reserva1.setEstado(EstadoReserva.PENDIENTE);
+
+        Reserva reserva2 = new Reserva();
+        reserva2.setId(2);
+        reserva2.setUsuario(usuario);
+        reserva2.setCoche(coche);
+        reserva2.setFecha("2023-05-01");
+        reserva2.setPrecioTotal(600.0);
+        reserva2.setEstado(EstadoReserva.PENDIENTE);
+
+        List<Reserva> reservasMock = Arrays.asList(reserva1, reserva2);
 
         when(serviceProxy.obtenerReservasPorRangoFechas(desde, hasta)).thenReturn(reservasMock);
 
-        String view = clientController.filtrarReservasPorRangoFechas(desde, hasta, model, redirectAttributes);
+        mockMvc.perform(get("/reservas/filtrar/rango")
+                .param("desde", desde)
+                .param("hasta", hasta))
+                .andExpect(status().isOk())
+                .andExpect(view().name("reservasADMIN"))
+                .andExpect(model().attribute("reservas", reservasMock))
+                .andExpect(model().attributeExists("successMessage"));
 
-        assertEquals("reservasADMIN", view);
-        verify(model).addAttribute("reservas", reservasMock);
-        verify(redirectAttributes).addFlashAttribute(eq("successMessage"), anyString());
-    }
+        verify(serviceProxy, times(1)).obtenerReservasPorRangoFechas(desde, hasta);
+}
 
-    @Test
-    void testFiltrarReservasPorRangoFechas_error() {
+
+     @Test
+     void testFiltrarReservasPorRangoFechas_error() throws Exception {
         String desde = "2024-01-01";
         String hasta = "2024-01-31";
 
-        when(serviceProxy.obtenerReservasPorRangoFechas(desde, hasta)).thenThrow(new RuntimeException("Error"));
+        when(serviceProxy.obtenerReservasPorRangoFechas(desde, hasta))
+                .thenThrow(new RuntimeException("Error"));
 
-        String view = clientController.filtrarReservasPorRangoFechas(desde, hasta, model, redirectAttributes);
+        mockMvc.perform(get("/reservas/filtrar/rango")
+                .param("desde", desde)
+                .param("hasta", hasta))
+                .andExpect(status().isOk())
+                .andExpect(view().name("reservasADMIN"))
+                .andExpect(model().attributeExists("errorMessage")); // 🔁 Aquí va model() en vez de flash()
 
-        assertEquals("reservasADMIN", view);
-        verify(redirectAttributes).addFlashAttribute(eq("errorMessage"), contains("Error"));
-    }
+        verify(serviceProxy, times(1)).obtenerReservasPorRangoFechas(desde, hasta);
+     }
+
+
 
 }

@@ -42,9 +42,6 @@ public class ReservaControllerTest {
     private ReservaService reservaService;
 
     @MockBean
-    private ReservaController reservaController;
-
-    @MockBean
     private CocheController cocheController;
 
     @Autowired
@@ -226,32 +223,34 @@ public class ReservaControllerTest {
     }
 
     @Test
-    void testObtenerReservasPorRangoFechas_ok() {
+        void testObtenerReservasPorRangoFechas_ok() throws Exception {
         String desde = "2024-01-01";
         String hasta = "2024-01-31";
         List<Reserva> reservasMock = Arrays.asList(new Reserva(), new Reserva());
 
         when(reservaService.obtenerReservasPorRangoFechas(desde, hasta)).thenReturn(reservasMock);
 
-        ResponseEntity<List<Reserva>> response = reservaController.obtenerReservasPorRangoFechas(desde, hasta);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(reservasMock, response.getBody());
+        mockMvc.perform(get("/api/reservas/filtrar/rango")
+                .param("desde", desde)
+                .param("hasta", hasta))
+                .andExpect(status().isOk());
         verify(reservaService, times(1)).obtenerReservasPorRangoFechas(desde, hasta);
-    }
+        
+        }
 
-    @Test
-    void testObtenerReservasPorRangoFechas_badRequest() {
-        String desde = "2024-01-01";
-        String hasta = "2024-01-31";
+        @Test
+        void testObtenerReservasPorRangoFechas_badRequest() throws Exception {
+                String desde = "2024-01-01";
+                String hasta = "2024-01-31";
 
-        when(reservaService.obtenerReservasPorRangoFechas(desde, hasta)).thenThrow(new RuntimeException("Error"));
+                when(reservaService.obtenerReservasPorRangoFechas(desde, hasta)).thenThrow(new RuntimeException("Error"));
 
-        ResponseEntity<List<Reserva>> response = reservaController.obtenerReservasPorRangoFechas(desde, hasta);
+                mockMvc.perform(get("/api/reservas/filtrar/rango")
+                        .param("desde", desde)
+                        .param("hasta", hasta))
+                        .andExpect(status().isBadRequest());
 
-        assertEquals(400, response.getStatusCodeValue());
-        assertNull(response.getBody());
-        verify(reservaService, times(1)).obtenerReservasPorRangoFechas(desde, hasta);
-    }
+                verify(reservaService, times(1)).obtenerReservasPorRangoFechas(desde, hasta);
+        }
 
 }

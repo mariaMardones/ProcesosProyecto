@@ -416,17 +416,14 @@ public class ClientController {
     public String filtrarReservasPorRangoFechas(
             @RequestParam("desde") String desde,
             @RequestParam("hasta") String hasta,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
+            Model model) {
         try {
             List<Reserva> reservas = serviceProxy.obtenerReservasPorRangoFechas(desde, hasta);
             model.addAttribute("reservas", reservas);
-            redirectAttributes.addFlashAttribute("successMessage", "Rol del usuario cambiado correctamente.");
-            return "reservasADMIN";
+            model.addAttribute("successMessage", "Rol del usuario cambiado correctamente.");
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error al cambiar el rol usuario: " + e.getMessage());
-            return "reservasADMIN";
+            model.addAttribute("errorMessage", "Error al cambiar el rol usuario: " + e.getMessage());
         }
+        return "reservasADMIN";
     }
 }

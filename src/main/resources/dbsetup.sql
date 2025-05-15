@@ -6,4 +6,3 @@ CREATE SCHEMA restapidb;
 
 GRANT ALL ON restapidb.* TO 'spq'@'%';
 FLUSH PRIVILEGES;
-

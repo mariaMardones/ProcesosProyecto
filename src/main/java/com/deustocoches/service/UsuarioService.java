@@ -31,6 +31,15 @@ public class UsuarioService {
     }
 
     public Usuario registrarUsuario(Usuario usuario) {
+        List<Usuario> usuarios = repository.findAll();
+        for (Usuario u : usuarios) {
+            if (u.getEmail().equals(usuario.getEmail())) {
+                throw new IllegalArgumentException("Ya existe un usuario registrado con ese email.");
+            }
+            if (u.getTlf().equals(usuario.getTlf())) {
+                throw new IllegalArgumentException("Ya existe un usuario registrado con ese teléfono.");
+            }
+        }
         if (usuario.getRol()== null) {
             usuario.setRol(TipoRol.CLIENTE);
         }

@@ -1,5 +1,7 @@
 package com.deustocoches.controller;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -10,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.deustocoches.model.Coche;
@@ -36,6 +40,9 @@ public class ReservaControllerTest {
 
     @MockBean
     private ReservaService reservaService;
+
+    @MockBean
+    private ReservaController reservaController;
 
     @MockBean
     private CocheController cocheController;
@@ -217,4 +224,34 @@ public class ReservaControllerTest {
 
         verify(reservaService, times(1)).obtenerReservasCompradasPorUsuario("juan.garcia@example.com");
     }
+
+    @Test
+    void testObtenerReservasPorRangoFechas_ok() {
+        String desde = "2024-01-01";
+        String hasta = "2024-01-31";
+        List<Reserva> reservasMock = Arrays.asList(new Reserva(), new Reserva());
+
+        when(reservaService.obtenerReservasPorRangoFechas(desde, hasta)).thenReturn(reservasMock);
+
+        ResponseEntity<List<Reserva>> response = reservaController.obtenerReservasPorRangoFechas(desde, hasta);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(reservasMock, response.getBody());
+        verify(reservaService, times(1)).obtenerReservasPorRangoFechas(desde, hasta);
+    }
+
+    @Test
+    void testObtenerReservasPorRangoFechas_badRequest() {
+        String desde = "2024-01-01";
+        String hasta = "2024-01-31";
+
+        when(reservaService.obtenerReservasPorRangoFechas(desde, hasta)).thenThrow(new RuntimeException("Error"));
+
+        ResponseEntity<List<Reserva>> response = reservaController.obtenerReservasPorRangoFechas(desde, hasta);
+
+        assertEquals(400, response.getStatusCodeValue());
+        assertNull(response.getBody());
+        verify(reservaService, times(1)).obtenerReservasPorRangoFechas(desde, hasta);
+    }
+
 }

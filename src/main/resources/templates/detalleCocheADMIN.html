@@ -39,11 +39,7 @@
                     <span th:if="${coche.descuento == null or coche.descuento == 0}">NO</span>
                     <span th:unless="${coche.descuento == null or coche.descuento == 0}" th:text="${coche.descuento + ' %'}"></span>
                 </td>
-                <td>
-                    <span th:if="${coche.descuento == null or coche.descuento == 0}" th:text="${coche.precio}"></span>
-                    <span th:unless="${coche.descuento == null or coche.descuento == 0}" 
-                          th:text="${#numbers.formatDecimal(coche.precio * (1 - coche.descuento / 100), 1, 'POINT', 2, 'NONE')}"></span>
-                </td>
+                <td th:text="${coche.precioFinal}"></td>
                 <td>
                     <span th:text="${coche.disponible} ? 'Sí' : 'No'"></span>
                 </td>

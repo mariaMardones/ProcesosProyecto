@@ -80,6 +80,7 @@ public class ReservaController {
             reserva.setFecha(LocalDate.now().toString());
         }
 
+        reserva.getCoche().setDisponible(false);
         cocheController.actualizarCoche(reserva.getCoche().getMatricula(), reserva.getCoche());
         Reserva nuevaReserva = reservaService.hacerPedido(reserva);
         return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);

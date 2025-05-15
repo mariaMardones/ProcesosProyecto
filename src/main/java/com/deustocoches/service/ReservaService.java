@@ -27,6 +27,10 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
+    public Reserva hacerPedido(Reserva reserva) {
+        return reservaRepository.save(reserva);
+    }
+
     public Reserva actualizarReserva(Integer id, Reserva detallesReserva) {
         return reservaRepository.findById(id)
                 .map(reserva -> {

@@ -53,16 +53,11 @@ jobs:
     
     - name: Generate Doxygen Documentation
       run: |
-        # Usar directamente el Doxyfile existente
         doxygen src/main/resources/Doxyfile
-        
-        # Asegurar que el directorio de salida exista
-        mkdir -p target/doxygen/html
-    
+
     - name: Publish on Github Pages
       uses: crazy-max/ghaction-github-pages@v2.3.0
       with:
-        build_dir:  docs/doxygen/html
+        build_dir: docs/doxygen/html
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        

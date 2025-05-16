@@ -24,12 +24,31 @@
 */
 var NAVTREE =
 [
-  [ "DeustoCoches", "index.html", ]
+  [ "DeustoCoches", "index.html", [
+    [ "Paquetes", "namespaces.html", [
+      [ "Lista de paquetes", "namespaces.html", "namespaces_dup" ]
+    ] ],
+    [ "Clases", "annotated.html", [
+      [ "Lista de clases", "annotated.html", "annotated_dup" ],
+      [ "Índice de clases", "classes.html", null ],
+      [ "Jerarquía de clases", "hierarchy.html", "hierarchy" ],
+      [ "Miembros de clases", "functions.html", [
+        [ "Todos", "functions.html", "functions_dup" ],
+        [ "Funciones", "functions_func.html", "functions_func" ],
+        [ "Variables", "functions_vars.html", null ]
+      ] ]
+    ] ],
+    [ "Archivos", "files.html", [
+      [ "Lista de archivos", "files.html", "files_dup" ]
+    ] ]
+  ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"index.html"
+"_client_controller_8java.html",
+"classcom_1_1deustocoches_1_1model_1_1_coche.html#a0cdfd4e92a310e02d7c341bdb72b9148",
+"classcom_1_1deustocoches_1_1service_1_1_usuario_service.html#ad7b6aa5ece0e931ff846281e117c4c47"
 ];
 
 var SYNCONMSG = 'pulsar para deshabilitar sincronización';

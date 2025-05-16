@@ -201,4 +201,56 @@ public class CocheControllerTest {
 
         verify(cocheService, times(1)).ListarCochesDisponibles();
     }
+    
+    @Test
+    void testAplicarDescuento() throws Exception {
+        String matricula = "1234ABC";
+        double descuento = 10.0;
+
+        Coche cocheConDescuento = new Coche();
+        cocheConDescuento.setMatricula(matricula);
+        cocheConDescuento.setDescuento(descuento);
+
+        when(cocheService.aplicarDescuento(matricula, descuento)).thenReturn(cocheConDescuento);
+
+        mockMvc.perform(put("/api/coche/aplicarDescuento")
+                .param("matricula", matricula)
+                .param("descuento", String.valueOf(descuento))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.matricula").value(matricula))
+                .andExpect(jsonPath("$.descuento").value(descuento));
+    }
+
+    @Test
+    void testEliminarDescuento() throws Exception {
+        String matricula = "1234ABC";
+
+        Coche cocheSinDescuento = new Coche();
+        cocheSinDescuento.setMatricula(matricula);
+        cocheSinDescuento.setDescuento(0.0);
+
+        when(cocheService.eliminarDescuento(matricula)).thenReturn(cocheSinDescuento);
+
+        mockMvc.perform(put("/api/coche/eliminarDescuento")
+                .param("matricula", matricula)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.matricula").value(matricula))
+                .andExpect(jsonPath("$.descuento").value(0.0));
+    }
+
+    @Test
+    void testAplicarDescuentoCocheNoExiste() throws Exception {
+        String matricula = "NOEXISTE";
+        double descuento = 5.0;
+
+        when(cocheService.aplicarDescuento(matricula, descuento)).thenThrow(new RuntimeException("Coche no encontrado"));
+
+        mockMvc.perform(put("/api/coche/aplicarDescuento")
+                .param("matricula", matricula)
+                .param("descuento", String.valueOf(descuento))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

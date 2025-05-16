@@ -101,4 +101,75 @@ class CocheServiceTest {
         verify(cocheRepository, times(1)).existsById("1234ABC");
         verify(cocheRepository, times(1)).deleteById("1234ABC");
     }
+    
+    
+    @Test
+    void testAplicarDescuento_Exito() {
+        String matricula = "1234ABC";
+        double descuento = 15.0;
+
+        Coche coche = new Coche();
+        coche.setMatricula(matricula);
+        coche.setDescuento(0.0);
+
+        when(cocheRepository.findById(matricula)).thenReturn(Optional.of(coche));
+        when(cocheRepository.save(any(Coche.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Coche resultado = cocheService.aplicarDescuento(matricula, descuento);
+
+        assertNotNull(resultado);
+        assertEquals(descuento, resultado.getDescuento());
+        verify(cocheRepository).findById(matricula);
+        verify(cocheRepository).save(any(Coche.class));
+    }
+
+    @Test
+    void testAplicarDescuento_CocheNoEncontrado() {
+        String matricula = "NOEXISTE";
+        double descuento = 10.0;
+
+        when(cocheRepository.findById(matricula)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            cocheService.aplicarDescuento(matricula, descuento);
+        });
+
+        assertEquals("Coche con matrícula " + matricula + " no encontrado", exception.getMessage());
+        verify(cocheRepository).findById(matricula);
+        verify(cocheRepository, never()).save(any());
+    }
+
+    @Test
+    void testEliminarDescuento_Exito() {
+        String matricula = "1234ABC";
+
+        Coche coche = new Coche();
+        coche.setMatricula(matricula);
+        coche.setDescuento(10.0);
+
+        when(cocheRepository.findById(matricula)).thenReturn(Optional.of(coche));
+        when(cocheRepository.save(any(Coche.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Coche resultado = cocheService.eliminarDescuento(matricula);
+
+        assertNotNull(resultado);
+        assertEquals(0.0, resultado.getDescuento());
+        verify(cocheRepository).findById(matricula);
+        verify(cocheRepository).save(any(Coche.class));
+    }
+
+    @Test
+    void testEliminarDescuento_CocheNoEncontrado() {
+        String matricula = "NOEXISTE";
+
+        when(cocheRepository.findById(matricula)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            cocheService.eliminarDescuento(matricula);
+        });
+
+        assertEquals("Coche con matrícula " + matricula + " no encontrado", exception.getMessage());
+        verify(cocheRepository).findById(matricula);
+        verify(cocheRepository, never()).save(any());
+    }
 }

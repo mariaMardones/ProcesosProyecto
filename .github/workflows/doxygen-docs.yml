@@ -58,8 +58,8 @@ jobs:
     - name: Add .nojekyll file
       run: touch docs/doxygen/html/.nojekyll
 
-    - name: Copiar README convertido a HTML como index.html
-      run: cp README.html docs/index.html
+    - name: Añadir .nojekyll en la raíz
+      run: touch docs/.nojekyll
 
     - name: Publish on Github Pages
       uses: crazy-max/ghaction-github-pages@v2.3.0

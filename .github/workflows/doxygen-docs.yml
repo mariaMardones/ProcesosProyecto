@@ -55,9 +55,12 @@ jobs:
       run: |
         doxygen src/main/resources/Doxyfile
 
+    - name: Add .nojekyll file
+      run: touch docs/doxygen/html/.nojekyll
+
     - name: Publish on Github Pages
       uses: crazy-max/ghaction-github-pages@v2.3.0
       with:
-        build_dir: docs
+        build_dir: docs/doxygen/html
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>SpringBoot + REST API + MySQL</title>
+</head>
+<body>
+  <h1>SpringBoot + REST API + MySQL</h1>
+
+  <h2>Descripción</h2>
+  <p>Este proyecto utiliza Spring Boot para crear una REST API y se conecta a una base de datos MySQL utilizando JPA, con una aplicación de ejemplo que maneja reservas, coches y usuarios.</p>
+  <p>El proyecto se basa en un servicio backend para gestionar reservas de coches y usuarios mediante una API REST. Usa Spring Boot y Spring Data JPA para interactuar con la base de datos MySQL.</p>
+  <p>La estructura básica de un proyecto Spring Boot se puede inicializar utilizando Spring Initializr en <a href="https://start.spring.io/">https://start.spring.io/</a>.</p>
+
+  <h2>Documentación técnica</h2>
+  <ul>
+    <li>
+      <a href="doxygen/html/index.html" target="_blank">
+        Ver documentación generada automáticamente (Doxygen)
+      </a>
+    </li>
+  </ul>
+
+  <h2>Requisitos previos</h2>
+  <ul>
+    <li>Java 17+</li>
+    <li>Maven</li>
+    <li>MySQL</li>
+  </ul>
+
+  <h2>Lanzar la aplicación</h2>
+  <p>Requisitos previos:<br>
+  Asegúrate de que las dependencias necesarias están especificadas en el archivo <code>pom.xml</code> y la configuración de la base de datos en el archivo <code>src/main/resources/application.properties</code>.</p>
+  <p>Paso 1: Compilar y descargar dependencias</p>
+  <pre><code>mvn compile</code></pre>
+  <p>Paso 2: Configuración de la base de datos</p>
+  <p>Usa el archivo <code>src/main/resources/dbsetup.sql</code> para crear la base de datos y el usuario específico <code>spq</code> (con contraseña <code>spq</code>) para la aplicación. Si usas la línea de comandos de MySQL, ejecuta:</p>
+  <pre><code>mysql –uroot -p &lt; src/main/resources/dbsetup.sql</code></pre>
+  <p>O usa el contenido del archivo en cualquier otro cliente MySQL que estés utilizando.</p>
+  <p>Paso 3: Ejecutar la aplicación</p>
+  <pre><code>mvn spring-boot:run</code></pre>
+  <p>Si no hay errores, la aplicación estará disponible en <a href="http://localhost:8080/">http://localhost:8080/</a>. Puedes detener la aplicación presionando Ctrl+C.</p>
+
+  <h2>Acceso a la aplicación</h2>
+  <p>Una vez que el programa esté en funcionamiento, puede acceder a DeustoCoches a través de:</p>
+  <pre><code>http://localhost:8080</code></pre>
+
+  <h2>Características</h2>
+  <ul>
+    <li>Registro e inicio de sesión de usuarios.</li>
+    <li>Ver el listado de coches disponibles.</li>
+    <li>Ver el listado de todos los usuarios registrados.</li>
+    <li>Como cliente, ver las compras hechas.</li>
+    <li>Como admin, bloquear y desbloquear usuarios.</li>
+    <li>Hacer compras</li>
+    <li>…</li>
+  </ul>
+
+  <h2>Ejecución de tests</h2>
+  <p>Puede ejecutar las distintas pruebas del proyecto utilizando los siguientes comandos:</p>
+  <p>Tests unitarios:</p>
+  <pre><code>mvn test</code></pre>
+
+  <h2>Creadores</h2>
+  <p>Este proyecto ha sido desarrollado por:</p>
+  <ul>
+    <li><strong>Markel Urquiza</strong> - <a href="https://github.com/MarkelUrquiza">MarkelUrquiza</a></li>
+    <li><strong>Génesis Balcazar</strong> - <a href="https://github.com/gnnesis">gnnesis</a></li>
+    <li><strong>Ekaitz Hernando</strong> - <a href="https://github.com/hernandoekaitz">hernandoekaitz</a></li>
+    <li><strong>Maria Mardones</strong> - <a href="https://github.com/mariaMardones">mariaMardones</a></li>
+    <li><strong>Ekhiotz Garay</strong> - <a href="https://github.com/EkHi04">EkHi04</a></li>
+  </ul>
+</body>
+</html>

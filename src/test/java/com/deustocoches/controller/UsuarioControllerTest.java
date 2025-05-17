@@ -196,6 +196,19 @@ public class UsuarioControllerTest {
     }
 
     @Test
+    void testIniciarSesion_InternalServerError() throws Exception {
+        when(usuarioService.logIn("juan.garcia@example.com", "password123"))
+                .thenThrow(new RuntimeException("Error inesperado"));
+
+        mockMvc.perform(post("/api/usuario/login")
+                .param("email", "juan.garcia@example.com")
+                .param("password", "password123"))
+                .andExpect(status().isInternalServerError());
+
+        verify(usuarioService, times(1)).logIn("juan.garcia@example.com", "password123");
+    }
+
+    @Test
     void testCerrarSesion() throws Exception {
         String token = "abc123token";
         when(usuarioService.logout(token))
@@ -213,6 +226,18 @@ public class UsuarioControllerTest {
         String token = "invalid-token";
         when(usuarioService.logout(token))
                 .thenReturn(Optional.of(false));
+
+        mockMvc.perform(post("/api/usuario/logout")
+                .param("token", token))
+                .andExpect(status().isUnauthorized());
+
+        verify(usuarioService, times(1)).logout(token);
+    }
+
+    @Test
+    void testCerrarSesion_OptionalEmpty() throws Exception {
+        String token = "token-invalido";
+        when(usuarioService.logout(token)).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/api/usuario/logout")
                 .param("token", token))
@@ -241,6 +266,30 @@ public class UsuarioControllerTest {
     }
 
     @Test
+    void testBloquearUsuario_NotFound() throws Exception {
+        when(usuarioService.bloquearUsuario("noexiste@example.com"))
+                .thenThrow(new IllegalArgumentException("Usuario no encontrado"));
+
+        mockMvc.perform(put("/api/usuario/bloquear")
+                .param("email", "noexiste@example.com"))
+                .andExpect(status().isNotFound());
+
+        verify(usuarioService, times(1)).bloquearUsuario("noexiste@example.com");
+    }
+
+    @Test
+    void testBloquearUsuario_InternalServerError() throws Exception {
+        when(usuarioService.bloquearUsuario("juan.garcia@example.com"))
+                .thenThrow(new RuntimeException("Error inesperado"));
+
+        mockMvc.perform(put("/api/usuario/bloquear")
+                .param("email", "juan.garcia@example.com"))
+                .andExpect(status().isInternalServerError());
+
+        verify(usuarioService, times(1)).bloquearUsuario("juan.garcia@example.com");
+    }
+
+    @Test
     void testDesbloquearUsuario() throws Exception {
         Usuario usuarioDesbloqueado = new Usuario();
         usuarioDesbloqueado.setId(1L);
@@ -257,5 +306,110 @@ public class UsuarioControllerTest {
                 .andExpect(jsonPath("$.bloqueado").value(false));
 
         verify(usuarioService, times(1)).desbloquearUsuario("juan.garcia@example.com");
+    }
+
+    @Test
+    void testDesbloquearUsuario_NotFound() throws Exception {
+        when(usuarioService.desbloquearUsuario("noexiste@example.com"))
+                .thenThrow(new IllegalArgumentException("Usuario no encontrado"));
+
+        mockMvc.perform(put("/api/usuario/desbloquear")
+                .param("email", "noexiste@example.com"))
+                .andExpect(status().isNotFound());
+
+        verify(usuarioService, times(1)).desbloquearUsuario("noexiste@example.com");
+    }
+
+    @Test
+    void testDesbloquearUsuario_InternalServerError() throws Exception {
+        when(usuarioService.desbloquearUsuario("juan.garcia@example.com"))
+                .thenThrow(new RuntimeException("Error inesperado"));
+
+        mockMvc.perform(put("/api/usuario/desbloquear")
+                .param("email", "juan.garcia@example.com"))
+                .andExpect(status().isInternalServerError());
+
+        verify(usuarioService, times(1)).desbloquearUsuario("juan.garcia@example.com");
+    }
+    @Test
+    void testCrearAdmin_OK() throws Exception {
+        Usuario usuarioAdmin = new Usuario();
+        usuarioAdmin.setId(1L);
+        usuarioAdmin.setEmail("juan.garcia@example.com");
+        usuarioAdmin.setRol(TipoRol.ADMIN);
+
+        when(usuarioService.crearAdmin("juan.garcia@example.com")).thenReturn(usuarioAdmin);
+
+        mockMvc.perform(put("/api/usuario/crearadmin")
+                .param("email", "juan.garcia@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rol").value("ADMIN"));
+
+        verify(usuarioService, times(1)).crearAdmin("juan.garcia@example.com");
+    }
+
+    @Test
+    void testCrearAdmin_NotFound() throws Exception {
+        when(usuarioService.crearAdmin("noexiste@example.com"))
+                .thenThrow(new IllegalArgumentException("Usuario no encontrado"));
+
+        mockMvc.perform(put("/api/usuario/crearadmin")
+                .param("email", "noexiste@example.com"))
+                .andExpect(status().isNotFound());
+
+        verify(usuarioService, times(1)).crearAdmin("noexiste@example.com");
+    }
+
+    @Test
+    void testCrearAdmin_InternalServerError() throws Exception {
+        when(usuarioService.crearAdmin("juan.garcia@example.com"))
+                .thenThrow(new RuntimeException("Error inesperado"));
+
+        mockMvc.perform(put("/api/usuario/crearadmin")
+                .param("email", "juan.garcia@example.com"))
+                .andExpect(status().isInternalServerError());
+
+        verify(usuarioService, times(1)).crearAdmin("juan.garcia@example.com");
+    }
+
+    @Test
+        void testEliminarAdmin_OK() throws Exception {
+        Usuario usuarioCliente = new Usuario();
+        usuarioCliente.setId(1L);
+        usuarioCliente.setEmail("juan.garcia@example.com");
+        usuarioCliente.setRol(TipoRol.CLIENTE);
+
+        when(usuarioService.eliminarAdmin("juan.garcia@example.com")).thenReturn(usuarioCliente);
+
+        mockMvc.perform(put("/api/usuario/eliminaradmin")
+                .param("email", "juan.garcia@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rol").value("CLIENTE"));
+
+        verify(usuarioService, times(1)).eliminarAdmin("juan.garcia@example.com");
+    }
+
+    @Test
+    void testEliminarAdmin_NotFound() throws Exception {
+        when(usuarioService.eliminarAdmin("noexiste@example.com"))
+                .thenThrow(new IllegalArgumentException("Usuario no encontrado"));
+
+        mockMvc.perform(put("/api/usuario/eliminaradmin")
+                .param("email", "noexiste@example.com"))
+                .andExpect(status().isNotFound());
+
+        verify(usuarioService, times(1)).eliminarAdmin("noexiste@example.com");
+    }
+
+    @Test
+    void testEliminarAdmin_InternalServerError() throws Exception {
+        when(usuarioService.eliminarAdmin("juan.garcia@example.com"))
+                .thenThrow(new RuntimeException("Error inesperado"));
+
+        mockMvc.perform(put("/api/usuario/eliminaradmin")
+                .param("email", "juan.garcia@example.com"))
+                .andExpect(status().isInternalServerError());
+
+        verify(usuarioService, times(1)).eliminarAdmin("juan.garcia@example.com");
     }
 }

@@ -18,7 +18,7 @@
     <description>Proyecto para la asignatura de PCS</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <server.hostname>127.0.0.1</server.hostname>
         <server.port>8080</server.port>
         <api.base.url>http://${server.hostname}:${server.port}/api</api.base.url>

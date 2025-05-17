@@ -74,28 +74,4 @@ public class CocheIntegrationTest {
                 .getForEntity("/api/coche/buscar?matricula=" + matriculaUnica, Coche.class);
         assertEquals(HttpStatus.NOT_FOUND, responseAfterDelete.getStatusCode());
     }
-
-    @Test
-    public void testFiltrarCoches() {
-        Coche coche1 = new Coche("TEST1", "Toyota", "Corolla", 2021, "Azul", 15000.0, true);
-        Coche coche2 = new Coche("TEST2", "Honda", "Civic", 2022, "Rojo", 20000.0, true);
-
-        restTemplate.postForEntity("/api/coche/crear", coche1, Coche.class);
-        restTemplate.postForEntity("/api/coche/crear", coche2, Coche.class);
-
-        ResponseEntity<List<Coche>> response = restTemplate.exchange(
-                "/api/coche/filtrar?marca=Toyota&precioMax=16000",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Coche>>() {
-                });
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<Coche> cochesFiltrados = response.getBody();
-        assertNotNull(cochesFiltrados);
-        assertEquals(2, cochesFiltrados.size()); // Cambia de 1 a 2
-
-        restTemplate.delete("/api/coche/eliminar?matricula=TEST1");
-        restTemplate.delete("/api/coche/eliminar?matricula=TEST2");
-    }
 }

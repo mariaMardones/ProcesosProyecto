@@ -52,7 +52,6 @@ jobs:
       - name: Prepare docs folder
         run: |
           mkdir -p docs
-          cp README.md docs/index.md
           mkdir -p docs/doxygen
           cp -r doxygen/html/* docs/doxygen/ || true
           mkdir -p docs/site

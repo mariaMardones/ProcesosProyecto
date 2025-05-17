@@ -61,6 +61,57 @@ class UsuarioServiceTest {
     }
 
     @Test
+    void testRegistrarUsuario_ExcepcionEmailYaRegistrado() {
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente.setEmail("test@correo.com");
+        usuarioExistente.setTlf("123456789");
+
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setEmail("test@correo.com");
+        nuevoUsuario.setTlf("987654321");
+
+        when(usuarioRepository.findAll()).thenReturn(List.of(usuarioExistente));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            usuarioService.registrarUsuario(nuevoUsuario);
+        });
+        assertEquals("Ya existe un usuario registrado con ese email.", ex.getMessage());
+    }
+
+    @Test
+    void testRegistrarUsuario_ExcepcionTelefonoYaRegistrado() {
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente.setEmail("test@correo.com");
+        usuarioExistente.setTlf("123456789");
+
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setEmail("otro@correo.com");
+        nuevoUsuario.setTlf("123456789");
+
+        when(usuarioRepository.findAll()).thenReturn(List.of(usuarioExistente));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            usuarioService.registrarUsuario(nuevoUsuario);
+        });
+        assertEquals("Ya existe un usuario registrado con ese teléfono.", ex.getMessage());
+    }
+
+    @Test
+    void testRegistrarUsuario_SinRolPorDefectoCliente() {
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setEmail("nuevo@correo.com");
+        nuevoUsuario.setTlf("111222333");
+        nuevoUsuario.setRol(null);
+
+        when(usuarioRepository.findAll()).thenReturn(List.of());
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Usuario guardado = usuarioService.registrarUsuario(nuevoUsuario);
+
+        assertEquals(TipoRol.CLIENTE, guardado.getRol());
+    }
+
+    @Test
     void testActualizarUsuarioInexistente() {
         String emailInexistente = "noexiste@example.com";
         Usuario usuario = new Usuario();
@@ -146,6 +197,32 @@ class UsuarioServiceTest {
         
         assertEquals("Usuario no encontrado con el email proporcionado.", exception.getMessage());
         verify(usuarioRepository).findByEmail(email);
+    }
+
+    @Test
+    void testLogIn_EmailYaEnTokensDevuelveEmpty() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("test@correo.com");
+        usuario.setPassword("1234");
+        UsuarioService.tokens.put("token123", usuario);
+
+        Optional<String> result = usuarioService.logIn("test@correo.com", "1234");
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testLogIn_UsuarioBloqueadoLanzaExcepcion() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("bloqueado@correo.com");
+        usuario.setPassword("pass");
+        usuario.setBloqueado(true);
+
+        when(usuarioRepository.findByEmail("bloqueado@correo.com")).thenReturn(usuario);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            usuarioService.logIn("bloqueado@correo.com", "pass");
+        });
+        assertEquals("Usuario bloqueado.", ex.getMessage());
     }
 
     @Test
@@ -283,5 +360,53 @@ class UsuarioServiceTest {
         Set<String> tokens = usuarioService.getTokens().keySet();
         
         assertNotNull(tokens);
+    }
+
+    @Test
+    void testCrearAdmin_CambiaRolAAdmin() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("admin@correo.com");
+        usuario.setRol(TipoRol.CLIENTE);
+
+        when(usuarioRepository.findByEmail("admin@correo.com")).thenReturn(usuario);
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Usuario actualizado = usuarioService.crearAdmin("admin@correo.com");
+
+        assertEquals(TipoRol.ADMIN, actualizado.getRol());
+    }
+
+    @Test
+    void testCrearAdmin_UsuarioNoEncontrado() {
+        when(usuarioRepository.findByEmail("noexiste@correo.com")).thenReturn(null);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            usuarioService.crearAdmin("noexiste@correo.com");
+        });
+        assertEquals("Usuario no encontrado con el email proporcionado.", ex.getMessage());
+    }
+
+    @Test
+    void testEliminarAdmin_CambiaRolACliente() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("cliente@correo.com");
+        usuario.setRol(TipoRol.ADMIN);
+
+        when(usuarioRepository.findByEmail("cliente@correo.com")).thenReturn(usuario);
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Usuario actualizado = usuarioService.eliminarAdmin("cliente@correo.com");
+
+        assertEquals(TipoRol.CLIENTE, actualizado.getRol());
+    }
+
+    @Test
+    void testEliminarAdmin_UsuarioNoEncontrado() {
+        when(usuarioRepository.findByEmail("noexiste@correo.com")).thenReturn(null);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            usuarioService.eliminarAdmin("noexiste@correo.com");
+        });
+        assertEquals("Usuario no encontrado con el email proporcionado.", ex.getMessage());
     }
 }

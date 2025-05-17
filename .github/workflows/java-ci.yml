@@ -52,13 +52,13 @@ jobs:
       - name: Prepare docs folder
         run: |
           mkdir -p docs
+          cp index.html docs/index.html  || true
           mkdir -p docs/doxygen
           cp -r doxygen/html/* docs/doxygen/ || true
           mkdir -p docs/site
           cp -r target/site/* docs/site/ || true
           mkdir -p docs/site/reports
           cp -r target/reports/* docs/site/reports/ || true
-          cp index.html docs/index.html  || true
 
       - name: Install Doxygen
         run: sudo apt-get install -y doxygen

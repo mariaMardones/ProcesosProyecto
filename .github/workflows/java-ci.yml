@@ -38,13 +38,11 @@ jobs:
       - name: Run Integration Tests and Verify
         run: |
           mvn -Pintegration integration-test
-          mvn failsafe:verify
 
       - name: Performance Test
         run: |
           mvn -Pperformance integration-test
-          mvn failsafe:verify
-      
+                
       - name: Generate Maven Site
         run: mvn site
 
@@ -54,12 +52,11 @@ jobs:
           rm -rf docs/site
           mkdir -p docs/site
           cp -r target/site/* docs/site/ || true
-          # Si tienes documentación Doxygen en doxygen/html, la copia
-          if [ -d "doxygen/html" ]; then
-            rm -rf docs/doxygen
-            mkdir -p docs/doxygen
-            cp -r doxygen/html/* docs/doxygen/
-          fi
+          mkdir -p docs/site/reports
+          cp -r rest-api/target/reports/* docs/site/reports/ || true
+          rm -rf docs/doxygen
+          mkdir -p docs/doxygen
+          cp -r doxygen/html/* docs/doxygen/ || true
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4

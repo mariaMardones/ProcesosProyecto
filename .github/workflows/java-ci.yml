@@ -76,9 +76,6 @@ jobs:
       - name: Añadir .nojekyll en la raíz
         run: touch docs/.nojekyll
 
-      - name: Add GitHub Pages theme
-        run: echo "theme: jekyll-theme-cayman" > docs/_config.yml
-
       - name: Publish on Github Pages
         uses: crazy-max/ghaction-github-pages@v2.3.0
         with:

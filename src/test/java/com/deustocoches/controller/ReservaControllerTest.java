@@ -2,6 +2,7 @@ package com.deustocoches.controller;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
@@ -84,72 +86,252 @@ public class ReservaControllerTest {
     }
     
     @Test
-    void testCrearReserva() throws Exception {
-        when(reservaService.crearReserva(any(Reserva.class)))
-                .thenReturn(reserva);
+    void testCrearReserva_exito() throws Exception {
+        Reserva reservaGuardada = new Reserva();
+        reservaGuardada.setId(1);
+        when(reservaService.crearReserva(any(Reserva.class))).thenReturn(reservaGuardada);
 
         mockMvc.perform(post("/api/reservas/crear")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reserva)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.precioTotal").value(500.0));
+                .andExpect(jsonPath("$.id").value(1));
 
-        verify(reservaService, times(1)).crearReserva(any(Reserva.class));
+        verify(reservaService).crearReserva(any(Reserva.class));
     }
 
+     @Test
+     void testCrearReserva_excepcion() throws Exception {
+        when(reservaService.crearReserva(any(Reserva.class))).thenThrow(new RuntimeException("Error"));
+
+        mockMvc.perform(post("/api/reservas/crear")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isBadRequest());
+
+        verify(reservaService).crearReserva(any(Reserva.class));
+     }
+
     @Test
-    void testActualizarReserva() throws Exception {
+    void testActualizarReserva_exito() throws Exception {
+        Reserva detallesReserva = new Reserva();
         Reserva reservaActualizada = new Reserva();
         reservaActualizada.setId(1);
-        reservaActualizada.setUsuario(usuario);
-        reservaActualizada.setCoche(coche);
-        reservaActualizada.setFecha("2023-04-23");
-        reservaActualizada.setPrecioTotal(550.0);
-        reservaActualizada.setEstado(EstadoReserva.COMPRADA);
-
-        when(reservaService.actualizarReserva(eq(1), any(Reserva.class)))
-                .thenReturn(reservaActualizada);
+        when(reservaService.actualizarReserva(eq(1), any(Reserva.class))).thenReturn(reservaActualizada);
 
         mockMvc.perform(put("/api/reservas/actualizar/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(reservaActualizada)))
+                .content(objectMapper.writeValueAsString(detallesReserva)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.precioTotal").value(550.0))
-                .andExpect(jsonPath("$.estado").exists());
+                .andExpect(jsonPath("$.id").value(1));
 
-        verify(reservaService, times(1)).actualizarReserva(eq(1), any(Reserva.class));
+        verify(reservaService).actualizarReserva(eq(1), any(Reserva.class));
     }
 
+   @Test
+   void testActualizarReserva_excepcion() throws Exception {
+        when(reservaService.actualizarReserva(eq(1), any(Reserva.class))).thenThrow(new RuntimeException("Error"));
+
+        mockMvc.perform(put("/api/reservas/actualizar/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Reserva())))
+                .andExpect(status().isBadRequest());
+
+        verify(reservaService).actualizarReserva(eq(1), any(Reserva.class));
+   } 
+
     @Test
-    void testEliminarReserva() throws Exception {
-        when(reservaService.obtenerReservaPorId(1))
-                .thenReturn(Optional.of(reserva));
-        
-        when(reservaService.eliminarReserva(1))
-                .thenReturn(true);
+    void testEliminarReserva_exito() throws Exception {
+        Reserva reserva = new Reserva();
+        Coche coche = new Coche();
+        coche.setMatricula("1234ABC");
+        coche.setDisponible(false);
+        reserva.setCoche(coche);
+
+        when(reservaService.obtenerReservaPorId(1)).thenReturn(Optional.of(reserva));
+        when(reservaService.eliminarReserva(1)).thenReturn(true);
+        when(cocheController.actualizarCoche(eq("1234ABC"), any(Coche.class))).thenReturn(ResponseEntity.ok(coche));
 
         mockMvc.perform(delete("/api/reservas/eliminar/1"))
                 .andExpect(status().isNoContent());
 
-        verify(reservaService, times(1)).obtenerReservaPorId(1);
-        verify(reservaService, times(1)).eliminarReserva(1);
+        assertTrue(coche.isDisponible());
+        verify(reservaService).obtenerReservaPorId(1);
+        verify(cocheController).actualizarCoche(eq("1234ABC"), any(Coche.class));
+        verify(reservaService).eliminarReserva(1);
     }
 
     @Test
-    void testHacerPedido() throws Exception {
-        when(reservaService.hacerPedido(any(Reserva.class)))
-                .thenReturn(reserva);
+    void testEliminarReserva_noEncontrada() throws Exception {
+        Reserva reserva = new Reserva();
+        Coche coche = new Coche();
+        coche.setMatricula("1234ABC");
+        reserva.setCoche(coche);
+
+        when(reservaService.obtenerReservaPorId(2)).thenReturn(Optional.of(reserva));
+        when(reservaService.eliminarReserva(2)).thenReturn(false);
+        when(cocheController.actualizarCoche(eq("1234ABC"), any(Coche.class))).thenReturn(ResponseEntity.ok(coche));
+
+        mockMvc.perform(delete("/api/reservas/eliminar/2"))
+                .andExpect(status().isNotFound());
+
+        verify(reservaService).obtenerReservaPorId(2);
+        verify(cocheController).actualizarCoche(eq("1234ABC"), any(Coche.class));
+        verify(reservaService).eliminarReserva(2);
+    }
+
+    @Test
+    void testHacerPedido_exito() throws Exception {
+        Usuario usuario = new Usuario();
+        Coche coche = new Coche();
+        coche.setMatricula("1234ABC");
+        coche.setDisponible(true);
+
+        Reserva reserva = new Reserva();
+        reserva.setUsuario(usuario);
+        reserva.setCoche(coche);
+
+        Reserva reservaGuardada = new Reserva();
+        reservaGuardada.setId(1);
+        reservaGuardada.setUsuario(usuario);
+        reservaGuardada.setCoche(coche);
+
+        when(cocheController.actualizarCoche(eq("1234ABC"), any(Coche.class))).thenReturn(ResponseEntity.ok(coche));
+        when(reservaService.hacerPedido(any(Reserva.class))).thenReturn(reservaGuardada);
 
         mockMvc.perform(post("/api/reservas/pedidos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reserva)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.precioTotal").value(500.0));
+                .andExpect(jsonPath("$.id").value(1));
 
-        verify(reservaService, times(1)).hacerPedido(any(Reserva.class));
+        verify(cocheController).actualizarCoche(eq("1234ABC"), any(Coche.class));
+        verify(reservaService).hacerPedido(any(Reserva.class));
+    }
+
+    @Test
+    void testHacerPedido_usuarioNull() throws Exception {
+        Reserva reserva = new Reserva();
+        reserva.setCoche(new Coche());
+
+        mockMvc.perform(post("/api/reservas/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testHacerPedido_cocheNull() throws Exception {
+        Reserva reserva = new Reserva();
+        reserva.setUsuario(new Usuario());
+
+        mockMvc.perform(post("/api/reservas/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testHacerPedido_usuarioOCocheNull() throws Exception {
+        Reserva reserva = new Reserva();
+
+        mockMvc.perform(post("/api/reservas/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testHacerPedido_estadoYFechaNull() throws Exception {
+        Usuario usuario = new Usuario();
+        Coche coche = new Coche();
+        coche.setMatricula("1234ABC");
+        coche.setDisponible(true);
+
+        Reserva reserva = new Reserva();
+        reserva.setUsuario(usuario);
+        reserva.setCoche(coche);
+        reserva.setEstado(null);
+        reserva.setFecha(null);
+
+        Reserva reservaGuardada = new Reserva();
+        reservaGuardada.setId(2);
+        reservaGuardada.setUsuario(usuario);
+        reservaGuardada.setCoche(coche);
+
+        when(cocheController.actualizarCoche(eq("1234ABC"), any(Coche.class))).thenReturn(ResponseEntity.ok(coche));
+        when(reservaService.hacerPedido(any(Reserva.class))).thenReturn(reservaGuardada);
+
+        mockMvc.perform(post("/api/reservas/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2));
+
+        verify(cocheController).actualizarCoche(eq("1234ABC"), any(Coche.class));
+        verify(reservaService).hacerPedido(any(Reserva.class));
+    }
+
+    @Test
+    void testHacerPedido_fechaNull() throws Exception {
+        Usuario usuario = new Usuario();
+        Coche coche = new Coche();
+        coche.setMatricula("1234ABC");
+        coche.setDisponible(true);
+
+        Reserva reserva = new Reserva();
+        reserva.setUsuario(usuario);
+        reserva.setCoche(coche);
+        reserva.setEstado(EstadoReserva.PENDIENTE);
+        reserva.setFecha(null);
+
+        Reserva reservaGuardada = new Reserva();
+        reservaGuardada.setId(1);
+        reservaGuardada.setUsuario(usuario);
+        reservaGuardada.setCoche(coche);
+
+        when(cocheController.actualizarCoche(eq("1234ABC"), any(Coche.class))).thenReturn(ResponseEntity.ok(coche));
+        when(reservaService.hacerPedido(any(Reserva.class))).thenReturn(reservaGuardada);
+
+        mockMvc.perform(post("/api/reservas/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+
+        verify(cocheController).actualizarCoche(eq("1234ABC"), any(Coche.class));
+        verify(reservaService).hacerPedido(any(Reserva.class));
+    }
+
+    @Test
+    void testHacerPedido_fechaVacia() throws Exception {
+        Usuario usuario = new Usuario();
+        Coche coche = new Coche();
+        coche.setMatricula("1234ABC");
+        coche.setDisponible(true);
+
+        Reserva reserva = new Reserva();
+        reserva.setUsuario(usuario);
+        reserva.setCoche(coche);
+        reserva.setEstado(EstadoReserva.PENDIENTE);
+        reserva.setFecha(""); // fecha vacía
+
+        Reserva reservaGuardada = new Reserva();
+        reservaGuardada.setId(2);
+        reservaGuardada.setUsuario(usuario);
+        reservaGuardada.setCoche(coche);
+
+        when(cocheController.actualizarCoche(eq("1234ABC"), any(Coche.class))).thenReturn(ResponseEntity.ok(coche));
+        when(reservaService.hacerPedido(any(Reserva.class))).thenReturn(reservaGuardada);
+
+        mockMvc.perform(post("/api/reservas/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2));
+
+        verify(cocheController).actualizarCoche(eq("1234ABC"), any(Coche.class));
+        verify(reservaService).hacerPedido(any(Reserva.class));
     }
 
     @Test

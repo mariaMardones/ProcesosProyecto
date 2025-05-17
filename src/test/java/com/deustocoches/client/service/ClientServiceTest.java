@@ -95,6 +95,39 @@ class ClientServiceTest {
     }
 
     @Test
+    void testInit_SetsDefaultApiBaseUrlIfNull() throws Exception {
+        // Fuerza apiBaseUrl a null antes de llamar a init()
+        java.lang.reflect.Field field = RestTemplateServiceProxy.class.getDeclaredField("apiBaseUrl");
+        field.setAccessible(true);
+        field.set(clientService, null);
+
+        clientService.init();
+
+        String value = (String) field.get(clientService);
+        assertEquals("http://127.0.0.1:8080", value);
+    }
+
+    @Test
+    void testInit_SetsDefaultApiBaseUrlIfContainsPlaceholder() throws Exception {
+        java.lang.reflect.Field field = RestTemplateServiceProxy.class.getDeclaredField("apiBaseUrl");
+        field.setAccessible(true);
+        field.set(clientService, "/api.base.url/otro");
+        clientService.init();
+        String value = (String) field.get(clientService);
+        assertEquals("http://127.0.0.1:8080", value);
+    }
+
+    @Test
+    void testInit_DoesNotOverrideValidApiBaseUrl() throws Exception {
+        java.lang.reflect.Field field = RestTemplateServiceProxy.class.getDeclaredField("apiBaseUrl");
+        field.setAccessible(true);
+        field.set(clientService, "http://miapi:9090");
+        clientService.init();
+        String value = (String) field.get(clientService);
+        assertEquals("http://miapi:9090", value);
+    }
+
+    @Test
     void testLogin() {
         String token = "abc123token";
         String url = apiBaseUrl + "/api/usuario/login?email=juan@example.com&password=password123";
@@ -272,6 +305,21 @@ class ClientServiceTest {
 
         assertNotNull(resultado);
         assertEquals("juan@example.com", resultado.getEmail());
+    }
+
+    @Test
+    void testGetUsuarioByEmail_CatchIf404ReturnsNull() {
+        String email = "noexiste@example.com";
+        String url = apiBaseUrl + "/api/usuario/buscar?email=" + email;
+
+        // Simula que el servidor responde con 404
+        when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        Usuario resultado = clientService.getUsuarioByEmail(email);
+
+        assertNull(resultado);
+        verify(restTemplate).getForEntity(eq(url), eq(Usuario.class));
     }
 
     @Test
@@ -522,6 +570,22 @@ class ClientServiceTest {
     }
 
     @Test
+    void testRegistrarUsuario_CatchException() {
+        String url = apiBaseUrl + "/api/usuario/registrar";
+        Usuario usuario = new Usuario();
+
+        when(restTemplate.postForObject(url, usuario, Usuario.class))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Datos inválidos"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.registrarUsuario(usuario);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to register user"));
+        verify(restTemplate).postForObject(url, usuario, Usuario.class);
+    }
+
+    @Test
     void testListarCochesConErrorDeServidor() {
         when(restTemplate.getForObject(contains("/api/coche"), eq(List.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor"));
@@ -575,6 +639,39 @@ class ClientServiceTest {
         assertNotNull(exception);
         assertTrue(exception.getMessage().contains("Login failed") || 
                    exception.getMessage().contains("401"));
+    }
+
+    @Test
+    void testLogin_CatchIf400ReturnsNull() {
+        String email = "usuario@ejemplo.com";
+        String password = "claveincorrecta";
+        String url = apiBaseUrl + "/api/usuario/login?email=" + email + "&password=" + password;
+
+        when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Login failed"));
+
+        String resultado = clientService.login(email, password);
+
+        assertNull(resultado);
+        verify(restTemplate).postForEntity(eq(url), isNull(), eq(String.class));
+    }
+
+    @Test
+    void testLogin_ThrowsExceptionOnNon2xxStatus() {
+        String email = "usuario@ejemplo.com";
+        String password = "claveincorrecta";
+        String url = apiBaseUrl + "/api/usuario/login?email=" + email + "&password=" + password;
+
+        ResponseEntity<String> response = new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
+            .thenReturn(response);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.login(email, password);
+        });
+
+        assertTrue(exception.getMessage().contains("Login failed"));
+        verify(restTemplate).postForEntity(eq(url), isNull(), eq(String.class));
     }
 
     @Test
@@ -871,5 +968,315 @@ class ClientServiceTest {
         assertNotNull(exception);
     }
 
+    @Test
+    void testFiltrarCoches_TodosLosParametros() {
+        String url = apiBaseUrl + "/api/coche/filtrar?marca=Toyota&modelo=Corolla&precioMin=10000.0&precioMax=20000.0";
+        List<Coche> coches = Arrays.asList(coche);
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
+
+        List<Coche> resultado = clientService.filtrarCoches("Toyota", "Corolla", 10000.0, 20000.0);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testFiltrarCoches_SoloMarca() {
+        String url = apiBaseUrl + "/api/coche/filtrar?marca=Toyota&";
+        List<Coche> coches = Arrays.asList(coche);
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
+
+        List<Coche> resultado = clientService.filtrarCoches("Toyota", null, null, null);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testFiltrarCoches_SoloModelo() {
+        String url = apiBaseUrl + "/api/coche/filtrar?modelo=Corolla&";
+        List<Coche> coches = Arrays.asList(coche);
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
+
+        List<Coche> resultado = clientService.filtrarCoches(null, "Corolla", null, null);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testFiltrarCoches_SoloPrecioMin() {
+        String url = apiBaseUrl + "/api/coche/filtrar?precioMin=10000.0&";
+        List<Coche> coches = Arrays.asList(coche);
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
+
+        List<Coche> resultado = clientService.filtrarCoches(null, null, 10000.0, null);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testFiltrarCoches_SoloPrecioMax() {
+        String url = apiBaseUrl + "/api/coche/filtrar?precioMax=20000.0";
+        List<Coche> coches = Arrays.asList(coche);
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
+
+        List<Coche> resultado = clientService.filtrarCoches(null, null, null, 20000.0);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testFiltrarCoches_Excepcion() {
+        String url = apiBaseUrl + "/api/coche/filtrar?marca=Toyota&";
+        when(restTemplate.getForObject(url, List.class))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error de filtrado"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.filtrarCoches("Toyota", null, null, null);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to filter cars"));
+    }
+
+    @Test
+    void testObtenerMarcas() {
+        String url = apiBaseUrl + "/api/coche/marcas";
+        List<String> marcas = Arrays.asList("Toyota", "Honda");
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(marcas);
+
+        List<String> resultado = clientService.obtenerMarcas();
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testObtenerMarcas_Excepcion() {
+        String url = apiBaseUrl + "/api/coche/marcas";
+        when(restTemplate.getForObject(url, List.class))
+            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de marcas"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.obtenerMarcas();
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to retrieve brands"));
+    }
+
+    @Test
+    void testAplicarDescuento() {
+        String url = apiBaseUrl + "/api/coche/aplicarDescuento?matricula=1234ABC&descuento=10.0";
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
+            .thenReturn(new ResponseEntity<>(coche, HttpStatus.OK));
+
+        Coche resultado = clientService.aplicarDescuento("1234ABC", 10.0);
+
+        assertNotNull(resultado);
+        assertEquals(coche, resultado);
+        verify(restTemplate).exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class));
+    }
+
+    @Test
+    void testAplicarDescuento_Excepcion() {
+        String url = apiBaseUrl + "/api/coche/aplicarDescuento?matricula=1234ABC&descuento=10.0";
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error de descuento"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.aplicarDescuento("1234ABC", 10.0);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to apply discount"));
+    }
+
+    @Test
+    void testEliminarDescuento() {
+        String url = apiBaseUrl + "/api/coche/eliminarDescuento?matricula=1234ABC";
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
+            .thenReturn(new ResponseEntity<>(coche, HttpStatus.OK));
+
+        Coche resultado = clientService.eliminarDescuento("1234ABC");
+
+        assertNotNull(resultado);
+        assertEquals(coche, resultado);
+        verify(restTemplate).exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class));
+    }
+
+    @Test
+    void testEliminarDescuento_Excepcion() {
+        String url = apiBaseUrl + "/api/coche/eliminarDescuento?matricula=1234ABC";
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error al eliminar descuento"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.eliminarDescuento("1234ABC");
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to remove discount"));
+    }
     
+    @Test
+    void testListarCochesDisponibles_Excepcion() {
+        String url = apiBaseUrl + "/api/coche/disponibles";
+        when(restTemplate.getForObject(url, List.class))
+            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de servidor"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.ListarCochesDisponibles();
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to retrieve available cars"));
+    }
+
+    @Test
+    void testHacerPedido_Excepcion() {
+        String url = apiBaseUrl + "/api/reservas/pedidos";
+        Reserva reserva = new Reserva();
+
+        when(restTemplate.postForObject(url, reserva, Reserva.class))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Datos inválidos"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.hacerPedido(reserva);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to create reservation"));
+    }
+
+    @Test
+    void testObtenerReservasPorFecha() {
+        String fecha = "2024-05-18";
+        String url = apiBaseUrl + "/api/reservas/filtrar/fecha/" + fecha;
+        List<Reserva> reservas = Arrays.asList(new Reserva());
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(reservas);
+
+        List<Reserva> resultado = clientService.obtenerReservasPorFecha(fecha);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testObtenerReservasPorFecha_Excepcion() {
+        String fecha = "2024-05-18";
+        String url = apiBaseUrl + "/api/reservas/filtrar/fecha/" + fecha;
+
+        when(restTemplate.getForObject(url, List.class))
+            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de servidor"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.obtenerReservasPorFecha(fecha);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to retrieve reservations by date"));
+    }
+
+    @Test
+    void testCrearAdmin() {
+        String email = "admin@example.com";
+        String url = apiBaseUrl + "/api/usuario/crearadmin?email=" + email;
+
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
+            .thenReturn(new ResponseEntity<>(usuario, HttpStatus.OK));
+
+        Usuario resultado = clientService.crearAdmin(email);
+
+        assertNotNull(resultado);
+        assertEquals(usuario, resultado);
+        verify(restTemplate).exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class));
+    }
+
+    @Test
+    void testCrearAdmin_Excepcion() {
+        String email = "admin@example.com";
+        String url = apiBaseUrl + "/api/usuario/crearadmin?email=" + email;
+
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error al cambiar rol"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.crearAdmin(email);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to change user rol"));
+    }
+
+    @Test
+    void testEliminarAdmin() {
+        String email = "cliente@example.com";
+        String url = apiBaseUrl + "/api/usuario/eliminaradmin?email=" + email;
+
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
+            .thenReturn(new ResponseEntity<>(usuario, HttpStatus.OK));
+
+        Usuario resultado = clientService.eliminarAdmin(email);
+
+        assertNotNull(resultado);
+        assertEquals(usuario, resultado);
+        verify(restTemplate).exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class));
+    }
+
+    @Test
+    void testEliminarAdmin_Excepcion() {
+        String email = "cliente@example.com";
+        String url = apiBaseUrl + "/api/usuario/eliminaradmin?email=" + email;
+
+        when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error al cambiar rol"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.eliminarAdmin(email);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to change user rol"));
+    }
+
+    @Test
+    void testObtenerReservasPorRangoFechas() {
+        String desde = "2024-05-01";
+        String hasta = "2024-05-31";
+        String url = apiBaseUrl + "/api/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
+        List<Reserva> reservas = Arrays.asList(reserva);
+
+        when(restTemplate.getForObject(url, List.class)).thenReturn(reservas);
+
+        List<Reserva> resultado = clientService.obtenerReservasPorRangoFechas(desde, hasta);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(restTemplate).getForObject(url, List.class);
+    }
+
+    @Test
+    void testObtenerReservasPorRangoFechas_Excepcion() {
+        String desde = "2024-05-01";
+        String hasta = "2024-05-31";
+        String url = apiBaseUrl + "/api/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
+
+        when(restTemplate.getForObject(url, List.class))
+            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de servidor"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            clientService.obtenerReservasPorRangoFechas(desde, hasta);
+        });
+
+        assertTrue(exception.getMessage().contains("Failed to retrieve reservations by date range"));
+    }
 }

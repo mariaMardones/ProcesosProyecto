@@ -253,4 +253,43 @@ public class CocheControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void testFiltrarCoches_Exception() throws Exception {
+        when(cocheService.filtrarCoches(any(), any(), any(), any()))
+                .thenThrow(new RuntimeException("Error inesperado"));
+
+        mockMvc.perform(get("/api/coche/filtrar")
+                .param("marca", "Toyota")
+                .param("modelo", "Corolla")
+                .param("precioMin", "10000")
+                .param("precioMax", "30000"))
+                .andExpect(status().isBadRequest());
+
+        verify(cocheService, times(1)).filtrarCoches("Toyota", "Corolla", 10000.0, 30000.0);
+    }
+
+    @Test
+    void testListarMarcasCoches() throws Exception {
+        when(cocheService.ListarMarcasCoches()).thenReturn(Arrays.asList("Toyota", "Honda"));
+
+        mockMvc.perform(get("/api/coche/marcas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").value("Toyota"))
+                .andExpect(jsonPath("$[1]").value("Honda"));
+
+        verify(cocheService, times(1)).ListarMarcasCoches();
+    }
+
+    @Test
+    void testEliminarDescuento_Exception() throws Exception {
+        String matricula = "NOEXISTE";
+        when(cocheService.eliminarDescuento(matricula)).thenThrow(new RuntimeException("Error al eliminar descuento"));
+
+        mockMvc.perform(put("/api/coche/eliminarDescuento")
+                .param("matricula", matricula)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(cocheService, times(1)).eliminarDescuento(matricula);
+    }
 }

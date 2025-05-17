@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: ["master"]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,22 +49,34 @@ jobs:
       - name: Generate Maven Site
         run: mvn site
 
-      - name: Copy Maven site and Doxygen output to docs folder
+      - name: Prepare docs folder
         run: |
           mkdir -p docs
-          rm -rf docs/site
+          cp README.md docs/index.md
+          mkdir -p docs/doxygen
+          cp -r doxygen/html/* docs/doxygen/ || true
           mkdir -p docs/site
           cp -r target/site/* docs/site/ || true
           mkdir -p docs/site/reports
-          cp -r rest-api/target/reports/* docs/site/reports/ || true
-          rm -rf docs/doxygen
-          mkdir -p docs/doxygen
-          cp -r doxygen/html/* docs/doxygen/ || true
-          
-      #Github Actions Pages
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+          cp -r target/reports/* docs/site/reports/ || true
+
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen
+      
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
+      
+      - name: Generate Doxygen Documentation
+        run: |
+          doxygen src/main/resources/Doxyfile
+
+      - name: Añadir .nojekyll en la raíz
+        run: touch docs/.nojekyll
+
+      #Para que se suban la carpeta docs a la rama gh-pages y no a la raíz
+      - name: Publish on Github Pages
+        uses: crazy-max/ghaction-github-pages@v2.3.0
         with:
-          folder: docs
-          branch: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+          build_dir: docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

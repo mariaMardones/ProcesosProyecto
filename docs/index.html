@@ -211,14 +211,10 @@
   <h2>Descripción</h2>
   <p>Este proyecto utiliza Spring Boot para crear una REST API y se conecta a una base de datos MySQL utilizando JPA, con una aplicación de ejemplo que maneja reservas, coches y usuarios.</p>
   <p>El proyecto se basa en un servicio backend para gestionar reservas de coches y usuarios mediante una API REST. Usa Spring Boot y Spring Data JPA para interactuar con la base de datos MySQL.</p>
-  <p>La estructura básica de un proyecto Spring Boot se puede inicializar utilizando Spring Initializr en <a href="https://start.spring.io/" target="_blank">https://start.spring.io/</a>.</p>
+  <p>La estructura básica de un proyecto Spring Boot se puede inicializar utilizando <a href="https://start.spring.io/">Spring Initializr</a>.</p>
 
-  <h2>Documentación técnica</h2>
-  <p>
-    <a href="doxygen/html/index.html" target="_blank" class="documentation-link">
-      Ver documentación generada automáticamente (Doxygen)
-    </a>
-  </p>
+  <p><a class="documentation-link" href="https://markelurquiza.github.io/G-15-Procesos/site" target="_blank">Documentación</a></p>
+  <p><a class="documentation-link" href="https://markelurquiza.github.io/G-15-Procesos/site/jacoco" target="_blank">Cobertura de Tests - JaCoCo</a></p>
 
   <h2>Requisitos previos</h2>
   <ul>
@@ -228,86 +224,72 @@
   </ul>
 
   <h2>Lanzar la aplicación</h2>
-  <p>Asegúrate de que las dependencias necesarias están especificadas en el archivo <code>pom.xml</code> y la configuración de la base de datos en el archivo <code>src/main/resources/application.properties</code>.</p>
-  
   <div class="step">
     <h3>Paso 1: Compilar y descargar dependencias</h3>
     <pre><code>mvn compile</code></pre>
   </div>
-  
+
   <div class="step">
     <h3>Paso 2: Configuración de la base de datos</h3>
-    <p>Usa el archivo <code>src/main/resources/dbsetup.sql</code> para crear la base de datos y el usuario específico <code>spq</code> (con contraseña <code>spq</code>) para la aplicación. Si usas la línea de comandos de MySQL, ejecuta:</p>
+    <p>Usa el archivo <code>src/main/resources/dbsetup.sql</code> para crear la base de datos y el usuario <code>spq</code> con contraseña <code>spq</code>. Si usas la línea de comandos de MySQL:</p>
     <pre><code>mysql –uroot -p &lt; src/main/resources/dbsetup.sql</code></pre>
-    <p>O usa el contenido del archivo en cualquier otro cliente MySQL que estés utilizando.</p>
   </div>
-  
+
   <div class="step">
     <h3>Paso 3: Ejecutar la aplicación</h3>
     <pre><code>mvn spring-boot:run</code></pre>
-    <p>Si no hay errores, la aplicación estará disponible en <a href="http://localhost:8080/" target="_blank">http://localhost:8080/</a>. Puedes detener la aplicación presionando Ctrl+C.</p>
+    <p>La aplicación estará disponible en <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>.</p>
   </div>
 
   <h2>Acceso a la aplicación</h2>
   <p>Una vez que el programa esté en funcionamiento, puede acceder a DeustoCoches a través de:</p>
-  <pre><code>http://localhost:8080</code></pre>
+  <p><a href="http://localhost:8080" target="_blank">http://localhost:8080</a></p>
 
   <h2>Características</h2>
   <div class="features-grid">
-    <div class="feature-item">
-      <p>Registro e inicio de sesión de usuarios</p>
-    </div>
-    <div class="feature-item">
-      <p>Ver el listado de coches disponibles</p>
-    </div>
-    <div class="feature-item">
-      <p>Ver el listado de todos los usuarios registrados</p>
-    </div>
-    <div class="feature-item">
-      <p>Como cliente, ver las compras hechas</p>
-    </div>
-    <div class="feature-item">
-      <p>Como admin, bloquear y desbloquear usuarios</p>
-    </div>
-    <div class="feature-item">
-      <p>Hacer compras</p>
-    </div>
+    <div class="feature-item">Registro e inicio de sesión de usuarios.</div>
+    <div class="feature-item">Ver el listado de coches disponibles.</div>
+    <div class="feature-item">Ver el listado de todos los usuarios registrados.</div>
+    <div class="feature-item">Como cliente, ver las compras hechas.</div>
+    <div class="feature-item">Como admin, bloquear y desbloquear usuarios.</div>
+    <div class="feature-item">Hacer compras.</div>
   </div>
+
+  <h2>Documentación (Doxygen)</h2>
+  <p>Genera la documentación del código fuente usando el archivo de configuración de Doxygen:</p>
+  <pre><code>doxygen src/main/resources/Doxyfile</code></pre>
+  <p>Abrir la documentación generada en el navegador:</p>
+  <pre><code>start docs/doxygen/html/index.html</code></pre>
 
   <h2>Ejecución de tests</h2>
-  <p>Puede ejecutar las distintas pruebas del proyecto utilizando los siguientes comandos:</p>
-  <div class="step">
-    <h3>Tests unitarios</h3>
-    <pre><code>mvn test</code></pre>
-  </div>
+  <ul>
+    <li><strong>Tests unitarios:</strong> <code>mvn test</code></li>
+    <li><strong>Limpiar y test con JaCoCo:</strong> <code>mvn clean test</code></li>
+    <li><strong>Pruebas de rendimiento:</strong> <code>mvn verify -Pperformance-tests</code></li>
+    <li><strong>Pruebas de integración:</strong> <code>mvn verify -Pintegration-tests</code></li>
+  </ul>
 
   <h2>Creadores</h2>
-  <p>Este proyecto ha sido desarrollado por:</p>
   <div class="creators">
     <div class="creator-card">
-      <a href="https://github.com/MarkelUrquiza" target="_blank" class="creator-link">
-        Markel Urquiza : @MarkelUrquiza
-      </a>
+      <p>Markel Urquiza</p>
+      <a class="creator-link" href="https://github.com/MarkelUrquiza" target="_blank">MarkelUrquiza</a>
     </div>
     <div class="creator-card">
-      <a href="https://github.com/gnnesis" target="_blank" class="creator-link">
-        Génesis Balcazar : @gnnesis
-      </a>
+      <p>Génesis Balcazar</p>
+      <a class="creator-link" href="https://github.com/gnnesis" target="_blank">gnnesis</a>
     </div>
     <div class="creator-card">
-      <a href="https://github.com/hernandoekaitz" target="_blank" class="creator-link">
-        Ekaitz Hernando : @hernandoekaitz
-      </a>
+      <p>Ekaitz Hernando</p>
+      <a class="creator-link" href="https://github.com/hernandoekaitz" target="_blank">hernandoekaitz</a>
     </div>
     <div class="creator-card">
-      <a href="https://github.com/mariaMardones" target="_blank" class="creator-link">
-        Maria Mardones : @mariaMardones
-      </a>
+      <p>Maria Mardones</p>
+      <a class="creator-link" href="https://github.com/mariaMardones" target="_blank">mariaMardones</a>
     </div>
     <div class="creator-card">
-      <a href="https://github.com/EkHi04" target="_blank" class="creator-link">
-        Ekhiotz Garay : @EkHi04
-      </a>
+      <p>Ekhiotz Garay</p>
+      <a class="creator-link" href="https://github.com/EkHi04" target="_blank">EkHi04</a>
     </div>
   </div>
 </body>

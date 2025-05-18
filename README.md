@@ -13,6 +13,10 @@ https://markelurquiza.github.io/G-15-Procesos/site
 
 https://markelurquiza.github.io/G-15-Procesos/site/jacoco
 
+Ver documentación generada automáticamente (Doxygen)
+
+doxygen/html/index.html
+
 Requisitos previos
 --------------------
 - Java 17+

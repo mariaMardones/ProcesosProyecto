@@ -74,9 +74,6 @@ jobs:
       - name: Añadir .nojekyll en la raíz
         run: touch docs/.nojekyll
 
-      - name: List docs folder before deploy
-        run: ls -l docs
-
       #Para que se suban la carpeta docs a la rama gh-pages y no a la raíz
       - name: Publish on Github Pages
         uses: crazy-max/ghaction-github-pages@v2.3.0

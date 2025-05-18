@@ -81,6 +81,10 @@ Limpiar el directorio, compilar y ejecutar todos los teses unitarios, además de
 Las pruebas de rendimiento:
 	mvn verify -Pperformance-tests
 
+Las pruebas de integración:
+	mvn verify -Pintegration-tests
+
+
 
 Creadores
 --------------------

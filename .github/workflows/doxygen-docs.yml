@@ -1,0 +1,64 @@
+name: Documentación Doxygen
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: write  # Necesario para publicar en GitHub Pages
+
+jobs:
+  generate-docs:
+    name: Generar y Publicar Documentación
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Inicializar Base de Datos
+        run: |
+          mysql -h127.0.0.1 -uroot -proot < src/main/resources/dbsetup.sql
+      
+      - name: Instalar Doxygen
+        run: sudo apt-get install -y doxygen
+      
+      - name: Instalar Graphviz (para diagramas)
+        run: sudo apt-get install -y graphviz
+      
+      - name: Generar Documentación Doxygen
+        run: |
+          doxygen src/main/resources/Doxyfile
+      
+      - name: Verificar documentación generada
+        run: ls -la docs/doxygen/html
+      
+      - name: Añadir archivos .nojekyll
+        run: |
+          touch docs/.nojekyll
+          touch docs/doxygen/html/.nojekyll
+      
+      - name: Publicar Documentación en GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2.3.0
+        with:
+          build_dir: docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

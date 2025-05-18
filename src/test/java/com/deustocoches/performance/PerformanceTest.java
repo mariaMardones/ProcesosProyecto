@@ -1,4 +1,4 @@
-package com.deustocoches.integration;
+package com.deustocoches.performance;
 
 import com.deustocoches.model.Coche;
 import com.deustocoches.model.Reserva;

@@ -43,7 +43,7 @@ public class ReservaIntegrationTest {
         usuario.setTlf("611222333");
         usuario.setRol(TipoRol.CLIENTE);
         
-        ResponseEntity<Usuario> userResponse = restTemplate.postForEntity("/api/usuario/registrar", usuario, Usuario.class);
+        ResponseEntity<Usuario> userResponse = restTemplate.postForEntity("/usuario/registrar", usuario, Usuario.class);
         assertEquals(HttpStatus.OK, userResponse.getStatusCode());
         Usuario usuarioCreado = userResponse.getBody();
         assertNotNull(usuarioCreado);
@@ -51,21 +51,21 @@ public class ReservaIntegrationTest {
         String matriculaUnica = "TEST" + System.currentTimeMillis();
         Coche coche = new Coche(matriculaUnica, "Ford", "Focus", 2019, "Blanco", 12000.0, true);
         
-        ResponseEntity<Coche> cocheResponse = restTemplate.postForEntity("/api/coche/crear", coche, Coche.class);
+        ResponseEntity<Coche> cocheResponse = restTemplate.postForEntity("/coche/crear", coche, Coche.class);
         assertEquals(HttpStatus.OK, cocheResponse.getStatusCode());
         Coche cocheCreado = cocheResponse.getBody();
         assertNotNull(cocheCreado);
         
         Reserva reserva = new Reserva(usuarioCreado, cocheCreado, LocalDate.now().toString(), 200.0, EstadoReserva.PENDIENTE);
         
-        ResponseEntity<Reserva> reservaResponse = restTemplate.postForEntity("/api/reservas/crear", reserva, Reserva.class);
+        ResponseEntity<Reserva> reservaResponse = restTemplate.postForEntity("/reservas/crear", reserva, Reserva.class);
         assertEquals(HttpStatus.OK, reservaResponse.getStatusCode());
         Reserva reservaCreada = reservaResponse.getBody();
         assertNotNull(reservaCreada);
         int reservaId = reservaCreada.getId();
         
         ResponseEntity<List<Reserva>> pendientesResponse = restTemplate.exchange(
-                "/api/reservas/pendientes", 
+                "/reservas/pendientes", 
                 HttpMethod.GET, 
                 null, 
                 new ParameterizedTypeReference<List<Reserva>>() {}
@@ -78,10 +78,10 @@ public class ReservaIntegrationTest {
         Reserva reservaActualizar = reservaCreada;
         reservaActualizar.setEstado(EstadoReserva.COMPRADA);
         
-        restTemplate.put("/api/reservas/actualizar/" + reservaId, reservaActualizar);
+        restTemplate.put("/reservas/actualizar/" + reservaId, reservaActualizar);
         
         ResponseEntity<List<Reserva>> compradasResponse = restTemplate.exchange(
-                "/api/reservas/compradas", 
+                "/reservas/compradas", 
                 HttpMethod.GET, 
                 null, 
                 new ParameterizedTypeReference<List<Reserva>>() {}
@@ -92,7 +92,7 @@ public class ReservaIntegrationTest {
         assertTrue(reservasCompradas.stream().anyMatch(r -> r.getId() == reservaId));
         
         ResponseEntity<List<Reserva>> pendientesDespuesResponse = restTemplate.exchange(
-                "/api/reservas/pendientes", 
+                "/reservas/pendientes", 
                 HttpMethod.GET, 
                 null, 
                 new ParameterizedTypeReference<List<Reserva>>() {}
@@ -101,8 +101,8 @@ public class ReservaIntegrationTest {
         assertNotNull(reservasPendientesDespues);
         assertFalse(reservasPendientesDespues.stream().anyMatch(r -> r.getId() == reservaId));
         
-        restTemplate.delete("/api/reservas/eliminar/" + reservaId);
-        restTemplate.delete("/api/coche/eliminar?matricula=" + matriculaUnica);
-        restTemplate.delete("/api/usuario/eliminar?email=" + usuario.getEmail());
+        restTemplate.delete("/reservas/eliminar/" + reservaId);
+        restTemplate.delete("/coche/eliminar?matricula=" + matriculaUnica);
+        restTemplate.delete("/usuario/eliminar?email=" + usuario.getEmail());
     }
 }

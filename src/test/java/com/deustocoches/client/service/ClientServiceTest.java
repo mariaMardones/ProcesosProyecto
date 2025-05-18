@@ -104,7 +104,7 @@ class ClientServiceTest {
         clientService.init();
 
         String value = (String) field.get(clientService);
-        assertEquals("http://127.0.0.1:8080", value);
+        assertEquals("http://127.0.0.1:8080/api", value);
     }
 
     @Test
@@ -114,23 +114,23 @@ class ClientServiceTest {
         field.set(clientService, "/api.base.url/otro");
         clientService.init();
         String value = (String) field.get(clientService);
-        assertEquals("http://127.0.0.1:8080", value);
+        assertEquals("http://127.0.0.1:8080/api", value);
     }
 
     @Test
     void testInit_DoesNotOverrideValidApiBaseUrl() throws Exception {
         java.lang.reflect.Field field = RestTemplateServiceProxy.class.getDeclaredField("apiBaseUrl");
         field.setAccessible(true);
-        field.set(clientService, "http://miapi:9090");
+        field.set(clientService, "http://miapi:9090/api");
         clientService.init();
         String value = (String) field.get(clientService);
-        assertEquals("http://miapi:9090", value);
+        assertEquals("http://miapi:9090/api", value);
     }
 
     @Test
     void testLogin() {
         String token = "abc123token";
-        String url = apiBaseUrl + "/api/usuario/login?email=juan@example.com&password=password123";
+        String url = apiBaseUrl + "/usuario/login?email=juan@example.com&password=password123";
 
         ResponseEntity<String> mockResponse = new ResponseEntity<>(token, HttpStatus.OK);
         when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
@@ -144,7 +144,7 @@ class ClientServiceTest {
 
     @Test
     void testRegistrarUsuario() {
-        String url = apiBaseUrl + "/api/usuario/registrar";
+        String url = apiBaseUrl + "/usuario/registrar";
 
         when(restTemplate.postForObject(url, usuario, Usuario.class))
                 .thenReturn(usuario);
@@ -158,7 +158,7 @@ class ClientServiceTest {
 
     @Test
     void testListarCoches() {
-        String url = apiBaseUrl + "/api/coche";
+        String url = apiBaseUrl + "/coche";
         List<Coche> coches = Arrays.asList(coche);
 
         when(restTemplate.getForObject(url, List.class))
@@ -173,7 +173,7 @@ class ClientServiceTest {
 
     @Test
     void testListarCochesDisponibles() {
-        String url = apiBaseUrl + "/api/coche/disponibles";
+        String url = apiBaseUrl + "/coche/disponibles";
         List<Coche> coches = Arrays.asList(coche);
 
         when(restTemplate.getForObject(url, List.class))
@@ -188,7 +188,7 @@ class ClientServiceTest {
 
     @Test
     void testGetCocheByMatricula() {
-        String url = apiBaseUrl + "/api/coche/buscar?matricula=1234ABC";
+        String url = apiBaseUrl + "/coche/buscar?matricula=1234ABC";
 
         when(restTemplate.getForObject(url, Coche.class))
                 .thenReturn(coche);
@@ -202,7 +202,7 @@ class ClientServiceTest {
 
     @Test
     void testCrearCoche() {
-        String url = apiBaseUrl + "/api/coche/crear";
+        String url = apiBaseUrl + "/coche/crear";
 
         when(restTemplate.postForObject(url, coche, Coche.class))
                 .thenReturn(coche);
@@ -216,7 +216,7 @@ class ClientServiceTest {
 
     @Test
     void testActualizarCoche() {
-        String url = apiBaseUrl + "/api/coche/actualizar?matricula=1234ABC";
+        String url = apiBaseUrl + "/coche/actualizar?matricula=1234ABC";
 
         when(restTemplate.exchange(
                 eq(url),
@@ -238,7 +238,7 @@ class ClientServiceTest {
 
     @Test
     void testEliminarCoche() {
-        String url = apiBaseUrl + "/api/coche/eliminar?matricula=1234ABC";
+        String url = apiBaseUrl + "/coche/eliminar?matricula=1234ABC";
 
         doNothing().when(restTemplate).delete(url);
 
@@ -249,7 +249,7 @@ class ClientServiceTest {
 
     @Test
     void testCrearReserva() {
-        String url = apiBaseUrl + "/api/reservas/pedidos";
+        String url = apiBaseUrl + "/reservas/pedidos";
 
         when(restTemplate.postForObject(url, reserva, Reserva.class))
                 .thenReturn(reserva);
@@ -259,12 +259,12 @@ class ClientServiceTest {
         assertNotNull(resultado);
         assertEquals(reserva, resultado);
         verify(restTemplate, times(1)).postForObject(url, reserva, Reserva.class);
-        verify(restTemplate).postForObject(contains("/api/reservas/pedidos"), eq(reserva), eq(Reserva.class));
+        verify(restTemplate).postForObject(contains("/reservas/pedidos"), eq(reserva), eq(Reserva.class));
     }
 
     @Test
     void testObtenerReservasPendientes() {
-        String url = apiBaseUrl + "/api/reservas/pendientes";
+        String url = apiBaseUrl + "/reservas/pendientes";
         List<Reserva> reservas = Arrays.asList(reserva);
 
         when(restTemplate.getForObject(url, List.class))
@@ -279,7 +279,7 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasCompradas() {
-        String url = apiBaseUrl + "/api/reservas/compradas";
+        String url = apiBaseUrl + "/reservas/compradas";
         reserva.setEstado(EstadoReserva.COMPRADA);
         List<Reserva> reservas = Arrays.asList(reserva);
 
@@ -295,7 +295,7 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmail() {
-        String url = apiBaseUrl + "/api/usuario/buscar?email=juan@example.com";
+        String url = apiBaseUrl + "/usuario/buscar?email=juan@example.com";
 
         ResponseEntity<Usuario> mockResponse = new ResponseEntity<>(usuario, HttpStatus.OK);
         when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
@@ -310,7 +310,7 @@ class ClientServiceTest {
     @Test
     void testGetUsuarioByEmail_CatchIf404ReturnsNull() {
         String email = "noexiste@example.com";
-        String url = apiBaseUrl + "/api/usuario/buscar?email=" + email;
+        String url = apiBaseUrl + "/usuario/buscar?email=" + email;
 
         // Simula que el servidor responde con 404
         when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
@@ -324,7 +324,7 @@ class ClientServiceTest {
 
     @Test
     void testBloquearUsuario() {
-        String url = apiBaseUrl + "/api/usuario/bloquear?email=juan@example.com";
+        String url = apiBaseUrl + "/usuario/bloquear?email=juan@example.com";
         usuario.setBloqueado(true);
 
         when(restTemplate.exchange(
@@ -347,7 +347,7 @@ class ClientServiceTest {
 
     @Test
     void testDesbloquearUsuario() {
-        String url = apiBaseUrl + "/api/usuario/desbloquear?email=juan@example.com";
+        String url = apiBaseUrl + "/usuario/desbloquear?email=juan@example.com";
         usuario.setBloqueado(false);
 
         when(restTemplate.exchange(
@@ -370,7 +370,7 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasConfirmadasPorUsuario() {
-        String url = apiBaseUrl + "/api/reservas/usuario/confirmadas?email=juan@example.com";
+        String url = apiBaseUrl + "/reservas/usuario/confirmadas?email=juan@example.com";
         reserva.setEstado(EstadoReserva.COMPRADA);
         List<Reserva> reservas = Arrays.asList(reserva);
 
@@ -386,7 +386,7 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasPendientesPorUsuario() {
-        String url = apiBaseUrl + "/api/reservas/usuario/pendientes?email=juan@example.com";
+        String url = apiBaseUrl + "/reservas/usuario/pendientes?email=juan@example.com";
         List<Reserva> reservas = Arrays.asList(reserva);
 
         when(restTemplate.getForObject(url, List.class))
@@ -402,7 +402,7 @@ class ClientServiceTest {
     @Test
     void testLogout() {
         String token = "abc123token";
-        String url = apiBaseUrl + "/api/usuario/logout?token=" + token;
+        String url = apiBaseUrl + "/usuario/logout?token=" + token;
 
         when(restTemplate.postForObject(eq(url), isNull(), eq(Void.class)))
                 .thenReturn(null);
@@ -414,7 +414,7 @@ class ClientServiceTest {
 
     @Test
     void testMetodoQuePuedeLanzarExcepcion() {
-        when(restTemplate.getForObject(contains("/api/ejemplo"), eq(String.class)))
+        when(restTemplate.getForObject(contains("/ejemplo"), eq(String.class)))
             .thenThrow(new RestClientException("Error de conexión simulado"));
         
         Exception excepcion = assertThrows(RuntimeException.class, () -> {
@@ -422,45 +422,45 @@ class ClientServiceTest {
         });
         
         assertTrue(excepcion.getMessage().contains("Error durante la llamada a la API"));
-        verify(restTemplate).getForObject(contains("/api/ejemplo"), eq(String.class));
+        verify(restTemplate).getForObject(contains("/ejemplo"), eq(String.class));
     }
 
     @Test
     void testMetodoQuePuedeLanzarExcepcionExitosoSinExcepcion() {
-        when(restTemplate.getForObject(contains("/api/ejemplo"), eq(String.class)))
+        when(restTemplate.getForObject(contains("/ejemplo"), eq(String.class)))
             .thenReturn("Resultado exitoso");
         
         assertDoesNotThrow(() -> {
             clientService.metodoQuePuedeLanzarExcepcion();
         });
         
-        verify(restTemplate).getForObject(contains("/api/ejemplo"), eq(String.class));
+        verify(restTemplate).getForObject(contains("/ejemplo"), eq(String.class));
     }
 
     @Test
     void testMetodoQueDevuelveLista() {
         List<String> datosEsperados = Arrays.asList("elemento1", "elemento2", "elemento3");
         
-        when(restTemplate.getForObject(contains("/api/coleccion"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/coleccion"), eq(List.class)))
             .thenReturn(datosEsperados);
         
         List<?> resultado = clientService.metodoQueDevuelveLista();
         
         assertNotNull(resultado);
         assertEquals(3, resultado.size());
-        verify(restTemplate).getForObject(contains("/api/coleccion"), eq(List.class));
+        verify(restTemplate).getForObject(contains("/coleccion"), eq(List.class));
     }
 
     @Test
     void testMetodoQueDevuelveListaVacia() {
-        when(restTemplate.getForObject(contains("/api/coleccion"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/coleccion"), eq(List.class)))
             .thenReturn(Collections.emptyList());
         
         List<?> resultado = clientService.metodoQueDevuelveLista();
         
         assertNotNull(resultado);
         assertTrue(resultado.isEmpty());
-        verify(restTemplate).getForObject(contains("/api/coleccion"), eq(List.class));
+        verify(restTemplate).getForObject(contains("/coleccion"), eq(List.class));
     }
 
     @Test
@@ -471,7 +471,7 @@ class ClientServiceTest {
         reserva.setPrecioTotal(100.0);
         
         when(restTemplate.exchange(
-                contains("/api/reservas/actualizar/" + id),
+                contains("/reservas/actualizar/" + id),
                 eq(HttpMethod.PUT),
                 any(HttpEntity.class),
                 eq(Reserva.class)))
@@ -482,7 +482,7 @@ class ClientServiceTest {
         assertNotNull(resultado);
         assertEquals(id, resultado.getId());
         verify(restTemplate).exchange(
-            contains("/api/reservas/actualizar/" + id),
+            contains("/reservas/actualizar/" + id),
             eq(HttpMethod.PUT),
             any(HttpEntity.class),
             eq(Reserva.class));
@@ -497,7 +497,7 @@ class ClientServiceTest {
         reservaCreada.setId(1);
         reservaCreada.setPrecioTotal(150.0);
         
-        when(restTemplate.postForObject(contains("/api/reservas/pedidos"), eq(reserva), eq(Reserva.class)))
+        when(restTemplate.postForObject(contains("/reservas/pedidos"), eq(reserva), eq(Reserva.class)))
             .thenReturn(reservaCreada);
         
         Reserva resultado = clientService.hacerPedido(reserva);
@@ -505,44 +505,44 @@ class ClientServiceTest {
         assertNotNull(resultado);
         assertEquals(1, resultado.getId());
         assertEquals(150.0, resultado.getPrecioTotal());
-        verify(restTemplate).postForObject(contains("/api/reservas/pedidos"), eq(reserva), eq(Reserva.class));
+        verify(restTemplate).postForObject(contains("/reservas/pedidos"), eq(reserva), eq(Reserva.class));
     }
 
     @Test
     void testListarUsuariosRegistrados() {
         List<Usuario> usuariosEsperados = Arrays.asList(new Usuario(), new Usuario());
         
-        when(restTemplate.getForObject(contains("/api/usuario"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/usuario"), eq(List.class)))
             .thenReturn(usuariosEsperados);
         
         List<Usuario> resultado = clientService.listarUsuariosResgistrados();
         
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
-        verify(restTemplate).getForObject(contains("/api/usuario"), eq(List.class));
+        verify(restTemplate).getForObject(contains("/usuario"), eq(List.class));
     }
 
     @Test
     void testEliminarUsuario() {
-        doNothing().when(restTemplate).delete(contains("/api/usuario/eliminar?email=test@example.com"));
+        doNothing().when(restTemplate).delete(contains("/usuario/eliminar?email=test@example.com"));
         
         clientService.eliminarUsuario("test@example.com");
         
-        verify(restTemplate).delete(contains("/api/usuario/eliminar?email=test@example.com"));
+        verify(restTemplate).delete(contains("/usuario/eliminar?email=test@example.com"));
     }
 
     @Test
     void testEliminarReserva() {
-        doNothing().when(restTemplate).delete(contains("/api/reservas/eliminar/1"));
+        doNothing().when(restTemplate).delete(contains("/reservas/eliminar/1"));
         
         clientService.eliminarReserva(1);
         
-        verify(restTemplate).delete(contains("/api/reservas/eliminar/1"));
+        verify(restTemplate).delete(contains("/reservas/eliminar/1"));
     }
 
     @Test
     void testMetodoQueDevuelveListaConExcepcion() {
-        when(restTemplate.getForObject(contains("/api/coleccion"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/coleccion"), eq(List.class)))
             .thenThrow(new RestClientException("Error al recuperar lista"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -556,7 +556,7 @@ class ClientServiceTest {
     void testRegistrarUsuarioConExcepcion() {
         Usuario usuario = new Usuario();
         
-        when(restTemplate.postForObject(contains("/api/usuario/registrar"), eq(usuario), eq(Usuario.class)))
+        when(restTemplate.postForObject(contains("/usuario/registrar"), eq(usuario), eq(Usuario.class)))
             .thenThrow(new RestClientException("Error al registrar"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -571,7 +571,7 @@ class ClientServiceTest {
 
     @Test
     void testRegistrarUsuario_CatchException() {
-        String url = apiBaseUrl + "/api/usuario/registrar";
+        String url = apiBaseUrl + "/usuario/registrar";
         Usuario usuario = new Usuario();
 
         when(restTemplate.postForObject(url, usuario, Usuario.class))
@@ -587,7 +587,7 @@ class ClientServiceTest {
 
     @Test
     void testListarCochesConErrorDeServidor() {
-        when(restTemplate.getForObject(contains("/api/coche"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/coche"), eq(List.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -599,7 +599,7 @@ class ClientServiceTest {
 
     @Test
     void testGetCocheByMatriculaNoEncontrado() {
-        when(restTemplate.getForObject(contains("/api/coche/buscar"), eq(Coche.class)))
+        when(restTemplate.getForObject(contains("/coche/buscar"), eq(Coche.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Coche no encontrado"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -612,7 +612,7 @@ class ClientServiceTest {
     @Test
     void testActualizarCocheConErrorDeAutorizacion() {
         when(restTemplate.exchange(
-                contains("/api/coche/actualizar"), 
+                contains("/coche/actualizar"), 
                 eq(HttpMethod.PUT), 
                 any(HttpEntity.class), 
                 eq(Coche.class)))
@@ -627,7 +627,7 @@ class ClientServiceTest {
 
     @Test
     void testLoginFallido() {
-        String url = apiBaseUrl + "/api/usuario/login?email=usuario@ejemplo.com&password=claveincorrecta";
+        String url = apiBaseUrl + "/usuario/login?email=usuario@ejemplo.com&password=claveincorrecta";
         
         when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Login failed"));
@@ -645,7 +645,7 @@ class ClientServiceTest {
     void testLogin_CatchIf400ReturnsNull() {
         String email = "usuario@ejemplo.com";
         String password = "claveincorrecta";
-        String url = apiBaseUrl + "/api/usuario/login?email=" + email + "&password=" + password;
+        String url = apiBaseUrl + "/usuario/login?email=" + email + "&password=" + password;
 
         when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Login failed"));
@@ -660,7 +660,7 @@ class ClientServiceTest {
     void testLogin_ThrowsExceptionOnNon2xxStatus() {
         String email = "usuario@ejemplo.com";
         String password = "claveincorrecta";
-        String url = apiBaseUrl + "/api/usuario/login?email=" + email + "&password=" + password;
+        String url = apiBaseUrl + "/usuario/login?email=" + email + "&password=" + password;
 
         ResponseEntity<String> response = new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         when(restTemplate.postForEntity(eq(url), isNull(), eq(String.class)))
@@ -677,7 +677,7 @@ class ClientServiceTest {
     @Test
     void testCrearReservaConErrorDeDatos() {
         when(restTemplate.postForObject(
-                contains("/api/reservas/pedidos"), 
+                contains("/reservas/pedidos"), 
                 any(Reserva.class), 
                 eq(Reserva.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Datos inválidos"));
@@ -697,7 +697,7 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailWithNullResponse() {
-        String url = apiBaseUrl + "/api/usuario/buscar?email=null@example.com";
+        String url = apiBaseUrl + "/usuario/buscar?email=null@example.com";
 
         ResponseEntity<Usuario> mockResponse = new ResponseEntity<>(null, HttpStatus.OK);
         when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
@@ -710,7 +710,7 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailWithNotFoundStatus() {
-        String url = apiBaseUrl + "/api/usuario/buscar?email=noexiste@example.com";
+        String url = apiBaseUrl + "/usuario/buscar?email=noexiste@example.com";
 
         ResponseEntity<Usuario> mockResponse = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
@@ -723,7 +723,7 @@ class ClientServiceTest {
 
     @Test
     void testListarCochesDisponiblesConErrorDeRed() {
-        when(restTemplate.getForObject(contains("/api/coche/disponibles"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/coche/disponibles"), eq(List.class)))
             .thenThrow(new ResourceAccessException("Error de red"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -736,7 +736,7 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasPendientesConErrorDeAutorizacion() {
-        when(restTemplate.getForObject(contains("/api/reservas/pendientes"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/reservas/pendientes"), eq(List.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "Acceso denegado"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -749,7 +749,7 @@ class ClientServiceTest {
 
     @Test
     void testObtenerReservasCompradasConErrorDeServidor() {
-        when(restTemplate.getForObject(contains("/api/reservas/compradas"), eq(List.class)))
+        when(restTemplate.getForObject(contains("/reservas/compradas"), eq(List.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error del servidor"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -763,7 +763,7 @@ class ClientServiceTest {
     @Test
     void testEliminarUsuarioConErrorDeServidor() {
         doThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error del servidor"))
-            .when(restTemplate).delete(contains("/api/usuario/eliminar"));
+            .when(restTemplate).delete(contains("/usuario/eliminar"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.eliminarUsuario("test@example.com");
@@ -776,7 +776,7 @@ class ClientServiceTest {
     @Test
     void testEliminarReservaConErrorDeAutorizacion() {
         doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "Acceso denegado"))
-            .when(restTemplate).delete(contains("/api/reservas/eliminar"));
+            .when(restTemplate).delete(contains("/reservas/eliminar"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.eliminarReserva(1);
@@ -789,7 +789,7 @@ class ClientServiceTest {
     @Test
     void testActualizarReservaConErrorDeServidor() {
         when(restTemplate.exchange(
-                contains("/api/reservas/actualizar"),
+                contains("/reservas/actualizar"),
                 eq(HttpMethod.PUT),
                 any(HttpEntity.class),
                 eq(Reserva.class)))
@@ -805,7 +805,7 @@ class ClientServiceTest {
     @Test
     void testBloquearUsuarioConErrorDeDatos() {
         when(restTemplate.exchange(
-                contains("/api/usuario/bloquear"),
+                contains("/usuario/bloquear"),
                 eq(HttpMethod.PUT),
                 isNull(),
                 eq(Usuario.class)))
@@ -821,7 +821,7 @@ class ClientServiceTest {
     @Test
     void testDesbloquearUsuarioConErrorDeAcceso() {
         when(restTemplate.exchange(
-                contains("/api/usuario/desbloquear"),
+                contains("/usuario/desbloquear"),
                 eq(HttpMethod.PUT),
                 isNull(),
                 eq(Usuario.class)))
@@ -837,7 +837,7 @@ class ClientServiceTest {
     @Test
     void testLogoutConErrorDeServidor() {
         when(restTemplate.postForObject(
-                contains("/api/usuario/logout"),
+                contains("/usuario/logout"),
                 isNull(),
                 eq(Void.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error del servidor"));
@@ -853,7 +853,7 @@ class ClientServiceTest {
     @Test
     void testCrearCocheConErrorDeDatos() {
         when(restTemplate.postForObject(
-                contains("/api/coche/crear"),
+                contains("/coche/crear"),
                 eq(coche),
                 eq(Coche.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Datos de coche inválidos"));
@@ -868,7 +868,7 @@ class ClientServiceTest {
     @Test
     void testHacerPedidoConErrorDeConexion() {
         when(restTemplate.postForObject(
-                contains("/api/reservas/pedidos"),
+                contains("/reservas/pedidos"),
                 any(Reserva.class),
                 eq(Reserva.class)))
             .thenThrow(new ResourceAccessException("Error de conexión"));
@@ -889,7 +889,7 @@ class ClientServiceTest {
     @Test
     void testObtenerReservasConfirmadasPorUsuarioConErrorDeServidor() {
         when(restTemplate.getForObject(
-                contains("/api/reservas/usuario/confirmadas"),
+                contains("/reservas/usuario/confirmadas"),
                 eq(List.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error del servidor"));
         
@@ -903,7 +903,7 @@ class ClientServiceTest {
     @Test
     void testObtenerReservasPendientesPorUsuarioConError404() {
         when(restTemplate.getForObject(
-                contains("/api/reservas/usuario/pendientes"),
+                contains("/reservas/usuario/pendientes"),
                 eq(List.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         
@@ -917,7 +917,7 @@ class ClientServiceTest {
     @Test
     void testListarUsuariosRegistradosConErrorDeAutenticacion() {
         when(restTemplate.getForObject(
-                contains("/api/usuario"),
+                contains("/usuario"),
                 eq(List.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "No autenticado"));
         
@@ -931,7 +931,7 @@ class ClientServiceTest {
     @Test
     void testEliminarCocheConError404() {
         doThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Coche no encontrado"))
-            .when(restTemplate).delete(contains("/api/coche/eliminar"));
+            .when(restTemplate).delete(contains("/coche/eliminar"));
         
         Exception exception = assertThrows(RuntimeException.class, () -> {
             clientService.eliminarCoche("NOEXISTE");
@@ -942,7 +942,7 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailConErrorDeServidor() {
-        String url = apiBaseUrl + "/api/usuario/buscar?email=error@example.com";
+        String url = apiBaseUrl + "/usuario/buscar?email=error@example.com";
         
         when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
@@ -956,7 +956,7 @@ class ClientServiceTest {
 
     @Test
     void testGetUsuarioByEmailConExcepcionConnectionRefused() {
-        String url = apiBaseUrl + "/api/usuario/buscar?email=exception@example.com";
+        String url = apiBaseUrl + "/usuario/buscar?email=exception@example.com";
         
         when(restTemplate.getForEntity(eq(url), eq(Usuario.class)))
             .thenThrow(new ResourceAccessException("Connection refused"));
@@ -970,7 +970,7 @@ class ClientServiceTest {
 
     @Test
     void testFiltrarCoches_TodosLosParametros() {
-        String url = apiBaseUrl + "/api/coche/filtrar?marca=Toyota&modelo=Corolla&precioMin=10000.0&precioMax=20000.0";
+        String url = apiBaseUrl + "/coche/filtrar?marca=Toyota&modelo=Corolla&precioMin=10000.0&precioMax=20000.0";
         List<Coche> coches = Arrays.asList(coche);
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
@@ -984,7 +984,7 @@ class ClientServiceTest {
 
     @Test
     void testFiltrarCoches_SoloMarca() {
-        String url = apiBaseUrl + "/api/coche/filtrar?marca=Toyota&";
+        String url = apiBaseUrl + "/coche/filtrar?marca=Toyota&";
         List<Coche> coches = Arrays.asList(coche);
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
@@ -998,7 +998,7 @@ class ClientServiceTest {
 
     @Test
     void testFiltrarCoches_SoloModelo() {
-        String url = apiBaseUrl + "/api/coche/filtrar?modelo=Corolla&";
+        String url = apiBaseUrl + "/coche/filtrar?modelo=Corolla&";
         List<Coche> coches = Arrays.asList(coche);
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
@@ -1012,7 +1012,7 @@ class ClientServiceTest {
 
     @Test
     void testFiltrarCoches_SoloPrecioMin() {
-        String url = apiBaseUrl + "/api/coche/filtrar?precioMin=10000.0&";
+        String url = apiBaseUrl + "/coche/filtrar?precioMin=10000.0&";
         List<Coche> coches = Arrays.asList(coche);
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
@@ -1026,7 +1026,7 @@ class ClientServiceTest {
 
     @Test
     void testFiltrarCoches_SoloPrecioMax() {
-        String url = apiBaseUrl + "/api/coche/filtrar?precioMax=20000.0";
+        String url = apiBaseUrl + "/coche/filtrar?precioMax=20000.0";
         List<Coche> coches = Arrays.asList(coche);
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(coches);
@@ -1040,7 +1040,7 @@ class ClientServiceTest {
 
     @Test
     void testFiltrarCoches_Excepcion() {
-        String url = apiBaseUrl + "/api/coche/filtrar?marca=Toyota&";
+        String url = apiBaseUrl + "/coche/filtrar?marca=Toyota&";
         when(restTemplate.getForObject(url, List.class))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error de filtrado"));
 
@@ -1053,7 +1053,7 @@ class ClientServiceTest {
 
     @Test
     void testObtenerMarcas() {
-        String url = apiBaseUrl + "/api/coche/marcas";
+        String url = apiBaseUrl + "/coche/marcas";
         List<String> marcas = Arrays.asList("Toyota", "Honda");
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(marcas);
@@ -1067,7 +1067,7 @@ class ClientServiceTest {
 
     @Test
     void testObtenerMarcas_Excepcion() {
-        String url = apiBaseUrl + "/api/coche/marcas";
+        String url = apiBaseUrl + "/coche/marcas";
         when(restTemplate.getForObject(url, List.class))
             .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de marcas"));
 
@@ -1080,7 +1080,7 @@ class ClientServiceTest {
 
     @Test
     void testAplicarDescuento() {
-        String url = apiBaseUrl + "/api/coche/aplicarDescuento?matricula=1234ABC&descuento=10.0";
+        String url = apiBaseUrl + "/coche/aplicarDescuento?matricula=1234ABC&descuento=10.0";
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
             .thenReturn(new ResponseEntity<>(coche, HttpStatus.OK));
 
@@ -1093,7 +1093,7 @@ class ClientServiceTest {
 
     @Test
     void testAplicarDescuento_Excepcion() {
-        String url = apiBaseUrl + "/api/coche/aplicarDescuento?matricula=1234ABC&descuento=10.0";
+        String url = apiBaseUrl + "/coche/aplicarDescuento?matricula=1234ABC&descuento=10.0";
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error de descuento"));
 
@@ -1106,7 +1106,7 @@ class ClientServiceTest {
 
     @Test
     void testEliminarDescuento() {
-        String url = apiBaseUrl + "/api/coche/eliminarDescuento?matricula=1234ABC";
+        String url = apiBaseUrl + "/coche/eliminarDescuento?matricula=1234ABC";
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
             .thenReturn(new ResponseEntity<>(coche, HttpStatus.OK));
 
@@ -1119,7 +1119,7 @@ class ClientServiceTest {
 
     @Test
     void testEliminarDescuento_Excepcion() {
-        String url = apiBaseUrl + "/api/coche/eliminarDescuento?matricula=1234ABC";
+        String url = apiBaseUrl + "/coche/eliminarDescuento?matricula=1234ABC";
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Coche.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error al eliminar descuento"));
 
@@ -1132,7 +1132,7 @@ class ClientServiceTest {
     
     @Test
     void testListarCochesDisponibles_Excepcion() {
-        String url = apiBaseUrl + "/api/coche/disponibles";
+        String url = apiBaseUrl + "/coche/disponibles";
         when(restTemplate.getForObject(url, List.class))
             .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de servidor"));
 
@@ -1145,7 +1145,7 @@ class ClientServiceTest {
 
     @Test
     void testHacerPedido_Excepcion() {
-        String url = apiBaseUrl + "/api/reservas/pedidos";
+        String url = apiBaseUrl + "/reservas/pedidos";
         Reserva reserva = new Reserva();
 
         when(restTemplate.postForObject(url, reserva, Reserva.class))
@@ -1161,7 +1161,7 @@ class ClientServiceTest {
     @Test
     void testObtenerReservasPorFecha() {
         String fecha = "2024-05-18";
-        String url = apiBaseUrl + "/api/reservas/filtrar/fecha/" + fecha;
+        String url = apiBaseUrl + "/reservas/filtrar/fecha/" + fecha;
         List<Reserva> reservas = Arrays.asList(new Reserva());
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(reservas);
@@ -1176,7 +1176,7 @@ class ClientServiceTest {
     @Test
     void testObtenerReservasPorFecha_Excepcion() {
         String fecha = "2024-05-18";
-        String url = apiBaseUrl + "/api/reservas/filtrar/fecha/" + fecha;
+        String url = apiBaseUrl + "/reservas/filtrar/fecha/" + fecha;
 
         when(restTemplate.getForObject(url, List.class))
             .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de servidor"));
@@ -1191,7 +1191,7 @@ class ClientServiceTest {
     @Test
     void testCrearAdmin() {
         String email = "admin@example.com";
-        String url = apiBaseUrl + "/api/usuario/crearadmin?email=" + email;
+        String url = apiBaseUrl + "/usuario/crearadmin?email=" + email;
 
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
             .thenReturn(new ResponseEntity<>(usuario, HttpStatus.OK));
@@ -1206,7 +1206,7 @@ class ClientServiceTest {
     @Test
     void testCrearAdmin_Excepcion() {
         String email = "admin@example.com";
-        String url = apiBaseUrl + "/api/usuario/crearadmin?email=" + email;
+        String url = apiBaseUrl + "/usuario/crearadmin?email=" + email;
 
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error al cambiar rol"));
@@ -1221,7 +1221,7 @@ class ClientServiceTest {
     @Test
     void testEliminarAdmin() {
         String email = "cliente@example.com";
-        String url = apiBaseUrl + "/api/usuario/eliminaradmin?email=" + email;
+        String url = apiBaseUrl + "/usuario/eliminaradmin?email=" + email;
 
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
             .thenReturn(new ResponseEntity<>(usuario, HttpStatus.OK));
@@ -1236,7 +1236,7 @@ class ClientServiceTest {
     @Test
     void testEliminarAdmin_Excepcion() {
         String email = "cliente@example.com";
-        String url = apiBaseUrl + "/api/usuario/eliminaradmin?email=" + email;
+        String url = apiBaseUrl + "/usuario/eliminaradmin?email=" + email;
 
         when(restTemplate.exchange(eq(url), eq(HttpMethod.PUT), isNull(), eq(Usuario.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Error al cambiar rol"));
@@ -1252,7 +1252,7 @@ class ClientServiceTest {
     void testObtenerReservasPorRangoFechas() {
         String desde = "2024-05-01";
         String hasta = "2024-05-31";
-        String url = apiBaseUrl + "/api/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
+        String url = apiBaseUrl + "/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
         List<Reserva> reservas = Arrays.asList(reserva);
 
         when(restTemplate.getForObject(url, List.class)).thenReturn(reservas);
@@ -1268,7 +1268,7 @@ class ClientServiceTest {
     void testObtenerReservasPorRangoFechas_Excepcion() {
         String desde = "2024-05-01";
         String hasta = "2024-05-31";
-        String url = apiBaseUrl + "/api/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
+        String url = apiBaseUrl + "/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
 
         when(restTemplate.getForObject(url, List.class))
             .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de servidor"));

@@ -54,3 +54,28 @@ jobs:
           mkdir -p docs/site
           cp -r target/site/* docs/site/ || true
           mkdir -p docs/site/reports
+          
+      - name: Instalar Doxygen
+        run: sudo apt-get install -y doxygen
+      
+      - name: Instalar Graphviz (para diagramas)
+        run: sudo apt-get install -y graphviz
+      
+      - name: Generar Documentación Doxygen
+        run: |
+          doxygen src/main/resources/Doxyfile
+      
+      - name: Verificar documentación generada
+        run: ls -la docs/doxygen/html
+      
+      - name: Añadir archivos .nojekyll
+        run: |
+          touch docs/.nojekyll
+          touch docs/doxygen/html/.nojekyll
+      
+      - name: Publicar Documentación en GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2.3.0
+        with:
+          build_dir: docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

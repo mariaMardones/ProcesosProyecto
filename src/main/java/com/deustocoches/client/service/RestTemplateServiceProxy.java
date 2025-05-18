@@ -30,16 +30,17 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @PostConstruct
     public void init() {
-        // Este método se ejecuta automáticamente después de inyectar las propiedades
         if (apiBaseUrl == null || apiBaseUrl.contains("/api.base.url")) {
-            apiBaseUrl = "http://127.0.0.1:8080";
+            apiBaseUrl = "http://127.0.0.1:8080/api";
+        } else if (!apiBaseUrl.endsWith("/api")) {
+            apiBaseUrl = apiBaseUrl + "/api";
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public List<Usuario> listarUsuariosResgistrados() {
-        String url = apiBaseUrl + "/api/usuario";
+        String url = apiBaseUrl + "/usuario";
         try {
             return restTemplate.getForObject(url, List.class);
         } catch (HttpStatusCodeException e) {
@@ -50,7 +51,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     @Override
     public Usuario getUsuarioByEmail(String email) {
         try {
-            String url = apiBaseUrl + "/api/usuario/buscar?email=" + email;
+            String url = apiBaseUrl + "/usuario/buscar?email=" + email;
             
             ResponseEntity<Usuario> response = restTemplate.getForEntity(url, Usuario.class);
             
@@ -68,7 +69,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public void eliminarUsuario(String email) {
-        String url = apiBaseUrl + "/api/usuario/eliminar?email=" + email;
+        String url = apiBaseUrl + "/usuario/eliminar?email=" + email;
         try {
             restTemplate.delete(url);
         } catch (HttpStatusCodeException e) {
@@ -78,7 +79,7 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public Usuario registrarUsuario(Usuario usuario) {
-        String url = apiBaseUrl + "/api/usuario/registrar";
+        String url = apiBaseUrl + "/usuario/registrar";
         try {
             return restTemplate.postForObject(url, usuario, Usuario.class);
         } catch (HttpStatusCodeException e) {
@@ -89,12 +90,11 @@ public class RestTemplateServiceProxy implements IServiceProxy {
     @Override
     public String login(String email, String password) {
         try {
-            // URL con parámetros en la query string
-            String url = apiBaseUrl + "/api/usuario/login?email=" + email + "&password=" + password;
+            String url = apiBaseUrl + "/usuario/login?email=" + email + "&password=" + password;
             
             ResponseEntity<String> response = restTemplate.postForEntity(
                 url,
-                null,  // No enviamos body, los parámetros van en la URL
+                null,
                 String.class
             );
             
@@ -113,296 +113,281 @@ public class RestTemplateServiceProxy implements IServiceProxy {
 
     @Override
     public void logout(String token) {
-        String url = apiBaseUrl + "/api/usuario/logout?token=" + token;
+        String url = apiBaseUrl + "/usuario/logout?token=" + token;
         try {
             restTemplate.postForObject(url, null, Void.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Logout failed: " + e.getStatusText());
+    }
+}
 
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Logout failed: " + e.getStatusText());
-        }
+@Override
+public Reserva crearReserva(Reserva reserva) {
+    String url = apiBaseUrl + "/reservas/pedidos";
+    try {
+        return restTemplate.postForObject(url, reserva, Reserva.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
     }
-    @Override
-    public Reserva crearReserva(Reserva reserva) {
-        String url = apiBaseUrl + "/api/reservas/pedidos";
-        try {
-            return restTemplate.postForObject(url, reserva, Reserva.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
-        }
-    }
+}
 
-    @Override
-    public Reserva actualizarReserva(Integer id, Reserva detallesReserva) {
-        String url = apiBaseUrl + "/api/reservas/actualizar/" + id;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(detallesReserva), Reserva.class)
-                    .getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to update reservation: " + e.getStatusText());
-        }
+@Override
+public Reserva actualizarReserva(Integer id, Reserva detallesReserva) {
+    String url = apiBaseUrl + "/reservas/actualizar/" + id;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(detallesReserva), Reserva.class)
+                .getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to update reservation: " + e.getStatusText());
     }
+}
 
-    @Override
-    public void eliminarReserva(Integer id) {
-        String url = apiBaseUrl + "/api/reservas/eliminar/" + id;
-        try {
-            restTemplate.delete(url);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to delete reservation: " + e.getStatusText());
-        }
+@Override
+public void eliminarReserva(Integer id) {
+    String url = apiBaseUrl + "/reservas/eliminar/" + id;
+    try {
+        restTemplate.delete(url);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to delete reservation: " + e.getStatusText());
     }
+}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Coche> ListarCoches() {
-        String url = apiBaseUrl + "/api/coche";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve cars: " + e.getStatusText());
-        }
+@SuppressWarnings("unchecked")
+@Override
+public List<Coche> ListarCoches() {
+    String url = apiBaseUrl + "/coche";
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve cars: " + e.getStatusText());
     }
+}
 
-    @Override
-    public Coche getCocheByMatricula(String matricula) {
-        String url = apiBaseUrl + "/api/coche/buscar?matricula=" + matricula;
-        try {
-            Coche coche = restTemplate.getForObject(url, Coche.class);
-            return coche;
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve car by license plate: " + e.getStatusText());
-        }
+@Override
+public Coche getCocheByMatricula(String matricula) {
+    String url = apiBaseUrl + "/coche/buscar?matricula=" + matricula;
+    try {
+        Coche coche = restTemplate.getForObject(url, Coche.class);
+        return coche;
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve car by license plate: " + e.getStatusText());
     }
+}
 
-    @Override
-    public Coche crearCoche(Coche coche) {
-        String url = apiBaseUrl + "/api/coche/crear";
-        try {
-            return restTemplate.postForObject(url, coche, Coche.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to create car: " + e.getStatusText());
-        }
+@Override
+public Coche crearCoche(Coche coche) {
+    String url = apiBaseUrl + "/coche/crear";
+    try {
+        return restTemplate.postForObject(url, coche, Coche.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to create car: " + e.getStatusText());
     }
+}
 
-    @Override
-    public Coche actualizarCoche(String matricula, Coche coche) {
-        String url = apiBaseUrl + "/api/coche/actualizar?matricula=" + matricula;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(coche), Coche.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to update car: " + e.getStatusText());
-        }
+@Override
+public Coche actualizarCoche(String matricula, Coche coche) {
+    String url = apiBaseUrl + "/coche/actualizar?matricula=" + matricula;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(coche), Coche.class).getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to update car: " + e.getStatusText());
     }
+}
 
-    @Override
-    public void eliminarCoche(String matricula) {
-        String url = apiBaseUrl + "/api/coche/eliminar?matricula=" + matricula;
-        try {
-            restTemplate.delete(url);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to delete car: " + e.getStatusText());
-        }
+@Override
+public void eliminarCoche(String matricula) {
+    String url = apiBaseUrl + "/coche/eliminar?matricula=" + matricula;
+    try {
+        restTemplate.delete(url);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to delete car: " + e.getStatusText());
     }
+}
 
-    public List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax) {
-        String url = apiBaseUrl + "/api/coche/filtrar?";
-        if (marca != null) url += "marca=" + marca + "&";
-        if (modelo != null) url += "modelo=" + modelo + "&";
-        if (precioMin != null) url += "precioMin=" + precioMin + "&";
-        if (precioMax != null) url += "precioMax=" + precioMax;
-        
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to filter cars: " + e.getStatusText());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> obtenerMarcas() {
-        String url = apiBaseUrl + "/api/coche/marcas";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve brands: " + e.getStatusText());
-        }
-    }
-
-    @Override
-    public Coche aplicarDescuento(String matricula, Double descuento) {
-        String url = apiBaseUrl + "/api/coche/aplicarDescuento?matricula=" + matricula + "&descuento=" + descuento;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, null, Coche.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to apply discount: " + e.getStatusText());
-        }
-    }
-
-    @Override
-    public Coche eliminarDescuento(String matricula) {
-        String url = apiBaseUrl + "/api/coche/eliminarDescuento?matricula=" + matricula;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, null, Coche.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to remove discount: " + e.getStatusText());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Coche> ListarCochesDisponibles() {
-        String url = apiBaseUrl + "/api/coche/disponibles";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve available cars: " + e.getStatusText());
-        }
-    }
-
-    @Override
-    public Reserva hacerPedido(Reserva reserva) {
-        String url = apiBaseUrl + "/api/reservas/pedidos";
-        try {
-            return restTemplate.postForObject(url, reserva, Reserva.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
-        }
-    }
-          
-
-    @SuppressWarnings("unchecked")
-    public List<Reserva> obtenerReservasPorFecha(String fecha) {
-        String url = apiBaseUrl + "/api/reservas/filtrar/fecha/" + fecha;
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve reservations by date: " + e.getStatusText());
-        }
-    }
-
-    @Override
-    public Usuario bloquearUsuario(String email) {
-        String url = apiBaseUrl + "/api/usuario/bloquear?email=" + email;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to block user: " + e.getStatusText());
-        }
-    }
-
-    @Override
-    public Usuario desbloquearUsuario(String email) {
-        String url = apiBaseUrl + "/api/usuario/desbloquear?email=" + email;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to unblock user: " + e.getStatusText());
-        }
-    }
-
-    @Override
-    public Usuario crearAdmin(String email) {
-        String url = apiBaseUrl + "/api/usuario/crearadmin?email=" + email;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to change user rol: " + e.getStatusText());
-        }
-    }
-
-    @Override
-    public Usuario eliminarAdmin(String email) {
-        String url = apiBaseUrl + "/api/usuario/eliminaradmin?email=" + email;
-        try {
-            return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to change user rol: " + e.getStatusText());
-        }
-    }
-
-    // Obtener reservas confirmadas por usuario
-    @SuppressWarnings("unchecked")
-    public List<Reserva> obtenerReservasConfirmadasPorUsuario(String email) {
-        String url = apiBaseUrl + "/api/reservas/usuario/confirmadas?email=" + email;
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve confirmed reservations by user: " + e.getStatusText());
-        }
-    }
-
-    // Obtener reservas pendientes por usuario
-    @SuppressWarnings("unchecked")
-    public List<Reserva> obtenerReservasPendientesPorUsuario(String email) {
-        String url = apiBaseUrl + "/api/reservas/usuario/pendientes?email=" + email;
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve pending reservations by user: " + e.getStatusText());
-        }
-    }
-
-    // Obtener todas las reservas compradas
-    @SuppressWarnings("unchecked")
-    public List<Reserva> obtenerReservasCompradas() {
-        String url = apiBaseUrl + "/api/reservas/compradas";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve bought reservations: " + e.getStatusText());
-        }
-    }
-
-    // Obtener todas las reservas pendientes
-    @SuppressWarnings("unchecked")
-    public List<Reserva> obtenerReservasPendientes() {
-        String url = apiBaseUrl + "/api/reservas/pendientes";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve pending reservations: " + e.getStatusText());
-        }
-    }
-
-        /**
-     * Método que podría lanzar una excepción al realizar una operación remota.
-     * Se utiliza para probar el manejo de errores en la aplicación.
-     * @throws RuntimeException Si ocurre un error durante la llamada a la API
-     */
-    public void metodoQuePuedeLanzarExcepcion() {
-        try {
-            // Lógica que podría lanzar una excepción
-            restTemplate.getForObject(apiBaseUrl + "/api/ejemplo", String.class);
-        } catch (RestClientException e) {
-            throw new RuntimeException("Error durante la llamada a la API: " + e.getMessage(), e);
-        }
-    }
+public List<Coche> filtrarCoches(String marca, String modelo, Double precioMin, Double precioMax) {
+    String url = apiBaseUrl + "/coche/filtrar?";
+    if (marca != null) url += "marca=" + marca + "&";
+    if (modelo != null) url += "modelo=" + modelo + "&";
+    if (precioMin != null) url += "precioMin=" + precioMin + "&";
+    if (precioMax != null) url += "precioMax=" + precioMax;
     
-    /**
-     * Método que devuelve una lista genérica de elementos.
-     * Se utiliza para probar la recuperación de colecciones de datos.
-     * @return Lista de elementos recuperados del endpoint
-     * @throws RuntimeException Si ocurre un error durante la llamada a la API
-     */
-    public List<?> metodoQueDevuelveLista() {
-        String url = apiBaseUrl + "/api/coleccion";
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (RestClientException e) {
-            throw new RuntimeException("Error al recuperar la lista de elementos: " + e.getMessage(), e);
-        }
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to filter cars: " + e.getStatusText());
     }
-    
-    @SuppressWarnings("unchecked")
-    public List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta) {
-        String url = apiBaseUrl + "/api/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
-        try {
-            return restTemplate.getForObject(url, List.class);
-        } catch (HttpStatusCodeException e) {
-            throw new RuntimeException("Failed to retrieve reservations by date range: " + e.getStatusText());
-        }
+}
+
+@Override
+public Coche aplicarDescuento(String matricula, Double descuento) {
+    String url = apiBaseUrl + "/coche/aplicarDescuento?matricula=" + matricula + "&descuento=" + descuento;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, null, Coche.class).getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to apply discount: " + e.getStatusText());
     }
+}
+
+@Override
+public Coche eliminarDescuento(String matricula) {
+    String url = apiBaseUrl + "/coche/eliminarDescuento?matricula=" + matricula;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, null, Coche.class).getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to remove discount: " + e.getStatusText());
+    }
+}
+
+@SuppressWarnings("unchecked")
+@Override
+public List<Coche> ListarCochesDisponibles() {
+    String url = apiBaseUrl + "/coche/disponibles";
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve available cars: " + e.getStatusText());
+    }
+}
+
+@Override
+public Reserva hacerPedido(Reserva reserva) {
+    String url = apiBaseUrl + "/reservas/pedidos";
+    try {
+        return restTemplate.postForObject(url, reserva, Reserva.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to create reservation: " + e.getStatusText());
+    }
+}
+
+@SuppressWarnings("unchecked")
+public List<Reserva> obtenerReservasPorFecha(String fecha) {
+    String url = apiBaseUrl + "/reservas/filtrar/fecha/" + fecha;
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve reservations by date: " + e.getStatusText());
+    }
+}
+
+@Override
+public Usuario bloquearUsuario(String email) {
+    String url = apiBaseUrl + "/usuario/bloquear?email=" + email;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to block user: " + e.getStatusText());
+    }
+}
+
+@Override
+public Usuario desbloquearUsuario(String email) {
+    String url = apiBaseUrl + "/usuario/desbloquear?email=" + email;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to unblock user: " + e.getStatusText());
+    }
+}
+
+@Override
+public Usuario crearAdmin(String email) {
+    String url = apiBaseUrl + "/usuario/crearadmin?email=" + email;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to change user rol: " + e.getStatusText());
+    }
+}
+
+@Override
+public Usuario eliminarAdmin(String email) {
+    String url = apiBaseUrl + "/usuario/eliminaradmin?email=" + email;
+    try {
+        return restTemplate.exchange(url, HttpMethod.PUT, null, Usuario.class).getBody();
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to change user rol: " + e.getStatusText());
+    }
+}
+
+@SuppressWarnings("unchecked")
+public List<Reserva> obtenerReservasConfirmadasPorUsuario(String email) {
+    String url = apiBaseUrl + "/reservas/usuario/confirmadas?email=" + email;
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve confirmed reservations by user: " + e.getStatusText());
+    }
+}
+
+@SuppressWarnings("unchecked")
+public List<Reserva> obtenerReservasPendientesPorUsuario(String email) {
+    String url = apiBaseUrl + "/reservas/usuario/pendientes?email=" + email;
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve pending reservations by user: " + e.getStatusText());
+    }
+}
+
+@SuppressWarnings("unchecked")
+public List<Reserva> obtenerReservasCompradas() {
+    String url = apiBaseUrl + "/reservas/compradas";
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve bought reservations: " + e.getStatusText());
+    }
+}
+
+@SuppressWarnings("unchecked")
+public List<Reserva> obtenerReservasPendientes() {
+    String url = apiBaseUrl + "/reservas/pendientes";
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve pending reservations: " + e.getStatusText());
+    }
+}
+
+public void metodoQuePuedeLanzarExcepcion() {
+    try {
+        restTemplate.getForObject(apiBaseUrl + "/ejemplo", String.class);
+    } catch (RestClientException e) {
+        throw new RuntimeException("Error durante la llamada a la API: " + e.getMessage(), e);
+    }
+}
+
+public List<?> metodoQueDevuelveLista() {
+    String url = apiBaseUrl + "/coleccion";
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (RestClientException e) {
+        throw new RuntimeException("Error al recuperar la lista de elementos: " + e.getMessage(), e);
+    }
+}
+
+@SuppressWarnings("unchecked")
+public List<Reserva> obtenerReservasPorRangoFechas(String desde, String hasta) {
+    String url = apiBaseUrl + "/reservas/filtrar/rango?desde=" + desde + "&hasta=" + hasta;
+    try {
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        throw new RuntimeException("Failed to retrieve reservations by date range: " + e.getStatusText());
+    }
+}
+
+@SuppressWarnings("unchecked")
+@Override
+public List<String> obtenerMarcas() {
+    String url = apiBaseUrl + "/coche/marcas";
+    try {
+        System.out.println("Intentando conectar a: " + url);
+        return restTemplate.getForObject(url, List.class);
+    } catch (HttpStatusCodeException e) {
+        System.err.println("Error HTTP: " + e.getStatusCode() + " - " + e.getStatusText());
+        throw new RuntimeException("Failed to retrieve brands: " + e.getStatusText());
+    }
+}
 
 
 }

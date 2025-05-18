@@ -10,6 +10,7 @@ El proyecto se basa en un servicio backend para gestionar reservas de coches y u
 La estructura básica de un proyecto Spring Boot se puede inicializar utilizando Spring Initializr en https://start.spring.io/.
 
 https://markelurquiza.github.io/G-15-Procesos/site
+
 https://markelurquiza.github.io/G-15-Procesos/site/jacoco
 
 Requisitos previos

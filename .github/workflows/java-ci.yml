@@ -46,15 +46,6 @@ jobs:
         run: |
           mvn -Pperformance integration-test
                 
-      - name: Generate Maven Site
-        run: mvn site
-
-      - name: Prepare Maven Site
-        run: |
-          mkdir -p docs/site
-          cp -r target/site/* docs/site/ || true
-          mkdir -p docs/site/reports
-          
       - name: Instalar Doxygen
         run: sudo apt-get install -y doxygen
       
@@ -79,3 +70,13 @@ jobs:
           build_dir: docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generate Maven Site
+        run: mvn site
+
+      - name: Prepare Maven Site
+        run: |
+          mkdir -p docs/site
+          cp -r target/site/* docs/site/ || true
+          mkdir -p docs/site/reports
+          

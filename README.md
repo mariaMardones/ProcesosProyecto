@@ -60,15 +60,27 @@ Características
 - Hacer compras
 - ...
 
+Doxyfile
+-------------
+
+doxygen src/main/resources/Doxyfile
+start docs/doxygen/html/index.html
+
 Ejecución de tests
 ------------------------
 
 Puede ejecutar las distintas pruebas del proyecto utilizando los siguientes comandos:
 
 Tests unitarios:
-	
+Para compilar y ejecutar las pruebas unitarias:	
 	mvn test
-	
+
+Limpiar el directorio, compilar y ejecutar todos los teses unitarios, además de actualizar JaCoCo:
+	mvn clean test
+
+Las pruebas de rendimiento:
+	mvn verify -Pperformance-tests
+
 
 Creadores
 --------------------

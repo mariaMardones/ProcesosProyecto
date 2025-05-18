@@ -54,4 +54,3 @@ jobs:
           mkdir -p docs/site
           cp -r target/site/* docs/site/ || true
           mkdir -p docs/site/reports
-          cp -r target/reports/* docs/site/reports/ || true

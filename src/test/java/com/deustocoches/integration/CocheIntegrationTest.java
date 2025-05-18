@@ -58,7 +58,7 @@ public class CocheIntegrationTest {
         assertEquals(16000.0, cocheActualizado.getPrecio());
 
         ResponseEntity<List<Coche>> responseList = restTemplate.exchange(
-                "/coche",
+                "/api/coche",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Coche>>() {

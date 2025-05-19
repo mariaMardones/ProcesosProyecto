@@ -64,6 +64,8 @@ jobs:
           touch docs/.nojekyll
           touch docs/doxygen/html/.nojekyll
       
+
+
       - name: Generate Maven Site
         run: mvn site
 
@@ -72,6 +74,14 @@ jobs:
           mkdir -p docs/site
           cp -r target/site/* docs/site/ || true
           mkdir -p docs/site/reports
+
+      - name: Generar reporte JaCoCo
+        run: mvn jacoco:report
+
+      - name: Preparar reporte de JaCoCo
+        run: |
+          mkdir -p docs/site/jacoco
+          cp -r target/site/jacoco/* docs/site/jacoco/
       
       - name: Publicar Documentación en GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.3.0

@@ -21,6 +21,7 @@ public class Coche {
     private double descuento;
     private double precioFinal;
 
+    //prueba
     // Constructor sin argumentos
     public Coche() {
     }

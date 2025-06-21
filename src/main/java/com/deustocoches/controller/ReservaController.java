@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -133,12 +134,16 @@ public class ReservaController {
             ByteArrayInputStream pdf = exportadorReservaService.exportarReservasAPdf(reservas);
             return ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=historial.pdf")
-                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf.readAllBytes());
+        } else if (formato.equalsIgnoreCase("csv")) {
+            ByteArrayInputStream csv = exportadorReservaService.exportarReservasACsv(reservas);
+            return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=historial.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csv.readAllBytes());
         }
 
-        // Aqui iria la parte del csv
         return ResponseEntity.badRequest().body(null);
     }
-
 }

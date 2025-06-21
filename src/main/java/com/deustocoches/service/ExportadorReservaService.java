@@ -10,6 +10,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import com.opencsv.CSVWriter;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+
 @Service
 public class ExportadorReservaService {
 
@@ -41,5 +45,34 @@ public class ExportadorReservaService {
         }
 
         return new ByteArrayInputStream(out.toByteArray());
+    }
+    
+    public ByteArrayInputStream exportarReservasACsv(List<Reserva> reservas) {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        // Cabeceras
+        String[] header = {"Fecha", "Coche", "Precio", "Estado"};
+        csvWriter.writeNext(header);
+
+        // Contenido
+        for (Reserva r : reservas) {
+            String[] data = {
+                r.getFecha(),
+                r.getCoche().getMarca() + " " + r.getCoche().getModelo(),
+                String.valueOf(r.getPrecioTotal()),
+                r.getEstado().toString()
+            };
+            csvWriter.writeNext(data);
+        }
+
+        try {
+            csvWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        byte[] csvBytes = stringWriter.toString().getBytes(StandardCharsets.UTF_8);
+        return new ByteArrayInputStream(csvBytes);
     }
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExportadorReservaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deustocoches</a> &gt; <a href="index.source.html" class="el_package">com.deustocoches.service</a> &gt; <span class="el_source">ExportadorReservaService.java</span></div><h1>ExportadorReservaService.java</h1><pre class="source lang-java linenums">package com.deustocoches.service;
+
+import com.deustocoches.model.Reserva;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+
+@Service
+<span class="fc" id="L14">public class ExportadorReservaService {</span>
+
+    public ByteArrayInputStream exportarReservasAPdf(List&lt;Reserva&gt; reservas) {
+<span class="nc" id="L17">        Document document = new Document();</span>
+<span class="nc" id="L18">        ByteArrayOutputStream out = new ByteArrayOutputStream();</span>
+
+        try {
+<span class="nc" id="L21">            PdfPTable table = new PdfPTable(4);</span>
+<span class="nc" id="L22">            table.addCell(&quot;Fecha&quot;);</span>
+<span class="nc" id="L23">            table.addCell(&quot;Coche&quot;);</span>
+<span class="nc" id="L24">            table.addCell(&quot;Precio&quot;);</span>
+<span class="nc" id="L25">            table.addCell(&quot;Estado&quot;);</span>
+
+<span class="nc bnc" id="L27" title="All 2 branches missed.">            for (Reserva r : reservas) {</span>
+<span class="nc" id="L28">                table.addCell(r.getFecha());</span>
+<span class="nc" id="L29">                table.addCell(r.getCoche().getMarca() + &quot; &quot; + r.getCoche().getModelo());</span>
+<span class="nc" id="L30">                table.addCell(String.valueOf(r.getPrecioTotal()));</span>
+<span class="nc" id="L31">                table.addCell(r.getEstado().toString());</span>
+<span class="nc" id="L32">            }</span>
+
+<span class="nc" id="L34">            PdfWriter.getInstance(document, out);</span>
+<span class="nc" id="L35">            document.open();</span>
+<span class="nc" id="L36">            document.add(new Paragraph(&quot;Historial de compras&quot;));</span>
+<span class="nc" id="L37">            document.add(table);</span>
+<span class="nc" id="L38">            document.close();</span>
+<span class="nc" id="L39">        } catch (Exception e) {</span>
+<span class="nc" id="L40">            e.printStackTrace();</span>
+<span class="nc" id="L41">        }</span>
+
+<span class="nc" id="L43">        return new ByteArrayInputStream(out.toByteArray());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

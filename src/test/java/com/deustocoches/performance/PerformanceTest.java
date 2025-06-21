@@ -5,6 +5,7 @@ import com.deustocoches.model.Reserva;
 import com.deustocoches.model.Usuario;
 import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.service.CocheService;
+import com.deustocoches.service.ExportadorReservaService;
 import com.deustocoches.service.ReservaService;
 import com.deustocoches.service.UsuarioService;
 import com.deustocoches.repository.CocheRepository;
@@ -95,4 +96,63 @@ public class PerformanceTest {
         Optional<String> token = usuarioService.logIn("sara@opendeusto.es", "password2");
         assertTrue(token.isPresent());
     }
+    
+    @Test
+    public void testExportacionPdfPerformance() {
+        ExportadorReservaService exportador = new ExportadorReservaService();
+
+        Usuario usuario = usuarioService.registrarUsuario(
+            new Usuario("Rendimiento", "Test", "1990-01-01", "perf@correo.com", "1234", "600000099")
+        );
+
+        // Crear 1000 reservas de prueba
+        for (int i = 0; i < 1000; i++) {
+            Coche coche = cocheService.guardarCoche(
+                new Coche("PERF" + i, "Marca", "Modelo" + i, 2020, "Color", 10000 + i, true)
+            );
+            Reserva reserva = new Reserva(usuario, coche, "2025-06-21", 10000.0 + i, EstadoReserva.COMPRADA);
+            reservaService.crearReserva(reserva);
+        }
+
+        List<Reserva> reservas = reservaService.obtenerReservasCompradasPorUsuario("perf@correo.com");
+
+        long inicio = System.currentTimeMillis();
+        exportador.exportarReservasAPdf(reservas);
+        long fin = System.currentTimeMillis();
+
+        long duracion = fin - inicio;
+        System.out.println("Tiempo para exportar 1000 reservas a PDF: " + duracion + " ms");
+
+        assertTrue(duracion < 5000, "Exportación a PDF debería tardar menos de 5 segundos");
+    }
+    
+    @Test
+    public void testExportacionCsvPerformance() {
+        ExportadorReservaService exportador = new ExportadorReservaService();
+
+        Usuario usuario = usuarioService.registrarUsuario(
+            new Usuario("Rendimiento", "Test", "1990-01-01", "perf@correo.com", "1234", "600000099")
+        );
+
+        // Crear 1000 reservas de prueba
+        for (int i = 0; i < 1000; i++) {
+            Coche coche = cocheService.guardarCoche(
+                new Coche("PERF" + i, "Marca", "Modelo" + i, 2020, "Color", 10000 + i, true)
+            );
+            Reserva reserva = new Reserva(usuario, coche, "2025-06-21", 10000.0 + i, EstadoReserva.COMPRADA);
+            reservaService.crearReserva(reserva);
+        }
+
+        List<Reserva> reservas = reservaService.obtenerReservasCompradasPorUsuario("perf@correo.com");
+
+        long inicio = System.currentTimeMillis();
+        exportador.exportarReservasACsv(reservas);
+        long fin = System.currentTimeMillis();
+
+        long duracion = fin - inicio;
+        System.out.println("Tiempo para exportar 1000 reservas a PDF: " + duracion + " ms");
+
+        assertTrue(duracion < 5000, "Exportación a PDF debería tardar menos de 5 segundos");
+    }
+
 }

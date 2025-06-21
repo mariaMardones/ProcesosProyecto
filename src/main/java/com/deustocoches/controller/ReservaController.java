@@ -1,5 +1,6 @@
 package com.deustocoches.controller;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.model.Reserva;
+import com.deustocoches.service.ExportadorReservaService;
 import com.deustocoches.service.ReservaService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +33,9 @@ public class ReservaController {
     private ReservaService reservaService;
     @Autowired
     private CocheController cocheController;
+    @Autowired
+    private ExportadorReservaService exportadorReservaService;
+
 
 
     @PostMapping("/crear")
@@ -118,4 +123,22 @@ public class ReservaController {
             return ResponseEntity.badRequest().build();
         }
     }
+    
+    @GetMapping("/exportar")
+    public ResponseEntity<byte[]> exportarReservas(@RequestParam("email") String email,
+                                                   @RequestParam(defaultValue = "pdf") String formato) {
+        List<Reserva> reservas = reservaService.obtenerReservasCompradasPorUsuario(email);
+
+        if (formato.equalsIgnoreCase("pdf")) {
+            ByteArrayInputStream pdf = exportadorReservaService.exportarReservasAPdf(reservas);
+            return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=historial.pdf")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdf.readAllBytes());
+        }
+
+        // Aqui iria la parte del csv
+        return ResponseEntity.badRequest().body(null);
+    }
+
 }

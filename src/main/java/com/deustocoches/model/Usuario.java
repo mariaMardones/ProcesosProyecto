@@ -16,14 +16,12 @@ public class Usuario {
     private String email;
     private String password;
     private String tlf;
-    @Column
-    private int puntos;
 
     @Enumerated(EnumType.STRING)
     private TipoRol rol; // Admin o Cliente
     
     private boolean bloqueado;
-
+    
     // Constructor sin argumentos
     public Usuario() {
     	this.bloqueado = false;
@@ -114,19 +112,12 @@ public class Usuario {
         this.bloqueado = bloqueado;
     }
     
-    public int getPuntos() {
-        return puntos;
-    }
-
-    public void setPuntos(int puntos) {
-        this.puntos = puntos;
-    }
     
     @Override
     public String toString() {
         return "Usuario [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + 
         		", fechaNacimiento=" + fechaNacimiento + ", email=" + email + 
         		", password=" + password + ", tlf=" + tlf + ", rol=" + rol +
-                ", bloqueado=" + bloqueado + ", puntos=" + puntos +"]";
+                ", bloqueado=" + bloqueado + "]";
     }
 }

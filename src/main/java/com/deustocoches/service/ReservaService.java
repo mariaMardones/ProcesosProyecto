@@ -5,18 +5,14 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import com.deustocoches.model.EstadoReserva;
 import com.deustocoches.model.Reserva;
-import com.deustocoches.model.Usuario;
 import com.deustocoches.repository.ReservaRepository;
-import com.deustocoches.repository.UsuarioRepository;
 
 @Service
 public class ReservaService {
 	private final ReservaRepository reservaRepository;
-	private final UsuarioRepository usuarioRepository;
 
-    public ReservaService(ReservaRepository reservaRepository, UsuarioRepository usuarioRepository) {
+    public ReservaService(ReservaRepository reservaRepository) {
         this.reservaRepository = reservaRepository;
-        this.usuarioRepository = usuarioRepository;
     }
 
     public List<Reserva> obtenerReservasConfirmadas() {
@@ -38,19 +34,12 @@ public class ReservaService {
     public Reserva actualizarReserva(Integer id, Reserva detallesReserva) {
         return reservaRepository.findById(id)
                 .map(reserva -> {
-                    EstadoReserva estadoAnterior = reserva.getEstado(); // Guardamos el estado previo
-
+                    
                     reserva.setFecha(detallesReserva.getFecha());
                     reserva.setPrecioTotal(detallesReserva.getPrecioTotal());
                     reserva.setEstado(detallesReserva.getEstado());
                     reserva.setUsuario(detallesReserva.getUsuario());
                     reserva.setCoche(detallesReserva.getCoche());
-
-                    if (estadoAnterior == EstadoReserva.PENDIENTE && detallesReserva.getEstado() == EstadoReserva.COMPRADA) {
-                        Usuario usuario = reserva.getUsuario();
-                        usuario.setPuntos(usuario.getPuntos() + 10);
-                        usuarioRepository.save(usuario);
-                    }
 
                     return reservaRepository.save(reserva);
                 })

@@ -36,6 +36,16 @@
         }
     </script>
 
+    <!-- BOTONES DE EXPORTACIÓN: Solo visibles si está seleccionado el estado COMPRADA -->
+    <div class="mb-3" th:if="${selectedEstado == 'COMPRADA'}">
+        <a th:href="@{'/api/reservas/exportar'(email=${currentUserEmail}, formato='pdf')}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-file-pdf"></i> Descargar historial (PDF)
+        </a>
+        <a th:href="@{'/api/reservas/exportar'(email=${currentUserEmail}, formato='csv')}" class="btn btn-outline-success">
+            <i class="fas fa-file-csv"></i> Descargar historial (CSV)
+        </a>
+    </div>
+
     <!-- Tabla de reservas -->
     <table class="table table-bordered table-hover shadow">
         <thead class="table-dark">
@@ -80,9 +90,11 @@
             </tr>
         </tbody>
     </table>
+
     <a href="/coches/disponibles" class="btn btn-secondary mt-3">
         <i class="fas fa-arrow-left me-2"></i>Volver a ver los coches
     </a>
+
     <!-- Footer -->
     <footer class="bg-light shadow-sm mt-5">
         <div class="container py-3 text-center">

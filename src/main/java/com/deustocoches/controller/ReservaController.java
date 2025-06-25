@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,7 @@ import com.deustocoches.service.ReservaService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@RestController
+@Controller
 @RequestMapping("/api/reservas")
 @Tag(name = "Reserva Controller", description = "API para gestionar reservas")
 public class ReservaController {
@@ -146,4 +147,20 @@ public class ReservaController {
 
         return ResponseEntity.badRequest().body(null);
     }
+    
+    @PostMapping("/{id}/devolver")
+    public String devolverReserva(@PathVariable Integer id, @RequestParam String email) {
+        Reserva reserva = reservaService.obtenerReservaPorId(id).orElse(null);
+
+        if (reserva == null || reserva.getEstado() != EstadoReserva.COMPRADA) {
+            return "redirect:/reservas/usuario/confirmadas?email=" + email + "&error=true";
+        }
+
+        reserva.setEstado(EstadoReserva.CANCELADA);
+        reserva.getCoche().setDisponible(true);
+        reservaService.actualizarReserva(id, reserva);
+
+        return "redirect:/reservas/usuario/confirmadas?email=" + email;
+    }
+
 }
